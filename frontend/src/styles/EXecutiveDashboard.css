@@ -1,0 +1,166 @@
+/* MAIN LAYOUT */
+
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+  background: #f4f6f9;
+}
+
+/* SIDEBAR */
+
+.sidebar {
+  width: 250px;
+  background: #1e293b;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+}
+
+.sidebar h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 22px;
+  color: #38bdf8;
+}
+
+/* SIDEBAR LINKS */
+
+.sidebar a {
+  padding: 12px 15px;
+  margin-bottom: 8px;
+  text-decoration: none;
+  color: #e5e7eb;
+  border-radius: 6px;
+  transition: 0.3s;
+  font-size: 15px;
+}
+
+.sidebar a:hover {
+  background: #0f172a;
+}
+
+.sidebar a.active {
+  background: #0284c7;
+  color: #fff;
+}
+
+/* MAIN CONTENT */
+
+.dashboard-content {
+  flex: 1;
+  padding: 25px;
+  overflow-y: auto;
+}
+
+/* PAGE CARD */
+
+.page-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.08);
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 200px;
+  }
+}
+/* Layout */
+.layout {
+  display: flex;
+  min-height: 100vh;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 240px;
+  background: #0f172a;
+  color: white;
+  padding: 20px;
+}
+
+.logo {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.sidebar a {
+  display: block;
+  padding: 12px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  color: #cbd5e1;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+  background: #2563eb;
+  color: white;
+}
+
+/* Main Area */
+.main-content {
+  flex: 1;
+  background: #f1f5f9;
+}
+
+.topbar {
+  background: white;
+  padding: 15px 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.page-content {
+  padding: 25px;
+}
+
+/* Dashboard */
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.profile-card {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 20px;
+}
+
+.stat-card {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.stat-card b {
+  font-size: 28px;
+  color: #1d4ed8;
+}

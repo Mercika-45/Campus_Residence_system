@@ -1,0 +1,40 @@
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+.data-table th,
+.data-table td {
+  padding: 12px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+.data-table th {
+  background: #1e293b;
+  color: white;
+  font-weight: 600;
+}
+
+.pending {
+  color: #dc2626;
+  font-weight: bold;
+}
+
+.paid {
+  color: #16a34a;
+  font-weight: bold;
+}
+.card {
+  width: 100%;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+.dashboard-content {
+  padding: 25px;
+  width: 100%;
+  box-sizing: border-box;
+}

@@ -1,0 +1,170 @@
+/* ===============================
+   MAIN LAYOUT
+================================ */
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+  background: #e7dbcf;
+  font-family: Arial, sans-serif;
+}
+
+/* ===============================
+   SIDEBAR
+================================ */
+.sidebar {
+  width: 230px;
+  background: #4b4035;
+  color: #fff;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.sidebar .logo {
+  margin-bottom: 30px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar li {
+  padding: 12px 10px;
+  cursor: pointer;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.sidebar li:hover,
+.sidebar .active {
+  background: #cbb9a7;
+  color: #000;
+}
+
+.sidebar a {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.logout {
+  margin-top: 30px;
+  padding: 10px;
+  background: #b08968;
+  color: #000;
+  font-weight: bold;
+  text-align: center;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* ===============================
+   MAIN CONTENT AREA
+================================ */
+.main-content1 {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-left: 0;
+}
+
+/* ===============================
+   TOPBAR
+================================ */
+.topbar {
+  height: 60px;
+  background: #3d332a;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.topbar .user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.topbar img {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+}
+
+/* ===============================
+   PAGE CONTENT
+================================ */
+.content {
+  padding: 25px;
+  flex: 1;
+  box-sizing: border-box;
+}
+
+.breadcrumb {
+  color: #555;
+  margin-bottom: 20px;
+}
+
+/* ===============================
+   INFO CARDS
+================================ */
+.info-wrapper {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+/* Profile card */
+.profile-card {
+  width: 260px;
+  background: #f7ebde;
+  padding: 20px;
+  text-align: center;
+  border-radius: 12px;
+  padding-bottom: 70px;
+}
+
+.profile-img {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 4px solid #b08968;
+  margin-bottom: 15px;
+}
+
+/* General info card */
+.general-card {
+  flex: 1;
+  background: #f7ebde;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.info-grid p {
+  margin: 10px 0;
+}
+
+/* ===============================
+   RESPONSIVE FIX
+================================ */
+@media (max-width: 768px) {
+  .info-wrapper {
+    flex-direction: column;
+  }
+
+  .profile-card {
+    width: 100%;
+  }
+}
+.main-content2 {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    
+}

@@ -1,0 +1,59 @@
+.fee-card {
+  max-width: 600px;
+  background: #f7ebde;
+  padding: 25px;
+  border-radius: 12px;
+  margin-top: 30px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.fee-card h3 {
+  margin-bottom: 20px;
+  color: #3d332a;
+}
+
+.fee-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.fee-table td {
+  padding: 12px 8px;
+  border-bottom: 1px solid #d3c2b2;
+  font-size: 16px;
+}
+
+.total-row td {
+  font-weight: bold;
+  color: #000;
+}
+
+.payment-status {
+  margin-top: 15px;
+  font-size: 16px;
+}
+
+.payment-status .paid {
+  color: green;
+  font-weight: bold;
+}
+
+.payment-status .pending {
+  color: red;
+  font-weight: bold;
+}
+
+.pay-btn {
+  margin-top: 20px;
+  padding: 12px 25px;
+  background: #3d332a;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.pay-btn:hover {
+  background: #5a4a3a;
+}

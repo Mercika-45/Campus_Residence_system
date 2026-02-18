@@ -1,0 +1,80 @@
+.complaint-form {
+  max-width: 600px;
+  background: #f7ebde;
+  padding: 25px;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+
+.complaint-form label {
+  display: block;
+  margin-top: 15px;
+  font-weight: bold;
+}
+
+.complaint-form select,
+.complaint-form textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.complaint-form button {
+  margin-top: 20px;
+  padding: 12px;
+  background: #3d332a;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.complaint-form button:hover {
+  background: #5a4a3a;
+}
+
+/* Complaint List */
+.complaint-list {
+  margin-top: 40px;
+}
+
+.complaint-card {
+  background: #fff;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+}
+
+.complaint-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.category {
+  font-weight: bold;
+}
+
+.status {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.status.pending {
+  background: #ffe0e0;
+  color: red;
+}
+
+.status.resolved {
+  background: #e0ffe0;
+  color: green;
+}
+
+.no-complaint {
+  color: #777;
+}
