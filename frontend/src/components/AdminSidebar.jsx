@@ -1,7 +1,13 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import "../styles/AdminSidebar.css";
 
 function AdminSidebar() {
+  const location = useLocation();
+
+  const handleLogout = () => {
+    localStorage.removeItem("admin");
+    window.location.href = "/admin/login";
+  };
   return (
     <div className="admin-sidebar">
       <h2 className="logo">Admin</h2>
@@ -17,8 +23,13 @@ function AdminSidebar() {
         <NavLink to="/admin/fee-status">Fee Status</NavLink>
         <NavLink to="/admin/announcements">Send Announcements</NavLink>
         <NavLink to="/admin/view-announcements">View Announcements</NavLink>
+         <div className="logout" onClick={handleLogout}>
+          Logout
+        </div>
       </nav>
+      
     </div>
+    
   );
 }
 

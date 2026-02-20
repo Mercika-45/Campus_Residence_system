@@ -1,6 +1,6 @@
 import { useState } from "react";
 import AdminSidebar from "../../components/AdminSidebar";
-import Topbar from "../../components/Topbar";
+import AdminTopbar from "../../components/AdminTopbar";
 import "../../styles/Admin.css";
 import "../../styles/Complaints.css";
 
@@ -15,6 +15,8 @@ function ViewComplaints() {
       room: "101",
       category: "Plumbing",
       issue: "Water leakage near wash basin",
+      completed: false,
+      approved: false,
       status: "Pending",
     },
     {
@@ -25,7 +27,9 @@ function ViewComplaints() {
       room: "210",
       category: "Food",
       issue: "Food quality is poor",
-      status: "Resolved",
+      completed: false,
+      approved: false,
+      status: "Pending",
     },
     {
       id: 3,
@@ -35,18 +39,60 @@ function ViewComplaints() {
       room: "305",
       category: "Electrical",
       issue: "Fan not working",
+      completed: false,
+      approved: false,
       status: "Pending",
     }
   ]);
 
-  // ✅ Mark complaint as Resolved
-  const markResolved = (id) => {
+  // ✅ Mark as Completed / Not Completed
+  const toggleCompleted = (id) => {
     setComplaints(prev =>
-      prev.map(c =>
-        c.id === id ? { ...c, status: "Resolved" } : c
-      )
+      prev.map(c => {
+        if (c.id === id) {
+          const updatedCompleted = !c.completed;
+
+          return {
+            ...c,
+            completed: updatedCompleted,
+            status:
+              updatedCompleted && c.approved
+                ? "Resolved"
+                : "Pending"
+          };
+        }
+        return c;
+      })
     );
   };
+
+  // ✅ Student Approval
+  const toggleApproved = (id) => {
+    setComplaints(prev =>
+      prev.map(c => {
+        if (c.id === id) {
+          const updatedApproved = !c.approved;
+
+          return {
+            ...c,
+            approved: updatedApproved,
+            status:
+              c.completed && updatedApproved
+                ? "Resolved"
+                : "Pending"
+          };
+        }
+        return c;
+      })
+    );
+  };
+
+  // ✅ Sort: Pending at Top, Resolved at Bottom
+  const sortedComplaints = [...complaints].sort((a, b) => {
+    if (a.status === "Resolved") return 1;
+    if (b.status === "Resolved") return -1;
+    return 0;
+  });
 
   return (
     <div className="dashboard-container">
@@ -54,10 +100,9 @@ function ViewComplaints() {
       <AdminSidebar />
 
       <div className="main-content">
-        <Topbar title="Student Complaints" />
+        <AdminTopbar title="Student Complaints" />
 
         <div className="dashboard-content">
-
           <h2>Hostel Complaints Management</h2>
 
           <div className="table-card">
@@ -70,13 +115,14 @@ function ViewComplaints() {
                   <th>Room</th>
                   <th>Category</th>
                   <th>Description</th>
+                  <th>Completed</th>
+                  <th>Student Approval</th>
                   <th>Status</th>
-                  <th>Action</th>
                 </tr>
               </thead>
 
               <tbody>
-                {complaints.map((c) => (
+                {sortedComplaints.map((c) => (
                   <tr key={c.id}>
                     <td>{c.name}</td>
                     <td>{c.regNo}</td>
@@ -85,24 +131,33 @@ function ViewComplaints() {
                     <td>{c.category}</td>
                     <td>{c.issue}</td>
 
+                    {/* Completed Toggle */}
+                    <td>
+                      <button
+                        className={c.completed ? "approved-btn" : "pending-btn"}
+                        onClick={() => toggleCompleted(c.id)}
+                      >
+                        {c.completed ? "Completed" : "Not Completed"}
+                      </button>
+                    </td>
+
+                    {/* Student Approval Toggle */}
+                    <td>
+                      <button
+                        className={c.approved ? "approved-btn" : "pending-btn"}
+                        onClick={() => toggleApproved(c.id)}
+                      >
+                        {c.approved ? "Approved" : "Not Approved"}
+                      </button>
+                    </td>
+
+                    {/* Final Status */}
                     <td>
                       <span className={`status ${c.status.toLowerCase()}`}>
                         {c.status}
                       </span>
                     </td>
 
-                    <td>
-                      {c.status === "Pending" ? (
-                        <button
-                          className="resolve-btn"
-                          onClick={() => markResolved(c.id)}
-                        >
-                          Mark Resolved
-                        </button>
-                      ) : (
-                        <span className="resolved-text">✔ Done</span>
-                      )}
-                    </td>
                   </tr>
                 ))}
               </tbody>

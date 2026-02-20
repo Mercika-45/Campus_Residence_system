@@ -21,7 +21,7 @@ function StudentDashboard() {
     <div className="dashboard-container">
       <Sidebar />
 
-      <div className="main-content2">
+      <div className="main-content1">
         <Topbar name={student.name} />
 
         <div className="content">
@@ -30,7 +30,7 @@ function StudentDashboard() {
 
           <div className="info-wrapper">
             {/* Profile Card */}
-            <div className="profile-card">
+            <div className="profile-card1">
               <img
                 src="/images/profile.jpg"
                 alt="profile"

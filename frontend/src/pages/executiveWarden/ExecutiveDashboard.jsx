@@ -30,7 +30,7 @@ function ExecutiveDashboard() {
 
           <div className="info-wrapper">
             {/* Profile Card */}
-            <div className="profile-card">
+            <div className="profile-card1">
               <img
                 src="/images/profile.jpg"
                 alt="profile"

@@ -1,5 +1,6 @@
 import "../../styles/Admin.css";
 import AdminSidebar from "../../components/AdminSidebar";
+import AdminTopbar from "../../components/AdminTopbar";
 
 function AdminViewAnnouncements() {
 
@@ -25,28 +26,33 @@ function AdminViewAnnouncements() {
   ];
 
   return (
-    <div className="warden-layout">
+    <div className="dashboard-container">
       <AdminSidebar />
 
-      <div className="warden-page">
+      <div className="main-content">
+        {/* ✅ Topbar added */}
+        <AdminTopbar title="View Announcements" />
 
-        <div className="page-header1">
-          <h1>View Announcements</h1>
-          <p className="breadcrumb">Admin / View Announcements</p>
+        <div className="dashboard-content">
+
+          <div className="page-header1">
+            <h1>View Announcements</h1>
+            <p className="breadcrumb">Admin / View Announcements</p>
+          </div>
+
+          <div className="announcement-grid1">
+            {announcements.map((item) => (
+              <div key={item.id} className="announcement-card">
+                <h3>{item.title}</h3>
+                <p>{item.content}</p>
+                <span className="announcement-date">
+                  Posted on: {item.date}
+                </span>
+              </div>
+            ))}
+          </div>
+
         </div>
-
-        <div className="announcement-grid1">
-          {announcements.map((item) => (
-            <div key={item.id} className="announcement-card">
-              <h3>{item.title}</h3>
-              <p>{item.content}</p>
-              <span className="announcement-date">
-                Posted on: {item.date}
-              </span>
-            </div>
-          ))}
-        </div>
-
       </div>
     </div>
   );

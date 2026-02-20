@@ -2,7 +2,7 @@ import "../styles/StudentDashboard.css";
 
 function Topbar({ name }) {
   return (
-    <div className="topbar">
+    <div className="topbarS">
       <h3>Welcome, {name}</h3>
 
       <div className="user">

@@ -14,6 +14,8 @@ function ViewComplaints() {
       room: "101",
       category: "Plumbing",
       issue: "Water leakage near wash basin",
+      completed: false,
+      approved: false,
       status: "Pending",
     },
     {
@@ -24,32 +26,64 @@ function ViewComplaints() {
       room: "210",
       category: "Food",
       issue: "Food quality is poor",
-      status: "Resolved",
-    },
-    {
-      id: 3,
-      name: "Meena",
-      regNo: "21EC014",
-      hostel: "Girls Hostel",
-      room: "305",
-      category: "Electrical",
-      issue: "Fan not working",
+      completed: false,
+      approved: false,
       status: "Pending",
     },
   ]);
 
-  const markResolved = (id) => {
+  // Toggle Completed
+  const toggleCompleted = (id) => {
     setComplaints((prev) =>
-      prev.map((c) =>
-        c.id === id ? { ...c, status: "Resolved" } : c
-      )
+      prev.map((c) => {
+        if (c.id === id) {
+          const updatedCompleted = !c.completed;
+          return {
+            ...c,
+            completed: updatedCompleted,
+            status:
+              updatedCompleted && c.approved
+                ? "Resolved"
+                : "Pending",
+          };
+        }
+        return c;
+      })
     );
   };
 
+  // Toggle Student Approval
+  const toggleApproved = (id) => {
+    setComplaints((prev) =>
+      prev.map((c) => {
+        if (c.id === id) {
+          const updatedApproved = !c.approved;
+          return {
+            ...c,
+            approved: updatedApproved,
+            status:
+              c.completed && updatedApproved
+                ? "Resolved"
+                : "Pending",
+          };
+        }
+        return c;
+      })
+    );
+  };
+
+  // Sort → Pending Top, Resolved Bottom
+  const sortedComplaints = [...complaints].sort((a, b) => {
+    if (a.status === "Resolved") return 1;
+    if (b.status === "Resolved") return -1;
+    return 0;
+  });
+
+  // Apply Filter
   const filteredComplaints =
     filter === "All"
-      ? complaints
-      : complaints.filter((c) => c.status === filter);
+      ? sortedComplaints
+      : sortedComplaints.filter((c) => c.status === filter);
 
   return (
     <div className="warden-layout">
@@ -81,8 +115,9 @@ function ViewComplaints() {
                 <th>Room</th>
                 <th>Category</th>
                 <th>Description</th>
+                <th>Completed</th>
+                <th>Student Approval</th>
                 <th>Status</th>
-                <th>Action</th>
               </tr>
             </thead>
 
@@ -97,24 +132,37 @@ function ViewComplaints() {
                   <td>{c.issue}</td>
 
                   <td>
+                    <button
+                      className={
+                        c.completed ? "approved-btn" : "pending-btn"
+                      }
+                      onClick={() => toggleCompleted(c.id)}
+                    >
+                      {c.completed
+                        ? "Completed"
+                        : "Not Completed"}
+                    </button>
+                  </td>
+
+                  <td>
+                    <button
+                      className={
+                        c.approved ? "approved-btn" : "pending-btn"
+                      }
+                      onClick={() => toggleApproved(c.id)}
+                    >
+                      {c.approved
+                        ? "Approved"
+                        : "Not Approved"}
+                    </button>
+                  </td>
+
+                  <td>
                     <span
                       className={`status-badge ${c.status.toLowerCase()}`}
                     >
                       {c.status}
                     </span>
-                  </td>
-
-                  <td>
-                    {c.status === "Pending" ? (
-                      <button
-                        className="action-btn"
-                        onClick={() => markResolved(c.id)}
-                      >
-                        Mark Resolved
-                      </button>
-                    ) : (
-                      <span className="done-text">✔ Completed</span>
-                    )}
                   </td>
                 </tr>
               ))}

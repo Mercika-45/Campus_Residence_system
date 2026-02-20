@@ -25,7 +25,7 @@ function PayFee() {
     <div className="dashboard-container">
       <Sidebar />
 
-      <div className="main-content2">
+      <div className="main-content1">
         <Topbar title="Fee Payment" />
 
         <div className="content">

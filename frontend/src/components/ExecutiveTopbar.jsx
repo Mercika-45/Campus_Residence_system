@@ -1,8 +1,8 @@
+import "../styles/EXecutiveDashboard.css";
 function ExecutiveTopbar() {
   return (
-    <div className="topbar">
-      <h3>CRS | Executive Dashboard</h3>
-      <span>Executive Warden</span>
+    <div className="topEW">
+      <h3>Welcome Executive Warden</h3>
     </div>
   );
 }

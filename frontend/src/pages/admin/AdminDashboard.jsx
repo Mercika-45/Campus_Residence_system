@@ -1,5 +1,5 @@
 import AdminSidebar from "../../components/AdminSidebar";
-import Topbar from "../../components/Topbar";
+import AdminTopbar from "../../components/AdminTopbar";
 import "../../styles/Admin.css";
 
 function AdminDashboard() {
@@ -12,7 +12,7 @@ function AdminDashboard() {
 
       {/* RIGHT CONTENT */}
       <div className="main-content">
-        <Topbar title="Admin Dashboard" />
+        <AdminTopbar title="Admin Dashboard" />
 
         <div className="dashboard-content">
           <h2 className="welcome-text">

@@ -1,9 +1,14 @@
 import { useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import "../styles/ForgotPassword.css";
 
 function ResetPassword() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  const role = searchParams.get("role");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -18,7 +23,11 @@ function ResetPassword() {
       return;
     }
 
-    alert("Password changed successfully!");
+    // ✅ Smart redirect based on role
+    if (role === "admin") navigate("/admin/login");
+    else if (role === "executive") navigate("/executive/login");
+    else if (role === "warden") navigate("/warden/login");
+    else navigate("/student-login"); // default
   };
 
   return (

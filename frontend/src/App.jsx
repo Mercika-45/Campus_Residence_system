@@ -5,16 +5,17 @@ import Home from "./pages/Home";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 
+
 /* Student */
 import StudentLogin from "./pages/student/StudentLogin";
 import StudentRegister from "./pages/student/StudentRegister";
 import StudentDashboard from "./pages/student/StudentDashboard";
 import ViewMenu from "./pages/student/ViewMenu";
-import ViewRoom from "./pages/student/ViewRoom";
 import PayFee from "./pages/student/PayFee";
 import DummyBankPayment from "./pages/student/DummyBankPayment";
 import RaiseComplaint from "./pages/student/RaiseComplaint";
 import ApplyLeave from "./pages/student/ApplyLeave";
+import ApplyVacating from "./pages/student/ApplyVacating";
 import LeaveStatus from "./pages/student/LeaveStatus";
 
 /* Admin */
@@ -38,6 +39,7 @@ import SendAnnouncementsEW from "./pages/executiveWarden/SendAnnouncements";
 import ViewComplaintsEW from "./pages/executiveWarden/ViewComplaints";
 import ViewMenuEW from "./pages/executiveWarden/ViewMenu";
 import ViewWardensEW from "./pages/executiveWarden/ViewWardens";
+import ExecutiveWardenRequests from "./pages/executiveWarden/ExecutiveWardenRequests";
 import ViewStudentsEW from "./pages/executiveWarden/ViewStudents";
 import FeeStatusEW from "./pages/executiveWarden/FeeStatus";
 import AllocateRoomsEW from "./pages/executiveWarden/AllocateRooms";
@@ -58,6 +60,7 @@ import InEntry from "./pages/warden/InEntry";
 
 function App() {
   return (
+    
     <Routes>
 
       <Route path="/" element={<Home />} />
@@ -67,11 +70,11 @@ function App() {
       <Route path="/student-register" element={<StudentRegister />} />
       <Route path="/student/dashboard" element={<StudentDashboard />} />
       <Route path="/student/menu" element={<ViewMenu />} />
-      <Route path="/student/room" element={<ViewRoom />} />
       <Route path="/student/fee" element={<PayFee />} />
       <Route path="/student/bank-payment" element={<DummyBankPayment />} />
       <Route path="/student/complaint" element={<RaiseComplaint />} />
       <Route path="/student/leave" element={<ApplyLeave />} />
+      <Route path="/student/vacating" element={<ApplyVacating />} />
       <Route path="/student/leave-status" element={<LeaveStatus />} />
       
       {/* Admin */}
@@ -95,6 +98,7 @@ function App() {
       <Route path="/executive/view-menu" element={<ViewMenuEW />} />
       <Route path="/executive/view-wardens" element={<ViewWardensEW />} />
       <Route path="/executive/view-students" element={<ViewStudentsEW />} />
+       <Route path="/executive/student-request" element={<ExecutiveWardenRequests />} />
       <Route path="/executive/fee-status" element={<FeeStatusEW />} />
       <Route path="/executive/allocate-rooms" element={<AllocateRoomsEW />} />
          {/* WARDEN LOGIN */}

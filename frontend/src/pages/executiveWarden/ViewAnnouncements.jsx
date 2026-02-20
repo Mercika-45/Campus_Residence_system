@@ -1,5 +1,5 @@
 import ExecutiveSidebar from "../../components/ExecutiveSidebar";
-import Topbar from "../../components/Topbar";
+import ExecutiveTopbar from "../../components/ExecutiveTopbar";
 import "../../styles/ExecutiveWarden.css";
 
 function ViewAnnouncements() {
@@ -12,7 +12,7 @@ function ViewAnnouncements() {
       <div className="main-content1">
         
         {/* Topbar */}
-        <Topbar name="Executive Warden" />
+        <ExecutiveTopbar name="Executive Warden" />
 
         <div className="content">
           <h2>Announcements</h2>

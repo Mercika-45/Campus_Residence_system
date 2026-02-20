@@ -1,40 +1,37 @@
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
+.status.paid {
+  color: green;
+  font-weight: bold;
 }
 
-.data-table th,
-.data-table td {
+.status.unpaid {
+  color: red;
+  font-weight: bold;
+}
+
+.mark-paid-btn {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.mark-paid-btn:hover {
+  background-color: #218838;
+}
+.fee-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.fee-table th, .fee-table td {
   padding: 12px;
-  border: 1px solid #ddd;
+  border-bottom: 1px solid #eee;
   text-align: center;
 }
 
-.data-table th {
-  background: #1e293b;
+.fee-table th {
+  background: #ae3107;
   color: white;
-  font-weight: 600;
-}
-
-.pending {
-  color: #dc2626;
-  font-weight: bold;
-}
-
-.paid {
-  color: #16a34a;
-  font-weight: bold;
-}
-.card {
-  width: 100%;
-  background: #ffffff;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-}
-.dashboard-content {
-  padding: 25px;
-  width: 100%;
-  box-sizing: border-box;
 }

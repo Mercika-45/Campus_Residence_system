@@ -1,5 +1,5 @@
 import AdminSidebar from "../../components/AdminSidebar";
-import Topbar from "../../components/Topbar";
+import AdminTopbar from "../../components/AdminTopbar";
 import "../../styles/Admin.css";
 import "../../styles/ViewMenu.css";
 
@@ -23,7 +23,7 @@ function FoodMenu() {
 
       {/* Main Content */}
       <div className="main-content">
-        <Topbar title="View Food Menu" />
+        <AdminTopbar title="View Food Menu" />
 
         <div className="dashboard-content">
 

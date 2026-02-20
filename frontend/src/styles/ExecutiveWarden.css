@@ -11,14 +11,7 @@
 /* ===============================
    SIDEBAR
 ================================ */
-.sidebar {
-  width: 240px;
-  background: linear-gradient(180deg, #4b4035, #3d332a);
-  color: #fff;
-  padding: 22px 18px;
-  box-sizing: border-box;
-  box-shadow: 3px 0 12px rgba(0,0,0,0.15);
-}
+
 .executive-sidebar {
   width: 240px;
   height: 100vh;
@@ -35,7 +28,7 @@
 .executive-sidebar .logo {
   color: white;
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: -140px;
 }
 
 .executive-sidebar a {
@@ -57,41 +50,6 @@
   color: white;
 }
 
-.sidebar .logo {
-  margin-bottom: 30px;
-  font-size: 22px;
-  font-weight: bold;
-  text-align: center;
-  letter-spacing: 0.5px;
-}
-
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.sidebar li {
-  padding: 12px 14px;
-  cursor: pointer;
-  border-radius: 8px;
-  margin-bottom: 8px;
-  transition: 0.3s;
-  font-size: 14px;
-}
-
-.sidebar li:hover,
-.sidebar .active {
-  background: linear-gradient(90deg, #d6c1a5, #cbb9a7);
-  color: #000;
-  transform: translateX(5px);
-}
-
-.sidebar a {
-  text-decoration: none;
-  color: inherit;
-  display: block;
-}
 
 /* Logout Button */
 .logout {
@@ -121,38 +79,6 @@
   margin-left: 240px;
 }
 
-/* ===============================
-   TOPBAR
-================================ */
-.topbar {
-  height: 65px;
-  background: linear-gradient(90deg, #0f172a, #da370f);
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 25px;
-  box-sizing: border-box;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
-}
-
-.topbar h3 {
-  font-weight: 500;
-  letter-spacing: 0.5px;
-}
-
-.topbar .user {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.topbar img {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  border: 2px solid #d6c1a5;
-}
 
 /* ===============================
    PAGE CONTENT
@@ -259,73 +185,6 @@
     width: 100%;
   }
 
-  .sidebar {
-    width: 200px;
-  }
-}
-/* ===============================
-   SIDEBAR – EXECUTIVE
-================================ */
-
-.sidebar {
-  width: 250px;
-  min-height: 100vh;
-  background: linear-gradient(180deg, #3d332a, #4b4035);
-  color: #fff;
-  padding: 25px 18px;
-  box-sizing: border-box;
-  box-shadow: 3px 0 15px rgba(0,0,0,0.25);
-}
-
-/* Logo */
-.sidebar .logo {
-  font-size: 22px;
-  font-weight: bold;
-  margin-bottom: 30px;
-  text-align: center;
-  letter-spacing: 1px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid rgba(255,255,255,0.15);
-}
-
-/* Nav Links */
-.sidebar a {
-  display: block;
-  text-decoration: none;
-  color: #f1f1f1;
-  padding: 12px 14px;
-  margin-bottom: 8px;
-  border-radius: 8px;
-  font-size: 14px;
-  transition: all 0.3s ease;
-}
-
-/* Hover Effect */
-.sidebar a:hover {
-  background: linear-gradient(90deg, #d6c1a5, #cbb9a7);
-  color: #000;
-  transform: translateX(6px);
-  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
-}
-
-/* Active Link */
-.sidebar a.active {
-  background: linear-gradient(90deg, #b08968, #d6b38c);
-  color: #000;
-  font-weight: 600;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-}
-
-/* Icons spacing (if added later) */
-.sidebar i {
-  margin-right: 10px;
-}
-
-/* Responsive */
-@media (max-width: 900px) {
-  .sidebar {
-    width: 210px;
-  }
 }
 /* ===============================
    ANNOUNCEMENT CARDS
@@ -589,16 +448,253 @@
 }
 
 /* Main Content */
-.executive-main {
+.executive-main1 {
   flex: 1;
-  padding: 20px;
+  margin-left: 220px;
 }
 
-/* Topbar spacing fix */
-.executive-main > div {
-  margin-top: 10px;
-}
+
 .dashboard-content {
   padding: 25px;
   width: 100%;
+}
+ 
+.executive-page {
+  display: flex;
+  font-family: "Segoe UI", sans-serif;
+}
+
+
+.executive-content {
+  flex: 1;
+  padding: 20px;
+  background-color: #f0f4f8;
+  margin-left: 20px;
+}
+
+.request-section {
+  margin-bottom: 30px;
+}
+
+.request-section h3 {
+  margin-bottom: 15px;
+  color: #0A1F44;
+}
+
+.request-table th, .request-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+.request-table th {
+  background-color: #15428f;
+  color: #fff;
+}
+
+.request-table tr:last-child td {
+  border-bottom: none;
+}
+
+.request-table tr.pending {
+  background-color: #fff8e1;
+}
+
+.request-table tr.approved {
+  background-color: #e6ffed;
+}
+
+.request-table button {
+  padding: 5px 10px;
+  background-color: #14a722;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.request-table button:hover {
+  background-color: #123060;
+}
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+/* Modal content */
+.modal-content {
+  background: #fff;
+  padding: 25px 30px;
+  border-radius: 10px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  position: relative;
+}
+
+/* Buttons */
+.modal-content button {
+  margin-top: 15px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.modal-content button:first-of-type {
+  background-color: #0A1F44;
+  color: #fff;
+}
+
+.modal-content button:first-of-type:hover {
+  background-color: #123060;
+}
+
+.modal-content .close-btn {
+  background-color: #ccc;
+  margin-left: 10px;
+}
+
+.modal-content .close-btn:hover {
+  background-color: #999;
+}
+/* Tabs */
+.tabs {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.tabs button {
+  flex: 1;
+  padding: 10px 15px;
+  border: none;
+  background-color: #ddd;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.tabs button.active {
+  background-color: #0A1F44;
+  color: #fff;
+}
+
+.tabs button:hover:not(.active) {
+  background-color: #bbb;
+}
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 50px;
+  z-index: 1000;
+}
+
+/* Modal content box */
+.modal-content {
+  background-color: #fff;
+  padding: 25px 30px;
+  border-radius: 10px;
+  max-width: 700px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  font-family: Arial, sans-serif;
+}
+
+/* Modal headers */
+.modal-content h3 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #0a1f44;
+  font-size: 22px;
+  border-bottom: 2px solid #0a1f44;
+  padding-bottom: 5px;
+}
+
+.modal-content h4 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  color: #0a1f44;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 3px;
+  font-size: 18px;
+}
+
+/* Modal paragraphs */
+.modal-content p {
+  margin: 8px 0;
+  font-size: 15px;
+}
+
+/* Bold label styling */
+.modal-content strong {
+  width: 180px;
+  display: inline-block;
+  color: #0a1f44;
+}
+
+/* Section separator */
+.modal-content hr {
+  margin: 15px 0;
+  border: none;
+  border-top: 1px dashed #ccc;
+}
+
+/* Approve and Close buttons */
+.modal-content button {
+  margin-top: 15px;
+  padding: 8px 18px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.modal-content button:hover {
+  opacity: 0.9;
+}
+
+.modal-content button.close-btn {
+  background-color: #ccc;
+  color: #000;
+  margin-left: 10px;
+}
+
+.modal-content button:not(.close-btn) {
+  background-color: #0a1f44;
+  color: #fff;
 }

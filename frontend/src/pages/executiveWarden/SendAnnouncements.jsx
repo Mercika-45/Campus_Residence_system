@@ -1,6 +1,6 @@
 import { useState } from "react";
 import ExecutiveSidebar from "../../components/ExecutiveSidebar";
-import Topbar from "../../components/Topbar";
+import ExecutiveTopbar from "../../components/ExecutiveTopbar";
 import "../../styles/ExecutiveWarden.css";
 
 function SendAnnouncements() {
@@ -37,7 +37,7 @@ function SendAnnouncements() {
       <ExecutiveSidebar />
 
       <div className="main-content1">
-        <Topbar name="Executive Warden" />
+        <ExecutiveTopbar name="Executive Warden" />
 
         <div className="content">
           <h2>Send Announcement</h2>

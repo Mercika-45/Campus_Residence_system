@@ -4,49 +4,40 @@ import "../styles/StudentDashboard.css";
 function Sidebar() {
   const location = useLocation();
 
+  const handleLogout = () => {
+    localStorage.removeItem("student");
+    window.location.href = "/student-login";
+  };
+
   return (
-    <div className="sidebar">
-      <h2 className="logo">CRS</h2>
+    <div className="sidebarS">
+      <h2 className="logo">Campus Resident</h2>
 
-      <ul>
-        <li className={location.pathname === "/student/dashboard" ? "active" : ""}>
-          <Link to="/student/dashboard">Dashboard</Link>
-        </li>
-
-        <li className={location.pathname === "/student/menu" ? "active" : ""}>
-          <Link to="/student/menu">View Menu</Link>
-        </li>
-
-        <li>
-          <Link to="/student/room">View Room</Link>
-        </li>
-
-        <li>
-          <Link to="/student/fee">Pay Fee</Link>
-        </li>
-
-        <li>
-          <Link to="/student/complaint">Raise Complaint</Link>
-        </li>
-
-        <li>
-          <Link to="/student/leave">Apply Leave</Link>
-        </li>
-
-        <li>
-          <Link to="/student/leave-status">Leave Status</Link>
-        </li>
-
-        <li
-          className="logout"
-          onClick={() => {
-            localStorage.removeItem("student");
-            window.location.href = "/student-login";
-          }}
+      <div className="nav-links">
+        <Link
+          to="/student/dashboard"
+          className={location.pathname === "/student/dashboard" ? "active" : ""}
         >
+          Dashboard
+        </Link>
+
+        <Link
+          to="/student/menu"
+          className={location.pathname === "/student/menu" ? "active" : ""}
+        >
+          View Menu
+        </Link>
+
+        <Link to="/student/fee">Pay Fee</Link>
+        <Link to="/student/complaint">Raise Complaint</Link>
+        <Link to="/student/leave">Apply Leave</Link>
+        <Link to="/student/vacating">vacation</Link>
+        <Link to="/student/leave-status">Leave Status</Link>
+
+        <div className="logout" onClick={handleLogout}>
           Logout
-        </li>
-      </ul>
+        </div>
+      </div>
     </div>
   );
 }

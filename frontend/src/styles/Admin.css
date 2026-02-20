@@ -356,8 +356,140 @@
   display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 25px;
-    margin-left: 250px;
+  
 }
 .page-header1{
   margin-left: 240px;
+}
+
+/* ===============================
+   TOPBAR
+================================ */
+.topbarA {
+  height: 65px;
+  background: linear-gradient(90deg, #0f172a, #0a086c);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 25px;
+  box-sizing: border-box;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+}
+
+.topbarA h3 {
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.topbarA .user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbarA img {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px solid #d6c1a5;
+}
+
+/* ===== Filter Bar Container ===== */
+.filter-bar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 15px 0 20px 0;
+  padding: 14px 16px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+}
+
+/* ===== Select Dropdown ===== */
+.filter-select {
+  min-width: 180px;
+  padding: 9px 12px;
+  border-radius: 6px;
+  border: 1px solid #cfd8dc;
+  background: #f9fafc;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+/* Hover */
+.filter-select:hover {
+  border-color: #0a1f44;
+  background: #ffffff;
+}
+
+/* Focus */
+.filter-select:focus {
+  border-color: #0a1f44;
+  box-shadow: 0 0 0 2px rgba(10, 31, 68, 0.15);
+  background: #ffffff;
+}
+
+/* ===== Clear Button ===== */
+.clear-btn {
+  padding: 9px 16px;
+  border: none;
+  border-radius: 6px;
+  background: #ef4444;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+/* Hover */
+.clear-btn:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+/* Active */
+.clear-btn:active {
+  transform: scale(0.97);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-select {
+    width: 100%;
+  }
+
+  .clear-btn {
+    width: 100%;
+  }
+}
+
+/* YEAR ACTIONS */
+.year-actions {
+  margin-bottom: 15px;
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+}
+
+.btn.promote {
+  background:#163a7a;
+  color: white;
+}
+
+.btn.promote:hover {
+  background: #0284c7;
 }

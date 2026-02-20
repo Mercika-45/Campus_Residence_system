@@ -805,3 +805,62 @@ body {
   font-size: 14px;
 }
 
+/* ===== BUTTONS ===== */
+
+.pending-btn {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.pending-btn:hover {
+  background: #fecaca;
+}
+
+.approved-btn {
+  background: #dcfce7;
+  color: #166534;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.approved-btn:hover {
+  background: #bbf7d0;
+}
+
+/* ===== STATUS BADGE ===== */
+
+.status-badge {
+  padding: 5px 12px;
+  border-radius: 15px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.status-badge.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-badge.resolved {
+  background: #d4edda;
+  color: #155724;
+}
+
+/* ===== TABLE HOVER EFFECT ===== */
+
+.warden-table tbody tr:hover {
+  background: #f8fafc;
+  transition: 0.2s ease;
+}

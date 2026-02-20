@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import AdminSidebar from "../../components/AdminSidebar";
-import Topbar from "../../components/Topbar";
+import AdminTopbar from "../../components/AdminTopbar";
 import "../../styles/Admin.css";
 import "../../styles/AllocateWarden.css";
 
@@ -16,25 +16,46 @@ function AllocateWarden() {
     name: "",
     dept: "",
     phone: "",
+    role: "",
+    password: "",
     image: ""
   });
 
-  const [wardensList, setWardensList] = useState([
-    {
-      name: "Ramesh Kumar",
-      dept: "Computer Science Department",
-      phone: "9876543210",
-      image: "https://i.pravatar.cc/150?img=3"
-    },
-    {
-      name: "Priya Sharma",
-      dept: "Electronic and Communication Department",
-      phone: "9876543211",
-      image: "https://i.pravatar.cc/150?img=5"
-    }
-  ]);
+  const DEFAULT_PROFILE =
+  "https://ui-avatars.com/api/?name=Warden&background=0A1F44&color=fff";
+
+
+  const departmentList = [
+  "Computer Science and Engineering",
+  "Information Technology",
+  "Electrical and Electronic Engineering",
+  "Electronics and Communication Engineering",
+  "Mechanical Engineering",
+  "Civil Engineering"
+];
+
+const [wardensList, setWardensList] = useState([
+  {
+    name: "Ramesh Kumar",
+    dept: "Computer Science and Engineering",
+    phone: "9876543210",
+    role: "Deputy Warden (Boys)",
+    password: "123456",
+    image: "https://i.pravatar.cc/150?img=3"
+  },
+  {
+    name: "Priya Sharma",
+    dept: "Electronics and Communication Engineering",
+    phone: "9876543211",
+    role: "Deputy Warden (Girls)",
+    password: "123456",
+    image: "https://i.pravatar.cc/150?img=5"
+  }
+]);
 
   const hostelList = [
+    "Boys Hostel",
+    "Girls Hostel",
     "Boys Hostel - A Block",
     "Boys Hostel - B Block",
     "Girls Hostel - A Block",
@@ -55,13 +76,32 @@ function AllocateWarden() {
     setError("");
     setSuccess("");
 
-    if (!newWarden.name || !newWarden.dept || !newWarden.phone) {
+    if (
+      !newWarden.name ||
+      !newWarden.dept ||
+      !newWarden.phone ||
+      !newWarden.role ||
+      !newWarden.password
+    ) {
       setError("Please fill all staff details");
       return;
     }
 
-    setWardensList([...wardensList, newWarden]);
-    setNewWarden({ name: "", dept: "", phone: "", image: "" });
+    const wardenWithImage = {
+  ...newWarden,
+  image: newWarden.image?.trim() || DEFAULT_PROFILE
+};
+
+setWardensList([...wardensList, wardenWithImage]);
+
+    setNewWarden({
+      name: "",
+      dept: "",
+      phone: "",
+      role: "",
+      password: "",
+      image: ""
+    });
     setShowAddWarden(false);
     setSuccess("New warden added successfully");
   };
@@ -122,7 +162,7 @@ function AllocateWarden() {
       <AdminSidebar />
 
       <div className="main-content">
-        <Topbar title="Allocate Warden" />
+        <AdminTopbar title="Allocate Warden" />
 
         <div className="dashboard-content">
           <h2 className="page-title">Allocate Warden</h2>
@@ -131,12 +171,12 @@ function AllocateWarden() {
           </p>
 
           {/* Toggle Add Warden */}
-          <button 
+          <button
             className="primary-btn wide"
             onClick={() => setShowAddWarden(!showAddWarden)}
-            style={{ marginBottom: "20px"}}
+            style={{ marginBottom: "20px" }}
           >
-            {showAddWarden ? "Cancel" : " Add New Warden"}
+            {showAddWarden ? "Cancel" : "Add New Warden"}
           </button>
 
           {/* Add Warden Form */}
@@ -152,14 +192,22 @@ function AllocateWarden() {
                     setNewWarden({ ...newWarden, name: e.target.value })
                   }
                 />
-                <input
-                  type="dept"
-                  placeholder="dept"
-                  value={newWarden.dept}
-                  onChange={(e) =>
-                    setNewWarden({ ...newWarden, dept: e.target.value })
-                  }
-                />
+
+               <select
+  value={newWarden.dept}
+  onChange={(e) =>
+    setNewWarden({ ...newWarden, dept: e.target.value })
+  }
+>
+  <option value="">-- Select Department --</option>
+  {departmentList.map((dept, index) => (
+    <option key={index} value={dept}>
+      {dept}
+    </option>
+  ))}
+</select>
+
+
                 <input
                   type="text"
                   placeholder="Phone"
@@ -168,6 +216,31 @@ function AllocateWarden() {
                     setNewWarden({ ...newWarden, phone: e.target.value })
                   }
                 />
+
+                {/* ✅ ROLE DROPDOWN */}
+                <select
+                  value={newWarden.role}
+                  onChange={(e) =>
+                    setNewWarden({ ...newWarden, role: e.target.value })
+                  }
+                >
+                  <option value="">-- Select Role --</option>
+                  <option>Deputy Warden (Boys)</option>
+                  <option>Deputy Warden (Girls)</option>
+                  <option>Local Warden (Boys)</option>
+                  <option>Local Warden (Girls)</option>
+                </select>
+
+                {/* ✅ PASSWORD FIELD */}
+                <input
+                  type="password"
+                  placeholder="Set Login Password"
+                  value={newWarden.password}
+                  onChange={(e) =>
+                    setNewWarden({ ...newWarden, password: e.target.value })
+                  }
+                />
+
                 <input
                   type="text"
                   placeholder="Profile Image URL (optional)"
@@ -187,7 +260,6 @@ function AllocateWarden() {
           {/* Allocation Form */}
           <div className="form-card">
             <form onSubmit={handleSubmit}>
-
               <div className="form-group">
                 <label>Select Warden</label>
                 <select
@@ -216,6 +288,7 @@ function AllocateWarden() {
                   <div>
                     <p><strong>{selectedProfile.name}</strong></p>
                     <p>{selectedProfile.dept}</p>
+                    <p>{selectedProfile.role}</p>
                     <p>{selectedProfile.phone}</p>
                   </div>
                 </div>
@@ -267,6 +340,7 @@ function AllocateWarden() {
                       />
 
                       <h4>{item.warden}</h4>
+                      <p>{profile?.role}</p>
                       <p>{profile?.dept}</p>
                       <p>{profile?.phone}</p>
 

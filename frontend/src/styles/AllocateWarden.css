@@ -144,3 +144,24 @@
 .wide{
     width: 20%;
 }
+
+/* ===== SELECT DROPDOWN ===== */
+
+.form-group select,
+.add-warden-card select {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 14px;
+  border-radius: 10px;
+  border: 1.5px solid #dcdfe6;
+  background-color: #ffffff;
+  color: #64748b;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  margin-bottom: 10px;
+
+}

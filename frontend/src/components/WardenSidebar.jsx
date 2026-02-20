@@ -1,7 +1,13 @@
-import { NavLink } from "react-router-dom";
+import { NavLink,useLocation } from "react-router-dom";
 import "../styles/WardenSidebar.css";
 
 function WardenSidebar() {
+  const location = useLocation();
+
+  const handleLogout = () => {
+    localStorage.removeItem("warden");
+    window.location.href = "/warden/login";
+  };
   return (
     <div className="sidebarlw">
       <h2 className="logo">WARDEN</h2>
@@ -46,6 +52,9 @@ function WardenSidebar() {
       <NavLink to="/warden/inentry" className="link">
         InEntry
       </NavLink>
+       <div className="logout" onClick={handleLogout}>
+          Logout
+        </div>
     </div>
   );
 }

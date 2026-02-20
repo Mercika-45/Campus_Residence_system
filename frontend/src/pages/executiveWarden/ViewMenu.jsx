@@ -1,6 +1,6 @@
 import { useState } from "react";
 import ExecutiveSidebar from "../../components/ExecutiveSidebar";
-import Topbar from "../../components/Topbar";
+import ExecutiveTopbar from "../../components/ExecutiveTopbar";
 import "../../styles/ViewMenuEW.css";
 
 function ViewMenuEW() {
@@ -29,7 +29,7 @@ function ViewMenuEW() {
       <ExecutiveSidebar />
 
       <div className="main-content1">
-        <Topbar title="Food Menu Management" />
+        <ExecutiveTopbar title="Food Menu Management" />
 
         <div className="content">
 

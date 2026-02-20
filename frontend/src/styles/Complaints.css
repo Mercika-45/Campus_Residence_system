@@ -51,3 +51,61 @@
 .resolve-btn:hover {
   background: #15803d;
 }
+/* ===== COMPLETED / NOT COMPLETED BUTTON ===== */
+
+.pending-btn {
+  background: #fee2e2;   /* light red */
+  color: #b91c1c;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.pending-btn:hover {
+  background: #fecaca;
+}
+
+/* ===== APPROVED BUTTON ===== */
+
+.approved-btn {
+  background: #dcfce7;   /* light green */
+  color: #166534;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.approved-btn:hover {
+  background: #bbf7d0;
+}
+
+/* ===== DISABLED BUTTON (optional) ===== */
+
+button:disabled {
+  background: #e5e7eb;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+/* ===== TABLE ROW HOVER EFFECT ===== */
+
+.complaint-table tbody tr:hover {
+  background: #f8fafc;
+  transition: 0.2s ease;
+}
+
+/* ===== SMOOTH BUTTON CLICK EFFECT ===== */
+
+.pending-btn:active,
+.approved-btn:active {
+  transform: scale(0.95);
+}
+

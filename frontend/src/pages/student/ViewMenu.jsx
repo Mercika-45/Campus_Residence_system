@@ -17,7 +17,7 @@ function ViewMenu() {
     <div className="student-layout">
       <Sidebar />
 
-      <div className="student-main">
+      <div className="main-content1">
         <Topbar title="View Food Menu" />
 
         <div className="menu-container">

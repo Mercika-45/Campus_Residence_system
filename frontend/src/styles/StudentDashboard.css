@@ -8,47 +8,6 @@
   font-family: Arial, sans-serif;
 }
 
-/* ===============================
-   SIDEBAR
-================================ */
-.sidebar {
-  width: 230px;
-  background: #4b4035;
-  color: #fff;
-  padding: 20px;
-  box-sizing: border-box;
-}
-
-.sidebar .logo {
-  margin-bottom: 30px;
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.sidebar li {
-  padding: 12px 10px;
-  cursor: pointer;
-  border-radius: 6px;
-  margin-bottom: 8px;
-}
-
-.sidebar li:hover,
-.sidebar .active {
-  background: #cbb9a7;
-  color: #000;
-}
-
-.sidebar a {
-  text-decoration: none;
-  color: inherit;
-  display: block;
-}
 
 .logout {
   margin-top: 30px;
@@ -69,32 +28,6 @@
   display: flex;
   flex-direction: column;
   margin-left: 0;
-}
-
-/* ===============================
-   TOPBAR
-================================ */
-.topbar {
-  height: 60px;
-  background: #3d332a;
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 20px;
-  box-sizing: border-box;
-}
-
-.topbar .user {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.topbar img {
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
 }
 
 /* ===============================
@@ -123,7 +56,15 @@
 /* Profile card */
 .profile-card {
   width: 260px;
-  background: #f7ebde;
+  background: #cf9c64;
+  padding: 20px;
+  text-align: center;
+  border-radius: 12px;
+  padding-bottom: 70px;
+}
+.profile-card1 {
+  width: 260px;
+  background: #f9e6d2;
   padding: 20px;
   text-align: center;
   border-radius: 12px;
@@ -141,7 +82,7 @@
 /* General info card */
 .general-card {
   flex: 1;
-  background: #f7ebde;
+  background: #b9b2ab;
   padding: 20px;
   border-radius: 12px;
 }
@@ -167,4 +108,95 @@
     display: flex;
     flex-direction: column;
     
+}
+/* ===============================
+   TOPBAR
+================================ */
+.topbarS {
+  height: 65px;
+  background: linear-gradient(90deg,#96116e, #570332);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 25px;
+  box-sizing: border-box;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+}
+
+.topbarS h3 {
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: white;
+}
+
+.topbarS .user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbarS img {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px solid #d6c1a5;
+}
+
+/* ===============================
+   SIDEBAR – EXECUTIVE
+================================ */
+
+.sidebarS {
+  width: 240px;
+  height: 100vh;
+  background: linear-gradient(90deg, #570332, #7c0c5b);
+  color: white;
+  padding: 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  
+}
+
+/* Logo */
+.sidebarS .logo {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: -160px;
+  text-align: center;
+}
+
+/* Nav Links */
+.sidebarS a {
+  display: block;
+  text-decoration: none;
+  color: white;
+  padding: 24px 14px;
+  border-radius: 8px;
+  font-size: 18px;
+  transition: all 0.3s ease;
+  
+}
+
+/* Hover Effect */
+.sidebarS a:hover {
+  background: linear-gradient(90deg, #554753, #6c5f6a);
+  color: #000;
+  transform: translateX(6px);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+}
+
+
+
+/* Icons spacing (if added later) */
+.sidebarS i {
+  margin-right: 10px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .sidebar {
+    width: 210px;
+  }
 }

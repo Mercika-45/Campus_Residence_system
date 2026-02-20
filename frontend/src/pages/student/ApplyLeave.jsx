@@ -4,10 +4,14 @@ import Topbar from "../../components/Topbar";
 import "../../styles/ApplyLeave.css";
 
 function ApplyLeave() {
+  const [studentName, setStudentName] = useState("");
+  const [registerNo, setRegisterNo] = useState("");
+  const [semester, setSemester] = useState("");
   const [leaveType, setLeaveType] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [reason, setReason] = useState("");
+  const [messReduction, setMessReduction] = useState(false);
 
   const [leaves, setLeaves] = useState(
     JSON.parse(localStorage.getItem("leaves")) || []
@@ -17,24 +21,36 @@ function ApplyLeave() {
     if (!fromDate || !toDate) return 0;
     const start = new Date(fromDate);
     const end = new Date(toDate);
-    return Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
+    const diff = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
+    return diff > 0 ? diff : 0;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!leaveType || !fromDate || !toDate || !reason) {
+    if (!studentName || !registerNo || !semester || !leaveType || !fromDate || !toDate || !reason) {
       alert("Please fill all fields");
       return;
     }
 
+    if (new Date(toDate) < new Date(fromDate)) {
+      alert("To Date cannot be before From Date");
+      return;
+    }
+
+    const days = calculateDays();
+
     const newLeave = {
       id: Date.now(),
+      studentName,
+      registerNo,
+      semester,
       leaveType,
       fromDate,
       toDate,
-      days: calculateDays(),
+      days,
       reason,
+      messReduction: days > 5 ? messReduction : false,
       status: "Pending",
       appliedOn: new Date().toLocaleDateString(),
     };
@@ -43,17 +59,21 @@ function ApplyLeave() {
     setLeaves(updatedLeaves);
     localStorage.setItem("leaves", JSON.stringify(updatedLeaves));
 
+    // reset form
+    setStudentName("");
+    setRegisterNo("");
+    setSemester("");
     setLeaveType("");
     setFromDate("");
     setToDate("");
     setReason("");
+    setMessReduction(false);
   };
 
   return (
     <div className="dashboard-container">
       <Sidebar />
-
-      <div className="main-content2">
+      <div className="main-content1">
         <Topbar title="Apply Leave" />
 
         <div className="content">
@@ -62,6 +82,30 @@ function ApplyLeave() {
 
           {/* Leave Form */}
           <form className="leave-form" onSubmit={handleSubmit}>
+            <label>Name of the Student</label>
+            <input
+              type="text"
+              value={studentName}
+              placeholder="Enter student name"
+              onChange={(e) => setStudentName(e.target.value)}
+            />
+
+            <label>Register No</label>
+            <input
+              type="text"
+              value={registerNo}
+              placeholder="Enter register number"
+              onChange={(e) => setRegisterNo(e.target.value)}
+            />
+
+            <label>Semester / Branch</label>
+            <input
+              type="text"
+              value={semester}
+              placeholder="Enter semester / branch"
+              onChange={(e) => setSemester(e.target.value)}
+            />
+
             <label>Leave Type</label>
             <select
               value={leaveType}
@@ -98,6 +142,19 @@ function ApplyLeave() {
               Total Days: <b>{calculateDays()}</b>
             </p>
 
+            {calculateDays() > 5 && (
+              <div className="mess-reduction-box">
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={messReduction}
+                    onChange={(e) => setMessReduction(e.target.checked)}
+                  />
+                  Apply for Mess Reduction (Leave exceeds 5 days)
+                </label>
+              </div>
+            )}
+
             <label>Reason</label>
             <textarea
               rows="3"
@@ -126,9 +183,19 @@ function ApplyLeave() {
                   </div>
 
                   <p>
+                    📌 {leave.studentName} | {leave.registerNo} | {leave.semester}
+                  </p>
+
+                  <p>
                     📅 {leave.fromDate} → {leave.toDate} ({leave.days} days)
                   </p>
+
                   <p>📝 {leave.reason}</p>
+
+                  {leave.messReduction && (
+                    <p className="mess-tag">🍽️ Mess Reduction Applied</p>
+                  )}
+
                   <small>Applied on {leave.appliedOn}</small>
                 </div>
               ))

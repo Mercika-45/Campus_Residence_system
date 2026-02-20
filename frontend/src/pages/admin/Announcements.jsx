@@ -1,6 +1,6 @@
 import { useState } from "react";
 import AdminSidebar from "../../components/AdminSidebar";
-import Topbar from "../../components/Topbar";
+import AdminTopbar from "../../components/AdminTopbar";
 import "../../styles/Admin.css";
 
 function Announcements() {
@@ -41,7 +41,7 @@ function Announcements() {
 
       {/* RIGHT CONTENT */}
       <div className="main-content">
-        <Topbar title="Announcements" />
+        <AdminTopbar title="Announcements" />
 
         <div className="dashboard-content">
 

@@ -1,7 +1,7 @@
 .admin-sidebar {
   width: 240px;
   height: 100vh;
-  background: #1e293b;
+  background: linear-gradient(90deg, #0a086c, #0f172a);
   color: white;
   padding: 20px;
 

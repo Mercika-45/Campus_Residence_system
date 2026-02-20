@@ -127,7 +127,7 @@ function WardenLogin() {
             />
 
             <div className="forgot-password">
-              <Link to="/forgot-password">Forgot Password?</Link>
+              <Link to="/forgot-password?role=warden">Forgot Password?</Link>
             </div>
 
             <div className="captcha-row">

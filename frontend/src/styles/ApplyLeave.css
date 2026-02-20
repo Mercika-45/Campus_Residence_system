@@ -94,3 +94,26 @@
 .main-content{
   margin-left: 0;
 }
+/* Mess reduction box */
+.mess-reduction-box {
+  background: #f1f5ff;
+  border: 1px dashed #0a1f44;
+  padding: 10px;
+  border-radius: 6px;
+  margin: 10px 0 15px;
+}
+
+.checkbox-label {
+  font-weight: 500;
+  color: #0a1f44;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* history tag */
+.mess-tag {
+  color: #0ea5e9;
+  font-weight: 600;
+  margin-top: 5px;
+}

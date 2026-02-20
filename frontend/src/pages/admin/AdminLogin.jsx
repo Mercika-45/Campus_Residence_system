@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "../../styles/Login.css";
 
 function AdminLogin() {
@@ -10,11 +10,10 @@ function AdminLogin() {
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
-
-  // ✅ Refs for moving focus
   const passwordRef = useRef(null);
   const captchaRef = useRef(null);
 
+  // Generate 5-char captcha
   const generateCaptcha = () => {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     let cap = "";
@@ -50,19 +49,15 @@ function AdminLogin() {
       return;
     }
 
-    if (captchaInput !== captcha) {
+    if (captchaInput.toUpperCase() !== captcha) {
       setError("Invalid captcha");
       generateCaptcha();
       setCaptchaInput("");
       return;
     }
 
-    const adminData = {
-      name: "Admin",
-      email: email,
-      role: "Administrator"
-    };
-
+    // Save admin data
+    const adminData = { name: "Admin", email, role: "Administrator" };
     localStorage.setItem("admin", JSON.stringify(adminData));
     navigate("/admin/dashboard");
   };
@@ -70,6 +65,7 @@ function AdminLogin() {
   return (
     <div className="login-container">
 
+      {/* Left side with overlay */}
       <div className="login-left">
         <div className="overlay">
           <h1>Campus Residence System</h1>
@@ -77,6 +73,7 @@ function AdminLogin() {
         </div>
       </div>
 
+      {/* Right side login box */}
       <div className="login-right">
         <div className="login-box">
           <h2>Admin Login</h2>
@@ -96,9 +93,10 @@ function AdminLogin() {
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();
-                  passwordRef.current.focus(); // ✅ Move to password
+                  passwordRef.current.focus();
                 }
               }}
+              required
             />
 
             <label>Password</label>
@@ -111,10 +109,15 @@ function AdminLogin() {
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();
-                  captchaRef.current.focus(); // ✅ Move to captcha
+                  captchaRef.current.focus();
                 }
               }}
+              required
             />
+
+            <div className="forgot-password">
+              <Link to="/forgot-password?role=admin">Forgot Password?</Link>
+            </div>
 
             <div className="captcha-row">
               <div className="captcha-text">{captcha}</div>
@@ -132,13 +135,14 @@ function AdminLogin() {
               placeholder="Enter captcha"
               value={captchaInput}
               ref={captchaRef}
-              onChange={(e) => setCaptchaInput(e.target.value)}
+              onChange={(e) => setCaptchaInput(e.target.value.toUpperCase())}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();
-                  handleLogin(); // ✅ Final login on Enter
+                  handleLogin();
                 }
               }}
+              required
             />
 
             {error && <p className="error">{error}</p>}
@@ -146,7 +150,6 @@ function AdminLogin() {
             <button type="submit" className="login-btn">
               Login
             </button>
-
           </form>
         </div>
       </div>

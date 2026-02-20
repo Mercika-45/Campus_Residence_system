@@ -126,7 +126,7 @@ function ExecutiveWardenLogin() {
             />
 
             <div className="forgot-password">
-              <Link to="/forgot-password">Forgot Password?</Link>
+              <Link to="/forgot-password?role=executive">Forgot Password?</Link>
             </div>
 
             <div className="captcha-row">
