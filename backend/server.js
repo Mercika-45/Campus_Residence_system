@@ -1,21 +1,41 @@
+// attendance-backend/server.js
 const express = require("express");
-const mongoose = require("mongoose");
 const cors = require("cors");
-require("dotenv").config();
+const bodyParser = require("body-parser");
+const { v4: uuidv4 } = require("uuid");
 
 const app = express();
-
 app.use(cors());
-app.use(express.json());
+app.use(bodyParser.json());
 
-// Routes
-app.use("/api/auth", require("./routes/authRoutes"));
-app.use("/api/students", require("./routes/studentRoutes"));
+// In-memory storage for demo
+let sessions = {}; // sessionId => { studentId: { name, status, timestamp } }
 
-mongoose.connect(process.env.MONGO_URI)
-.then(() => console.log("MongoDB Connected"))
-.catch(err => console.log(err));
-
-app.listen(5000, () => {
-  console.log("Server running on port 5000");
+// 1️⃣ Create a new attendance session
+app.post("/create-session", (req, res) => {
+  const sessionId = uuidv4();
+  sessions[sessionId] = {}; // empty session
+  res.send({ sessionId });
 });
+
+// 2️⃣ Mark attendance from mobile (after fingerprint)
+app.post("/mark-attendance", (req, res) => {
+  const { sessionId, studentId, name } = req.body;
+  if (!sessions[sessionId]) return res.status(400).send({ success: false });
+
+  sessions[sessionId][studentId] = {
+    name,
+    status: "Present (Biometric)",
+    timestamp: new Date().toISOString(),
+  };
+
+  res.send({ success: true });
+});
+
+// 3️⃣ Get attendance for a session
+app.get("/attendance/:sessionId", (req, res) => {
+  const { sessionId } = req.params;
+  res.send(sessions[sessionId] || {});
+});
+
+app.listen(5000, () => console.log("Backend running on port 5000"));
