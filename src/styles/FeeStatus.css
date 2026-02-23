@@ -1,0 +1,37 @@
+.status.paid {
+  color: green;
+  font-weight: bold;
+}
+
+.status.unpaid {
+  color: red;
+  font-weight: bold;
+}
+
+.mark-paid-btn {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.mark-paid-btn:hover {
+  background-color: #218838;
+}
+.fee-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.fee-table th, .fee-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  text-align: center;
+}
+
+.fee-table th {
+  background: #1e40af;
+  color: white;
+}

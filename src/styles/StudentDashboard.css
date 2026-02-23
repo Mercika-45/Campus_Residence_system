@@ -1,0 +1,202 @@
+/* ===============================
+   MAIN LAYOUT
+================================ */
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+  background: #e7dbcf;
+  font-family: Arial, sans-serif;
+}
+
+
+.logout {
+  margin-top: 30px;
+  padding: 10px;
+  background: #b08968;
+  color: #000;
+  font-weight: bold;
+  text-align: center;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* ===============================
+   MAIN CONTENT AREA
+================================ */
+.main-content1 {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-left: 0;
+}
+
+/* ===============================
+   PAGE CONTENT
+================================ */
+.content {
+  padding: 25px;
+  flex: 1;
+  box-sizing: border-box;
+}
+
+.breadcrumb {
+  color: #555;
+  margin-bottom: 20px;
+}
+
+/* ===============================
+   INFO CARDS
+================================ */
+.info-wrapper {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+/* Profile card */
+.profile-card {
+  width: 260px;
+  background: #cf9c64;
+  padding: 20px;
+  text-align: center;
+  border-radius: 12px;
+  padding-bottom: 70px;
+}
+.profile-card1 {
+  width: 260px;
+  background: #f9e6d2;
+  padding: 20px;
+  text-align: center;
+  border-radius: 12px;
+  padding-bottom: 70px;
+}
+
+.profile-img {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 4px solid #b08968;
+  margin-bottom: 15px;
+}
+
+/* General info card */
+.general-card {
+  flex: 1;
+  background: #b9b2ab;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.info-grid p {
+  margin: 10px 0;
+}
+
+/* ===============================
+   RESPONSIVE FIX
+================================ */
+@media (max-width: 768px) {
+  .info-wrapper {
+    flex-direction: column;
+  }
+
+  .profile-card {
+    width: 100%;
+  }
+}
+.main-content2 {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    
+}
+/* ===============================
+   TOPBAR
+================================ */
+.topbarS {
+  height: 65px;
+  background: linear-gradient(90deg,#96116e, #570332);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 25px;
+  box-sizing: border-box;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+}
+
+.topbarS h3 {
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: white;
+}
+
+.topbarS .user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbarS img {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px solid #d6c1a5;
+}
+
+/* ===============================
+   SIDEBAR – EXECUTIVE
+================================ */
+
+.sidebarS {
+  width: 240px;
+  height: 100vh;
+  background: linear-gradient(90deg, #570332, #7c0c5b);
+  color: white;
+  padding: 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  
+}
+
+/* Logo */
+.sidebarS .logo {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: -160px;
+  text-align: center;
+}
+
+/* Nav Links */
+.sidebarS a {
+  display: block;
+  text-decoration: none;
+  color: white;
+  padding: 24px 14px;
+  border-radius: 8px;
+  font-size: 18px;
+  transition: all 0.3s ease;
+  
+}
+
+/* Hover Effect */
+.sidebarS a:hover {
+  background: linear-gradient(90deg, #554753, #6c5f6a);
+  color: #000;
+  transform: translateX(6px);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+}
+
+
+
+/* Icons spacing (if added later) */
+.sidebarS i {
+  margin-right: 10px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .sidebar {
+    width: 210px;
+  }
+}

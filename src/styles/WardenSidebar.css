@@ -1,0 +1,32 @@
+.sidebarlw {
+  width: 240px;
+  background-color: #0d47a1;
+  color: white;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.logo {
+  margin-bottom: -180px;
+  text-align: center;
+}
+
+.link {
+  text-decoration: none;
+  color: white;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  transition: 0.3s;
+}
+
+.link:hover {
+  background-color: #1565c0;
+}
+
+.link.active {
+  background-color: white;
+  color: #0d47a1;
+  font-weight: bold;
+}

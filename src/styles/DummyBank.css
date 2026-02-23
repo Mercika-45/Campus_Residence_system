@@ -1,0 +1,126 @@
+.bank-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f4f7fb;
+}
+
+.bank-card {
+  background: white;
+  padding: 30px;
+  width: 350px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}
+
+.bank-card h2 {
+  color: #0056b3;
+  margin-bottom: 5px;
+}
+
+.bank-card input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.btn-group {
+  display: flex;
+  justify-content: space-between;
+}
+
+.pay {
+  background: green;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.cancel {
+  background: red;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.iob-container {
+  min-height: 100vh;
+  background: #f2f6ff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.iob-card {
+  background: white;
+  width: 600px;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.iob-card h3 {
+  color: #0a5ed7;
+  text-align: center;
+}
+
+.iob-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.iob-form input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.fee-box {
+  margin-top: 20px;
+  padding: 15px;
+  background: #eef3ff;
+  border-radius: 6px;
+}
+
+.pay-btn {
+  width: 100%;
+  margin-top: 20px;
+  padding: 12px;
+  background: #0a5ed7;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.pay-btn:hover {
+  background: #0847a5;
+}
+.payment-method {
+  margin: 15px 0;
+  display: flex;
+  gap: 20px;
+  font-weight: 600;
+}
+
+.card-box {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+button:disabled {
+  background: gray;
+  cursor: not-allowed;
+}

@@ -1,0 +1,119 @@
+.leave-form {
+  max-width: 650px;
+  background: #f7ebde;
+  padding: 25px;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+
+.leave-form label {
+  display: block;
+  margin-top: 15px;
+  font-weight: bold;
+}
+
+.leave-form select,
+.leave-form input,
+.leave-form textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.date-row {
+  display: flex;
+  gap: 20px;
+}
+
+.days {
+  margin-top: 10px;
+  font-size: 15px;
+}
+
+.leave-form button {
+  margin-top: 20px;
+  padding: 12px;
+  background: #3d332a;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.leave-form button:hover {
+  background: #5a4a3a;
+}
+
+/* Leave History */
+.leave-list {
+  margin-top: 40px;
+}
+
+.leave-card {
+  background: #fff;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+}
+
+.leave-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.status {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.status.pending {
+  background: #ffe0e0;
+  color: red;
+}
+
+.status.approved {
+  background: #e0ffe0;
+  color: green;
+}
+
+.status.rejected {
+  background: #ffecec;
+  color: darkred;
+}
+
+.no-leave {
+  color: #777;
+}
+.main-content{
+  margin-left: 0;
+}
+/* Mess reduction box */
+.mess-reduction-box {
+  background: #f1f5ff;
+  border: 1px dashed #0a1f44;
+  padding: 10px;
+  border-radius: 6px;
+  margin: 10px 0 15px;
+}
+
+.checkbox-label {
+  font-weight: 500;
+  color: #0a1f44;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* history tag */
+.mess-tag {
+  color: #0ea5e9;
+  font-weight: 600;
+  margin-top: 5px;
+}

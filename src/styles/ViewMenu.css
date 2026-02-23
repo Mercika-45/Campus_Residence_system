@@ -1,0 +1,85 @@
+/* Layout */
+.student-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #f4f6f9;
+}
+
+.student-main {
+  flex: 1;
+  padding: 20px;
+}
+
+/* Menu container */
+.menu-container {
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  margin-top: 20px;
+}
+
+/* Title */
+.menu-container h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+/* Table */
+.menu-table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+/* Header */
+.menu-table thead {
+  background: #2f80ed;
+  color: white;
+}
+
+.menu-table th {
+  padding: 14px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* Body */
+.menu-table td {
+  padding: 12px;
+  text-align: center;
+  font-size: 14px;
+  color: #333;
+}
+
+/* Row colors */
+.menu-table tbody tr:nth-child(even) {
+  background: #f8f9fc;
+}
+
+.menu-table tbody tr:nth-child(odd) {
+  background: #ffffff;
+}
+
+/* Hover effect */
+.menu-table tbody tr:hover {
+  background: #eaf1ff;
+  transition: 0.3s;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .menu-table th,
+  .menu-table td {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .menu-container {
+    padding: 15px;
+  }
+}

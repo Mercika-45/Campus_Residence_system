@@ -1,0 +1,111 @@
+.table-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+.complaint-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.complaint-table th,
+.complaint-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+}
+
+.complaint-table th {
+  background: #1e293b;
+  color: white;
+}
+
+.status {
+  padding: 5px 12px;
+  border-radius: 15px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.status.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status.resolved {
+  background: #d4edda;
+  color: #155724;
+}
+
+.resolve-btn {
+  background: #16a34a;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.resolve-btn:hover {
+  background: #15803d;
+}
+/* ===== COMPLETED / NOT COMPLETED BUTTON ===== */
+
+.pending-btn {
+  background: #fee2e2;   /* light red */
+  color: #b91c1c;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.pending-btn:hover {
+  background: #fecaca;
+}
+
+/* ===== APPROVED BUTTON ===== */
+
+.approved-btn {
+  background: #dcfce7;   /* light green */
+  color: #166534;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.approved-btn:hover {
+  background: #bbf7d0;
+}
+
+/* ===== DISABLED BUTTON (optional) ===== */
+
+button:disabled {
+  background: #e5e7eb;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+/* ===== TABLE ROW HOVER EFFECT ===== */
+
+.complaint-table tbody tr:hover {
+  background: #f8fafc;
+  transition: 0.2s ease;
+}
+
+/* ===== SMOOTH BUTTON CLICK EFFECT ===== */
+
+.pending-btn:active,
+.approved-btn:active {
+  transform: scale(0.95);
+}
+

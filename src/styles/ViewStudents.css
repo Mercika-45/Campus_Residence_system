@@ -1,0 +1,453 @@
+/* ================= PAGE WRAPPER ================= */
+
+.dashboard-content {
+  padding: 24px;
+  background: #f6f8fc;
+  min-height: 100vh;
+}
+
+/* ================= TABS (PRO) ================= */
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: none;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+
+.tabs button {
+  padding: 10px 22px;
+  border: 1px solid #e0e6ff;
+  background: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 10px;
+  color: #445;
+  transition: all 0.25s ease;
+}
+
+.tabs button:hover {
+  background: #f1f4ff;
+  transform: translateY(-1px);
+}
+
+.tabs button.active {
+  background: linear-gradient(135deg, #0a66c2, #004a99);
+  color: white;
+  border: none;
+  box-shadow: 0 6px 16px rgba(10, 102, 194, 0.25);
+}
+
+/* ================= STUDENT LIST ================= */
+
+.student-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ================= STUDENT CARD (PREMIUM) ================= */
+
+.student-card {
+  background: #ffffff;
+  padding: 16px 20px;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.25s ease;
+  border: 1px solid #f0f2ff;
+}
+
+.student-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* student name */
+
+.student-card h4 {
+  margin: 0;
+  font-size: 16px;
+  color: #1a237e;
+}
+
+.student-card p {
+  margin: 4px 0 0;
+  color: #666;
+  font-size: 13px;
+}
+
+/* ================= ACTION BUTTONS ================= */
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* accept button */
+
+.accept {
+  background: linear-gradient(135deg, #0a66c2, #004a99);
+  color: white;
+  border: none;
+  padding: 7px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.25s ease;
+}
+
+.accept:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(10, 102, 194, 0.35);
+}
+
+/* reject button */
+
+.reject {
+  background: #ffffff;
+  border: 1px solid #ff4d4f;
+  color: #ff4d4f;
+  padding: 7px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.25s ease;
+}
+
+.reject:hover {
+  background: #fff1f0;
+  transform: translateY(-1px);
+}
+
+/* ================= FILTER ================= */
+
+.filter {
+  margin-bottom: 18px;
+}
+
+.filter select {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid #d0d7ff;
+  background: #fff;
+  font-size: 14px;
+  transition: 0.25s;
+}
+
+.filter select:focus {
+  outline: none;
+  border-color: #0a66c2;
+  box-shadow: 0 0 0 2px rgba(10, 102, 194, 0.15);
+}
+
+/* ================= YEAR PICKER ================= */
+
+.calendar-filter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+  background: #ffffff;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid #eef1ff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+
+.calendar-label {
+  font-weight: 600;
+  color: #1a237e;
+}
+
+.year-only-picker {
+  width: 170px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: 1px solid #c5cae9;
+  font-size: 14px;
+  transition: 0.25s;
+}
+
+.year-only-picker:focus {
+  outline: none;
+  border-color: #0a66c2;
+  box-shadow: 0 0 0 2px rgba(10, 102, 194, 0.15);
+}
+
+/* clear button */
+
+.clear-btn {
+  padding: 7px 16px;
+  border-radius: 8px;
+  border: none;
+  background: #ef5350;
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.25s ease;
+}
+
+.clear-btn:hover {
+  background: #d32f2f;
+  transform: translateY(-1px);
+}
+
+/* ================= VACATED TEXT ================= */
+
+.vacated {
+  font-size: 13px;
+  color: #e74c3c;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+/* ================= EMPTY STATE ================= */
+
+.no-data {
+  text-align: center;
+  color: #888;
+  margin-top: 30px;
+  font-weight: 500;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 768px) {
+  .student-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+/* Container spacing */
+.student-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+/* Student Card */
+.student-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 18px 20px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  border-left: 5px solid #0a1f44;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hover effect */
+.student-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+  border-left-color: #007bff;
+}
+
+/* Student name */
+.student-card h4 {
+  margin: 0;
+  font-size: 18px;
+  color: #0a1f44;
+  font-weight: 600;
+}
+
+/* Student details */
+.student-card p {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: #666;
+}
+
+/* Action buttons container */
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* Accept button */
+.actions .accept {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+  border: none;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s ease;
+  font-weight: 500;
+}
+
+.actions .accept:hover {
+  transform: scale(1.08);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.35);
+}
+
+/* Reject button */
+.actions .reject {
+  background: linear-gradient(135deg, #dc3545, #ff6b6b);
+  color: white;
+  border: none;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: 0.2s ease;
+  font-weight: 500;
+}
+
+.actions .reject:hover {
+  transform: scale(1.08);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.35);
+}
+
+/* Filter section */
+.filter {
+  margin: 15px 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Year picker styling */
+.year-picker {
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid #dcdcdc;
+  font-size: 14px;
+  background: #f8faff;
+  outline: none;
+  transition: 0.2s;
+}
+
+.year-picker:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+}
+/* ===== TABLE CONTAINER ===== */
+.table-container {
+  margin-top: 20px;
+  overflow-x: auto;
+  border-radius: 14px;
+}
+
+/* ===== TABLE ===== */
+.students-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #ffffff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(10, 31, 68, 0.12);
+}
+
+/* ===== HEADER (HIGH VISIBILITY) ===== */
+.students-table thead th {
+  background: linear-gradient(135deg, #0a1f44, #123a7a);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 14.5px;
+  letter-spacing: 0.4px;
+  padding: 14px 16px;
+  text-transform: uppercase;
+  border-bottom: 2px solid #e6ecff;
+  position: sticky;      /* ⭐ sticky header */
+  top: 0;
+  z-index: 2;
+}
+
+/* first header rounded */
+.students-table thead th:first-child {
+  border-top-left-radius: 14px;
+}
+
+/* last header rounded */
+.students-table thead th:last-child {
+  border-top-right-radius: 14px;
+}
+
+/* ===== BODY ===== */
+.students-table td {
+  padding: 13px 16px;
+  font-size: 14px;
+  color: #2c3e50;
+}
+
+/* zebra rows */
+.students-table tbody tr:nth-child(even) {
+  background: #fafbff;
+}
+
+/* hover */
+.students-table tbody tr:hover {
+  background: #eef3ff;
+  transform: scale(1.002);
+  transition: all 0.18s ease;
+}
+
+/* row separator */
+.students-table tbody tr {
+  border-bottom: 1px solid #eef1f7;
+}
+
+/* ===== ACTION BUTTON SPACING ===== */
+.students-table .accept {
+  margin-left: 8px;
+}
+
+/* ===== NO DATA ===== */
+.no-data {
+  text-align: center;
+  padding: 22px;
+  color: #8a94a6;
+  font-weight: 500;
+}
+/* ===== filter row ===== */
+.filter-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.filter-row select {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid #cfd6e4;
+  background: white;
+  font-weight: 500;
+}
+
+/* better table header visibility */
+.students-table thead th {
+  background: linear-gradient(135deg, #0a66c2, #004a99);
+  color: white;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+/* zebra rows */
+.students-table tbody tr:nth-child(even) {
+  background: #f7f9fc;
+}
+
+/* hover */
+.students-table tbody tr:hover {
+  background: #eef4ff;
+  transition: 0.2s;
+}
+
