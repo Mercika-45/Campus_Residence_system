@@ -1,6 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "../../styles/Login.css";
+import axios from "axios";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 function ExecutiveWardenLogin() {
   const [captcha, setCaptcha] = useState("");
@@ -8,12 +10,10 @@ function ExecutiveWardenLogin() {
   const [error, setError] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
-
-  // ✅ Refs for focus control
   const passwordRef = useRef(null);
-  const captchaRef = useRef(null);
 
   const generateCaptcha = () => {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -28,51 +28,40 @@ function ExecutiveWardenLogin() {
     generateCaptcha();
   }, []);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     setError("");
 
-    // ✅ Empty validation
-    if (!email || !password) {
-      setError("Please fill all fields");
-      return;
-    }
-
-    // ✅ Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setError("Please enter a valid email address");
-      return;
-    }
-
-    // ✅ Password validation
-    const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{6,}$/;
-    if (!passwordRegex.test(password)) {
-      setError(
-        "Password must be at least 6 characters, include 1 uppercase letter and 1 number"
-      );
-      return;
-    }
-
-    // ✅ Captcha validation
+    // ✅ CAPTCHA VALIDATION
     if (captchaInput !== captcha) {
-      setError("Invalid captcha");
+      setError("Invalid Captcha");
       generateCaptcha();
-      setCaptchaInput("");
       return;
     }
 
-    const executiveData = {
-      name: "Executive Warden",
-      email: email,
-      role: "ExecutiveWarden"
-    };
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/login",
+        { email, password }
+      );
 
-    localStorage.setItem(
-      "executiveWarden",
-      JSON.stringify(executiveData)
-    );
+      const { token, user } = res.data;
 
-    navigate("/executive/dashboard");
+      // ✅ Allow only executive role
+      if (user.role !== "executive") {
+        setError("Access denied. Not an Executive account.");
+        return;
+      }
+
+      // ✅ Store specifically for executive dashboard
+      localStorage.setItem("token", token);
+      localStorage.setItem("executiveWarden", JSON.stringify(user));
+
+      navigate("/executive/dashboard");
+
+    } catch (err) {
+      setError(err.response?.data?.message || "Login failed");
+      generateCaptcha();
+    }
   };
 
   return (
@@ -88,14 +77,12 @@ function ExecutiveWardenLogin() {
         <div className="login-box">
           <h2>Executive Warden Login</h2>
 
-          {/* ✅ Form for Enter key support */}
           <form
             onSubmit={(e) => {
               e.preventDefault();
               handleLogin();
             }}
           >
-
             <label>Email ID</label>
             <input
               type="email"
@@ -108,25 +95,33 @@ function ExecutiveWardenLogin() {
                   passwordRef.current.focus();
                 }
               }}
+              required
             />
 
             <label>Password</label>
-            <input
-              type="password"
-              value={password}
-              placeholder="Enter password"
-              ref={passwordRef}
-              onChange={(e) => setPassword(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  captchaRef.current.focus();
-                }
-              }}
-            />
+
+            <div className="input-group">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                placeholder="Enter password"
+                ref={passwordRef}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+
+              <span
+                className="toggle-password"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
+            </div>
 
             <div className="forgot-password">
-              <Link to="/forgot-password?role=executive">Forgot Password?</Link>
+              <Link to="/forgot-password?role=executive">
+                Forgot Password?
+              </Link>
             </div>
 
             <div className="captcha-row">
@@ -144,14 +139,8 @@ function ExecutiveWardenLogin() {
               type="text"
               placeholder="Enter captcha"
               value={captchaInput}
-              ref={captchaRef}
               onChange={(e) => setCaptchaInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  handleLogin();
-                }
-              }}
+              required
             />
 
             {error && <p className="error">{error}</p>}

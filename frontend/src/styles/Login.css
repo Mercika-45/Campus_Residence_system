@@ -163,3 +163,22 @@ html, body, #root {
   margin: 0;
   padding: 0;
 }
+.input-group {
+  position: relative;
+  width: 100%;
+}
+
+.input-group input {
+  width: 100%;
+  padding-right: 45px; /* space for icon */
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #666;
+  font-size: 18px;
+}

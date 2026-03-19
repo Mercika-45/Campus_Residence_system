@@ -1,6 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../../styles/Login.css";
+import axios from "axios";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 function WardenLogin() {
   const [captcha, setCaptcha] = useState("");
@@ -8,6 +10,7 @@ function WardenLogin() {
   const [error, setError] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
 
@@ -27,56 +30,41 @@ function WardenLogin() {
   useEffect(() => {
     generateCaptcha();
   }, []);
+const handleLogin = async () => {
+  setError("");
 
-  const handleLogin = () => {
-    setError("");
+  try {
+    const res = await axios.post(
+      "http://localhost:5000/api/auth/login",
+      { email, password }
+    );
 
-    // ✅ Empty field validation
-    if (!email || !password) {
-      setError("Please fill all fields");
-      return;
+    const { token, user } = res.data;
+
+    localStorage.setItem("token", token);
+
+    // 🔥 Store separately based on role
+    if (user.role === "warden") {
+      localStorage.setItem("warden", JSON.stringify(user));
+      navigate("/warden/dashboard");
+    } 
+    else if (user.role === "executive") {
+      localStorage.setItem("executiveWarden", JSON.stringify(user));
+      navigate("/executive/dashboard");
+    }
+    else if (user.role === "admin") {
+      localStorage.setItem("admin", JSON.stringify(user));
+      navigate("/admin/dashboard");
+    }
+    else {
+      localStorage.setItem("student", JSON.stringify(user));
+      navigate("/student/dashboard");
     }
 
-    // ✅ Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setError("Please enter a valid email address");
-      return;
-    }
-
-    // ✅ Password validation
-    const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{6,}$/;
-    if (!passwordRegex.test(password)) {
-      setError(
-        "Password must be at least 6 characters, include 1 uppercase letter and 1 number"
-      );
-      return;
-    }
-
-    // ✅ Captcha validation
-    if (captchaInput !== captcha) {
-      setError("Invalid captcha");
-      generateCaptcha();
-      setCaptchaInput("");
-      return;
-    }
-
-    // ✅ Dummy logged-in data
-    const studentData = {
-      name: "Gopika R",
-      registerNo: "962822104030",
-      email: email,
-      department: "Computer Science and Engineering",
-      year: "IV",
-      hostel: "Girls Hostel",
-      roomNo: "G-203"
-    };
-
-    localStorage.setItem("student", JSON.stringify(studentData));
-
-    navigate("/warden/dashboard");
-  };
-
+  } catch (err) {
+    setError(err.response?.data?.message || "Login failed");
+  }
+};
   return (
     <div className="login-container">
       <div className="login-left">
@@ -111,20 +99,25 @@ function WardenLogin() {
               }}
             />
 
-            <label>Password</label>
-            <input
-              type="password"
-              value={password}
-              placeholder="Enter password"
-              ref={passwordRef}
-              onChange={(e) => setPassword(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  captchaRef.current.focus();
-                }
-              }}
-            />
+           <label>Password</label>
+
+<div className="input-group">
+  <input
+    type={showPassword ? "text" : "password"}
+    value={password}
+    placeholder="Enter password"
+    ref={passwordRef}
+    onChange={(e) => setPassword(e.target.value)}
+    required
+  />
+
+  <span
+    className="toggle-password"
+    onClick={() => setShowPassword(!showPassword)}
+  >
+    {showPassword ? <FaEyeSlash /> : <FaEye />}
+  </span>
+</div>
 
             <div className="forgot-password">
               <Link to="/forgot-password?role=warden">Forgot Password?</Link>

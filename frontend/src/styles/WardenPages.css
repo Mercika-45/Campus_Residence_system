@@ -226,7 +226,6 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
 }
 
 .page-header h1 {
@@ -330,6 +329,7 @@ body {
   .warden-table td {
     font-size: 12px;
     padding: 8px;
+    white-space: nowrap;
   }
 }
 
@@ -863,4 +863,102 @@ body {
 .warden-table tbody tr:hover {
   background: #f8fafc;
   transition: 0.2s ease;
+}
+
+.posted-by {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #444;
+}
+
+.announcement-time {
+  display: block;
+  margin-top: 5px;
+  font-size: 13px;
+  color: gray;
+}
+
+.edit-btn {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.edit-btn:hover {
+  background-color: #1d4ed8;
+}
+
+.delete-btn1 {
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.delete-btn:hover {
+  background-color: #b91c1c;
+}
+
+.live-counter{
+  background:#eef3ff;
+  padding:10px;
+  margin-bottom:15px;
+  font-weight:bold;
+  border-left:4px solid #4a6cf7;
+}
+
+.late-row{
+  background-color:#ffe5e5;
+}
+
+
+
+.late-badge{
+  background:red;
+  color:white;
+  padding:3px 6px;
+  margin-left:6px;
+  border-radius:4px;
+  font-size:12px;
+}
+
+/* Attendance Select Styling */
+.attendance-select {
+  width: 120px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  background-color: #f9fafb;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Hover effect */
+.attendance-select:hover {
+  border-color: #4f46e5;
+}
+
+/* Focus effect */
+.attendance-select:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 4px rgba(79, 70, 229, 0.4);
+}
+
+/* Present option */
+.attendance-select option[value="Present"] {
+  color: green;
+}
+
+/* Absent option */
+.attendance-select option[value="Absent"] {
+  color: red;
 }

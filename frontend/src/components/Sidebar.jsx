@@ -28,11 +28,14 @@ function Sidebar() {
           View Menu
         </Link>
 
-        <Link to="/student/fee">Pay Fee</Link>
+        <Link to="/student/student-fee">Fee Status</Link>
         <Link to="/student/complaint">Raise Complaint</Link>
         <Link to="/student/leave">Apply Leave</Link>
         <Link to="/student/vacating">vacation</Link>
         <Link to="/student/leave-status">Leave Status</Link>
+        <Link to="/student/view-announcements">Announcements</Link>
+        
+
 
         <div className="logout" onClick={handleLogout}>
           Logout

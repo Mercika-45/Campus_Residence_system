@@ -1,19 +1,17 @@
 import { useState } from "react";
+import axios from "axios";
 import Sidebar from "../../components/Sidebar";
 import Topbar from "../../components/Topbar";
-import "../../styles/ApplyLeave.css"; // reuse existing styles
+import "../../styles/ApplyLeave.css";
 
 function ApplyVacating() {
-  // Utility: get current date in DD/MM/YYYY
+
+  const API = "http://localhost:5000/api";
+
   const getCurrentDate = () => {
-    const today = new Date();
-    const day = String(today.getDate()).padStart(2, "0");
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const year = today.getFullYear();
-    return `${day}/${month}/${year}`;
+    return new Date().toISOString(); // ISO for backend
   };
 
-  // Hostel Vacating Form State
   const [vacatingData, setVacatingData] = useState({
     studentName: "",
     fatherName: "",
@@ -33,27 +31,16 @@ function ApplyVacating() {
     ifsc: "",
     mobile: "",
     appliedOn: getCurrentDate(),
-    status: "Pending",
   });
 
-  // Caution Deposit Refund Form State
   const [depositData, setDepositData] = useState({
     studentName: "",
     branchYearSemester: "",
     registerNo: "",
     department: "",
     appliedOn: getCurrentDate(),
-    status: "Pending",
   });
 
-  const [vacatingRequests, setVacatingRequests] = useState(
-    JSON.parse(localStorage.getItem("vacatingRequests")) || []
-  );
-  const [depositRequests, setDepositRequests] = useState(
-    JSON.parse(localStorage.getItem("depositRequests")) || []
-  );
-
-  // Handle form changes
   const handleVacatingChange = (e) => {
     const { name, value } = e.target;
     setVacatingData({ ...vacatingData, [name]: value });
@@ -64,23 +51,16 @@ function ApplyVacating() {
     setDepositData({ ...depositData, [name]: value });
   };
 
-  // Submit Vacating Form
-  const submitVacating = (e) => {
+  // ✅ Submit Vacating Form
+  const submitVacating = async (e) => {
     e.preventDefault();
+
     const requiredFields = [
-      "studentName",
-      "fatherName",
-      "address",
-      "branch",
-      "year",
-      "semester",
-      "registerNo",
-      "hostelName",
-      "roomNo",
-      "dateJoining",
-      "dateVacating",
-      "reason",
+      "studentName","fatherName","address","branch","year",
+      "semester","registerNo","hostelName","roomNo",
+      "dateJoining","dateVacating","reason"
     ];
+
     for (let field of requiredFields) {
       if (!vacatingData[field]) {
         alert("Please fill all required fields in Vacating Form.");
@@ -88,18 +68,54 @@ function ApplyVacating() {
       }
     }
 
-    const newRequest = { id: Date.now(), ...vacatingData };
-    const updatedRequests = [newRequest, ...vacatingRequests];
-    setVacatingRequests(updatedRequests);
-    localStorage.setItem("vacatingRequests", JSON.stringify(updatedRequests));
-    alert("Hostel Vacating Form submitted successfully!");
-    setVacatingData({ ...vacatingData, appliedOn: getCurrentDate(), studentName:"", fatherName:"", address:"", branch:"", year:"", semester:"", registerNo:"", hostelName:"", roomNo:"", dateJoining:"", dateVacating:"", reason:"", noDues:"", remarks:"", bankAcc:"", ifsc:"", mobile:"" });
+    if (new Date(vacatingData.dateVacating) < new Date(vacatingData.dateJoining)) {
+      alert("Vacating date cannot be before Joining date.");
+      return;
+    }
+
+    try {
+      await axios.post(`${API}/vacating`, {
+        ...vacatingData,
+        appliedOn: new Date().toISOString()
+      });
+
+      alert("Hostel Vacating Form submitted successfully!");
+
+      setVacatingData({
+        studentName:"",
+        fatherName:"",
+        address:"",
+        branch:"",
+        year:"",
+        semester:"",
+        registerNo:"",
+        hostelName:"",
+        roomNo:"",
+        dateJoining:"",
+        dateVacating:"",
+        reason:"",
+        noDues:"",
+        remarks:"",
+        bankAcc:"",
+        ifsc:"",
+        mobile:"",
+        appliedOn:getCurrentDate()
+      });
+
+    } catch (error) {
+      console.error(error);
+      alert("Error submitting vacating form");
+    }
   };
 
-  // Submit Caution Deposit Form
-  const submitDeposit = (e) => {
+  // ✅ Submit Deposit Form
+  const submitDeposit = async (e) => {
     e.preventDefault();
-    const requiredFields = ["studentName", "branchYearSemester", "registerNo", "department"];
+
+    const requiredFields = [
+      "studentName","branchYearSemester","registerNo","department"
+    ];
+
     for (let field of requiredFields) {
       if (!depositData[field]) {
         alert("Please fill all required fields in Caution Deposit Form.");
@@ -107,12 +123,26 @@ function ApplyVacating() {
       }
     }
 
-    const newRequest = { id: Date.now(), ...depositData };
-    const updatedRequests = [newRequest, ...depositRequests];
-    setDepositRequests(updatedRequests);
-    localStorage.setItem("depositRequests", JSON.stringify(updatedRequests));
-    alert("Caution Deposit Refund Form submitted successfully!");
-    setDepositData({ ...depositData, appliedOn: getCurrentDate(), studentName:"", branchYearSemester:"", registerNo:"", department:"" });
+    try {
+      await axios.post(`${API}/deposit`, {
+        ...depositData,
+        appliedOn: new Date().toISOString()
+      });
+
+      alert("Caution Deposit Refund Form submitted successfully!");
+
+      setDepositData({
+        studentName:"",
+        branchYearSemester:"",
+        registerNo:"",
+        department:"",
+        appliedOn:getCurrentDate()
+      });
+
+    } catch (error) {
+      console.error(error);
+      alert("Error submitting deposit form");
+    }
   };
 
   return (
@@ -121,12 +151,17 @@ function ApplyVacating() {
       <div className="main-content1">
         <Topbar title="Hostel Vacating & Caution Deposit Forms" />
         <div className="content">
-          {/* Hostel Vacating Form */}
+
           <h2>Hostel Vacating Form</h2>
           <p className="breadcrumb">Home / Hostel Vacating Form</p>
+
           <form className="leave-form" onSubmit={submitVacating}>
             <label>Applied On</label>
-            <input type="text" value={vacatingData.appliedOn} disabled />
+            <input
+              type="text"
+              value={new Date(vacatingData.appliedOn).toLocaleDateString()}
+              disabled
+            />
 
             <label>Name of the Student</label>
             <input type="text" name="studentName" value={vacatingData.studentName} onChange={handleVacatingChange} />
@@ -184,12 +219,16 @@ function ApplyVacating() {
 
           <hr style={{ margin: "40px 0" }} />
 
-          {/* Caution Deposit Refund Form */}
           <h2>Caution Deposit Refund Form</h2>
           <p className="breadcrumb">Home / Caution Deposit Refund</p>
+
           <form className="leave-form" onSubmit={submitDeposit}>
             <label>Applied On</label>
-            <input type="text" value={depositData.appliedOn} disabled />
+            <input
+              type="text"
+              value={new Date(depositData.appliedOn).toLocaleDateString()}
+              disabled
+            />
 
             <label>Name of the Student</label>
             <input type="text" name="studentName" value={depositData.studentName} onChange={handleDepositChange} />
@@ -205,6 +244,7 @@ function ApplyVacating() {
 
             <button type="submit">Submit Caution Deposit Form</button>
           </form>
+
         </div>
       </div>
     </div>

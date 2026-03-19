@@ -1,93 +1,42 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import AdminSidebar from "../../components/AdminSidebar";
 import AdminTopbar from "../../components/AdminTopbar";
 import "../../styles/Admin.css";
 import "../../styles/Complaints.css";
 
 function ViewComplaints() {
+  const [complaints, setComplaints] = useState([]);
 
-  const [complaints, setComplaints] = useState([
-    {
-      id: 1,
-      name: "Arun",
-      regNo: "21CS001",
-      hostel: "Boys Hostel - A",
-      room: "101",
-      category: "Plumbing",
-      issue: "Water leakage near wash basin",
-      completed: false,
-      approved: false,
-      status: "Pending",
-    },
-    {
-      id: 2,
-      name: "Ravi",
-      regNo: "21ME032",
-      hostel: "Boys Hostel - B",
-      room: "210",
-      category: "Food",
-      issue: "Food quality is poor",
-      completed: false,
-      approved: false,
-      status: "Pending",
-    },
-    {
-      id: 3,
-      name: "Meena",
-      regNo: "21EC014",
-      hostel: "Girls Hostel",
-      room: "305",
-      category: "Electrical",
-      issue: "Fan not working",
-      completed: false,
-      approved: false,
-      status: "Pending",
+  // 🔹 Fetch complaints from backend
+  useEffect(() => {
+    fetchComplaints();
+  }, []);
+
+  const fetchComplaints = async () => {
+    try {
+      const res = await axios.get(
+        "http://localhost:5000/api/complaints"
+      );
+      setComplaints(res.data);
+    } catch (error) {
+      console.error(error);
     }
-  ]);
-
-  // ✅ Mark as Completed / Not Completed
-  const toggleCompleted = (id) => {
-    setComplaints(prev =>
-      prev.map(c => {
-        if (c.id === id) {
-          const updatedCompleted = !c.completed;
-
-          return {
-            ...c,
-            completed: updatedCompleted,
-            status:
-              updatedCompleted && c.approved
-                ? "Resolved"
-                : "Pending"
-          };
-        }
-        return c;
-      })
-    );
   };
 
-  // ✅ Student Approval
-  const toggleApproved = (id) => {
-    setComplaints(prev =>
-      prev.map(c => {
-        if (c.id === id) {
-          const updatedApproved = !c.approved;
-
-          return {
-            ...c,
-            approved: updatedApproved,
-            status:
-              c.completed && updatedApproved
-                ? "Resolved"
-                : "Pending"
-          };
-        }
-        return c;
-      })
-    );
+  // 🔹 Admin marks complaint as Completed
+  const markCompleted = async (id) => {
+    try {
+      await axios.put(
+        `http://localhost:5000/api/complaints/complete/${id}`
+      );
+      fetchComplaints();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  // ✅ Sort: Pending at Top, Resolved at Bottom
+  // 🔹 Sort Pending first
   const sortedComplaints = [...complaints].sort((a, b) => {
     if (a.status === "Resolved") return 1;
     if (b.status === "Resolved") return -1;
@@ -96,7 +45,6 @@ function ViewComplaints() {
 
   return (
     <div className="dashboard-container">
-
       <AdminSidebar />
 
       <div className="main-content">
@@ -123,37 +71,50 @@ function ViewComplaints() {
 
               <tbody>
                 {sortedComplaints.map((c) => (
-                  <tr key={c.id}>
-                    <td>{c.name}</td>
-                    <td>{c.regNo}</td>
+                  <tr key={c._id}>
+                    <td>{c.studentName}</td>
+                    <td>{c.registerNo}</td>
                     <td>{c.hostel}</td>
                     <td>{c.room}</td>
                     <td>{c.category}</td>
-                    <td>{c.issue}</td>
+                    <td>{c.description}</td>
 
-                    {/* Completed Toggle */}
+                    {/* ✅ Completed Control */}
                     <td>
-                      <button
-                        className={c.completed ? "approved-btn" : "pending-btn"}
-                        onClick={() => toggleCompleted(c.id)}
-                      >
-                        {c.completed ? "Completed" : "Not Completed"}
-                      </button>
+                      {!c.completed ? (
+                        <button
+                          className="pending-btn"
+                          onClick={() =>
+                            markCompleted(c._id)
+                          }
+                        >
+                          Mark Completed
+                        </button>
+                      ) : (
+                        <span className="approved-btn">
+                          Completed
+                        </span>
+                      )}
                     </td>
 
-                    {/* Student Approval Toggle */}
+                    {/* 🔒 View Only Student Approval */}
                     <td>
-                      <button
-                        className={c.approved ? "approved-btn" : "pending-btn"}
-                        onClick={() => toggleApproved(c.id)}
-                      >
-                        {c.approved ? "Approved" : "Not Approved"}
-                      </button>
+                      {c.approved ? (
+                        <span className="approved-btn">
+                          Approved
+                        </span>
+                      ) : (
+                        <span className="pending-btn">
+                          Not Approved
+                        </span>
+                      )}
                     </td>
 
-                    {/* Final Status */}
+                    {/* ✅ Final Status */}
                     <td>
-                      <span className={`status ${c.status.toLowerCase()}`}>
+                      <span
+                        className={`status ${c.status.toLowerCase()}`}
+                      >
                         {c.status}
                       </span>
                     </td>
@@ -163,7 +124,6 @@ function ViewComplaints() {
               </tbody>
             </table>
           </div>
-
         </div>
       </div>
     </div>

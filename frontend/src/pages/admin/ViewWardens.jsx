@@ -1,69 +1,48 @@
+import { useState, useEffect } from "react";
+import axios from "axios";
 import AdminSidebar from "../../components/AdminSidebar";
 import AdminTopbar from "../../components/AdminTopbar";
 import "../../styles/Admin.css";
 
 function ViewWardens() {
-  /* ================= DATA ================= */
+  /* ================= STATE ================= */
 
-  // ✅ Deputy Wardens (NO block)
-  const deputyWardens = [
-    {
-      id: 1,
-      name: "Kumar",
-      email: "kumar@gmail.com",
-      phone: "9876543210",
-      hostel: "Boys Hostel",
-      image: "/images/profile.jpg",
-    },
-    {
-      id: 2,
-      name: "Anitha",
-      email: "anitha@gmail.com",
-      phone: "9845123456",
-      hostel: "Girls Hostel",
-      image: "/images/profile.jpg",
-    },
-  ];
+  const [wardens, setWardens] = useState([]);
 
-  // ✅ Local Wardens (WITH block)
-  const localWardens = [
-    {
-      id: 3,
-      name: "Rahul",
-      email: "rahul@gmail.com",
-      phone: "9784512369",
-      hostel: "Boys Hostel",
-      block: "Block A",
-      image: "/images/profile.jpg",
-    },
-    {
-      id: 4,
-      name: "Meena",
-      email: "meena@gmail.com",
-      phone: "9123456780",
-      hostel: "Girls Hostel",
-      block: "Block B",
-      image: "/images/profile.jpg",
-    },
-    {
-      id: 5,
-      name: "Suresh",
-      email: "suresh@gmail.com",
-      phone: "9001122334",
-      hostel: "Boys Hostel",
-      block: "Block C",
-      image: "/images/profile.jpg",
-    },
-  ];
+  /* ================= FETCH FROM ALLOCATIONS ================= */
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/api/allocations")
+      .then((res) => {
+        // ✅ Extract warden + hostel
+        const formatted = res.data.map((item) => ({
+          ...item.warden,
+          hostel: item.hostel,
+          _id: item._id, // unique key
+        }));
+
+        setWardens(formatted);
+      })
+      .catch((err) => console.log(err));
+  }, []);
 
   /* ================= FILTERING ================= */
 
-  const localBoys = localWardens.filter(
-    (w) => w.hostel === "Boys Hostel"
+  const deputyWardens = wardens.filter((w) =>
+    w.role?.toLowerCase().includes("executive")
   );
 
-  const localGirls = localWardens.filter(
-    (w) => w.hostel === "Girls Hostel"
+  const localWardens = wardens.filter((w) =>
+    w.role?.toLowerCase().includes("local")
+  );
+
+  const localBoys = localWardens.filter((w) =>
+    w.role?.toLowerCase().includes("boys")
+  );
+
+  const localGirls = localWardens.filter((w) =>
+    w.role?.toLowerCase().includes("girls")
   );
 
   /* ================= TABLE RENDER ================= */
@@ -78,7 +57,6 @@ function ViewWardens() {
             <th>Email</th>
             <th>Phone</th>
             <th>Hostel</th>
-            {showBlock && <th>Block</th>}
           </tr>
         </thead>
 
@@ -91,10 +69,10 @@ function ViewWardens() {
             </tr>
           ) : (
             data.map((w) => (
-              <tr key={w.id}>
+              <tr key={w._id}>
                 <td>
                   <img
-                    src={w.image}
+                    src={w.image || "/images/profile.jpg"}
                     alt="profile"
                     className="table-img"
                   />
@@ -103,14 +81,10 @@ function ViewWardens() {
                 <td>{w.email}</td>
                 <td>{w.phone}</td>
                 <td>
-                  <span className="hostel-badge">{w.hostel}</span>
+                  <span className="hostel-badge">
+                    {w.hostel || "N/A"}
+                  </span>
                 </td>
-
-                {showBlock && (
-                  <td>
-                    <span className="block-badge">{w.block}</span>
-                  </td>
-                )}
               </tr>
             ))
           )}

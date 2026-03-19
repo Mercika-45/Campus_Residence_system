@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import ExecutiveSidebar from "../../components/ExecutiveSidebar";
 import ExecutiveTopbar from "../../components/ExecutiveTopbar";
 import "../../styles/ExecutiveWarden.css";
@@ -6,30 +7,71 @@ import "../../styles/ExecutiveWarden.css";
 function SendAnnouncements() {
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
-  const [audience, setAudience] = useState("");
+  const [target, setTarget] = useState("");
+  const [announcements, setAnnouncements] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const fetchAnnouncements = async () => {
+    try {
+      const res = await axios.get(
+        "http://localhost:5000/api/announcements?createdBy=executive"
+      );
+      setAnnouncements(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchAnnouncements();
+  }, []);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!title || !message || !audience) {
-      alert("Please fill all fields");
+    if (!title || !message || !target) {
+      setError("Please fill all fields");
       return;
     }
 
-    const announcementData = {
-      title,
-      message,
-      audience,
-      date: new Date().toLocaleDateString()
-    };
+    try {
+      setLoading(true);
+      setError("");
 
-    console.log("Announcement Sent:", announcementData);
+      await axios.post("http://localhost:5000/api/announcements", {
+        title,
+        message,
+        target,
+        createdBy: "executive",
+      });
 
-    alert(`Announcement sent to ${audience}`);
+      alert("Announcement Sent Successfully ✅");
 
-    setTitle("");
-    setMessage("");
-    setAudience("");
+      setTitle("");
+      setMessage("");
+      setTarget("");
+
+      fetchAnnouncements();
+    } catch (err) {
+      setError("Failed to send announcement");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete?");
+    if (!confirmDelete) return;
+
+    try {
+      await axios.delete(
+        `http://localhost:5000/api/announcements/${id}`
+      );
+      fetchAnnouncements();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -45,7 +87,8 @@ function SendAnnouncements() {
 
           <div className="form-wrapper">
             <form className="announcement-form" onSubmit={handleSubmit}>
-              
+              {error && <p className="error-text">{error}</p>}
+
               <div className="form-group">
                 <label>Announcement Title</label>
                 <input
@@ -58,15 +101,16 @@ function SendAnnouncements() {
 
               <div className="form-group">
                 <label>Target Audience</label>
-                <select
-                  value={audience}
-                  onChange={(e) => setAudience(e.target.value)}
-                >
-                  <option value="">-- Select Audience --</option>
-                  <option value="Students">Students</option>
-                  <option value="Local Wardens">Local Wardens</option>
-                  <option value="All">All</option>
-                </select>
+               <select
+  value={target}
+  onChange={(e) => setTarget(e.target.value)}
+>
+  <option value="">-- Select Audience --</option>
+  <option value="student">Students</option>
+  <option value="warden">Wardens</option>
+  <option value="admin">Admin</option>
+  <option value="all">Everyone</option>
+</select>
               </div>
 
               <div className="form-group">
@@ -79,12 +123,50 @@ function SendAnnouncements() {
                 />
               </div>
 
-              <button type="submit" className="send-btn">
-                Send Announcement
+              <button
+                type="submit"
+                className="send-btn"
+                disabled={loading}
+              >
+                {loading ? "Sending..." : "Send Announcement"}
               </button>
-
             </form>
           </div>
+
+          {/* ✅ View Sent Announcements */}
+          <div style={{ marginTop: "40px" }}>
+            <h3>Your Announcements</h3>
+
+            <div className="announcement-grid1">
+              {announcements.length === 0 ? (
+                <p className="no-data">No announcements available.</p>
+              ) : (
+               announcements.map((item) => (
+  <div key={item._id} className="announcement-card">
+    <span
+      onClick={() => handleDelete(item._id)}
+      className="delete-btn"
+    >
+      ❌
+    </span>
+
+    <h3>{item.title}</h3>
+    <p>{item.message}</p>
+
+    <p>
+      <strong>Target:</strong> {item.target}
+    </p>
+
+
+    <small className="announcement-date">
+      Posted on: {new Date(item.createdAt).toLocaleString()}
+    </small>
+  </div>
+))
+              )}
+            </div>
+          </div>
+
         </div>
       </div>
     </div>

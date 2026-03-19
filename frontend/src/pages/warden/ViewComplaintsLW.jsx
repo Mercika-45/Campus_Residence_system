@@ -1,85 +1,48 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import "../../styles/WardenPages.css";
 import WardenSidebar from "../../components/WardenSidebar";
 
 function ViewComplaints() {
+  const [complaints, setComplaints] = useState([]);
   const [filter, setFilter] = useState("All");
 
-  const [complaints, setComplaints] = useState([
-    {
-      id: 1,
-      name: "Arun",
-      regNo: "21CS001",
-      hostel: "Boys Hostel - A",
-      room: "101",
-      category: "Plumbing",
-      issue: "Water leakage near wash basin",
-      completed: false,
-      approved: false,
-      status: "Pending",
-    },
-    {
-      id: 2,
-      name: "Ravi",
-      regNo: "21ME032",
-      hostel: "Boys Hostel - B",
-      room: "210",
-      category: "Food",
-      issue: "Food quality is poor",
-      completed: false,
-      approved: false,
-      status: "Pending",
-    },
-  ]);
+  // 🔹 Fetch complaints from backend
+  useEffect(() => {
+    fetchComplaints();
+  }, []);
 
-  // Toggle Completed
-  const toggleCompleted = (id) => {
-    setComplaints((prev) =>
-      prev.map((c) => {
-        if (c.id === id) {
-          const updatedCompleted = !c.completed;
-          return {
-            ...c,
-            completed: updatedCompleted,
-            status:
-              updatedCompleted && c.approved
-                ? "Resolved"
-                : "Pending",
-          };
-        }
-        return c;
-      })
-    );
+  const fetchComplaints = async () => {
+    try {
+      const res = await axios.get(
+        "http://localhost:5000/api/complaints"
+      );
+      setComplaints(res.data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  // Toggle Student Approval
-  const toggleApproved = (id) => {
-    setComplaints((prev) =>
-      prev.map((c) => {
-        if (c.id === id) {
-          const updatedApproved = !c.approved;
-          return {
-            ...c,
-            approved: updatedApproved,
-            status:
-              c.completed && updatedApproved
-                ? "Resolved"
-                : "Pending",
-          };
-        }
-        return c;
-      })
-    );
+  // 🔹 Warden marks complaint as Completed
+  const markCompleted = async (id) => {
+    try {
+      await axios.put(
+        `http://localhost:5000/api/complaints/complete/${id}`
+      );
+      fetchComplaints();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  // Sort → Pending Top, Resolved Bottom
+  // 🔹 Sort: Pending first
   const sortedComplaints = [...complaints].sort((a, b) => {
     if (a.status === "Resolved") return 1;
     if (b.status === "Resolved") return -1;
     return 0;
   });
 
-  // Apply Filter
+  // 🔹 Apply Filter
   const filteredComplaints =
     filter === "All"
       ? sortedComplaints
@@ -123,40 +86,44 @@ function ViewComplaints() {
 
             <tbody>
               {filteredComplaints.map((c) => (
-                <tr key={c.id}>
-                  <td>{c.name}</td>
-                  <td>{c.regNo}</td>
+                <tr key={c._id}>
+                  <td>{c.studentName}</td>
+                  <td>{c.registerNo}</td>
                   <td>{c.hostel}</td>
                   <td>{c.room}</td>
                   <td>{c.category}</td>
-                  <td>{c.issue}</td>
+                  <td>{c.description}</td>
 
+                  {/* ✅ Warden Control */}
                   <td>
-                    <button
-                      className={
-                        c.completed ? "approved-btn" : "pending-btn"
-                      }
-                      onClick={() => toggleCompleted(c.id)}
-                    >
-                      {c.completed
-                        ? "Completed"
-                        : "Not Completed"}
-                    </button>
+                    {!c.completed ? (
+                      <button
+                        className="pending-btn"
+                        onClick={() => markCompleted(c._id)}
+                      >
+                        Mark Completed
+                      </button>
+                    ) : (
+                      <span className="approved-btn">
+                        Completed
+                      </span>
+                    )}
                   </td>
 
+                  {/* 🔒 View Only */}
                   <td>
-                    <button
-                      className={
-                        c.approved ? "approved-btn" : "pending-btn"
-                      }
-                      onClick={() => toggleApproved(c.id)}
-                    >
-                      {c.approved
-                        ? "Approved"
-                        : "Not Approved"}
-                    </button>
+                    {c.approved ? (
+                      <span className="approved-btn">
+                        Approved
+                      </span>
+                    ) : (
+                      <span className="pending-btn">
+                        Not Approved
+                      </span>
+                    )}
                   </td>
 
+                  {/* ✅ Status */}
                   <td>
                     <span
                       className={`status-badge ${c.status.toLowerCase()}`}

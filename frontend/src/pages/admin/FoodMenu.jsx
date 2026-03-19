@@ -1,35 +1,72 @@
+import { useState, useEffect } from "react";
+import axios from "axios";
 import AdminSidebar from "../../components/AdminSidebar";
 import AdminTopbar from "../../components/AdminTopbar";
-import "../../styles/Admin.css";
-import "../../styles/ViewMenu.css";
+import "../../styles/ViewMenuEW.css"; // same style as executive
 
 function FoodMenu() {
+  const [menuData, setMenuData] = useState([]);
+  const [isEdit, setIsEdit] = useState(false);
 
-  const menuData = [
-    { day: "Monday", morning: "Idli & Sambar", afternoon: "Rice, Sambar, Poriyal", dinner: "Chapati & Kurma" },
-    { day: "Tuesday", morning: "Dosa & Chutney", afternoon: "Rice, Rasam, Curry", dinner: "Veg Fried Rice" },
-    { day: "Wednesday", morning: "Pongal", afternoon: "Rice, Sambar, Kootu", dinner: "Chapati & Dal" },
-    { day: "Thursday", morning: "Poori & Masala", afternoon: "Rice, Curd, Pickle", dinner: "Upma" },
-    { day: "Friday", morning: "Idiyappam", afternoon: "Rice, Veg Curry", dinner: "Dosa" },
-    { day: "Saturday", morning: "Bread & Jam", afternoon: "Variety Rice", dinner: "Chapati & Kurma" },
-    { day: "Sunday", morning: "Special Breakfast", afternoon: "Biryani", dinner: "Light Dinner" }
-  ];
+  // ✅ Fetch menu from backend
+  useEffect(() => {
+    fetchMenu();
+  }, []);
+
+  const fetchMenu = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/api/foodmenu");
+      setMenuData(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // ✅ Handle input change
+  const handleChange = (index, field, value) => {
+    const updatedMenu = [...menuData];
+    updatedMenu[index][field] = value;
+    setMenuData(updatedMenu);
+  };
+
+  // ✅ Save updated menu
+  const handleSave = async () => {
+    try {
+      await axios.put(
+        "http://localhost:5000/api/foodmenu/update",
+        menuData
+      );
+      alert("Menu Updated Successfully");
+      setIsEdit(false);
+      fetchMenu(); // refresh after save
+    } catch (error) {
+      console.log(error);
+      alert("Failed to update menu");
+    }
+  };
 
   return (
     <div className="dashboard-container">
-
-      {/* Sidebar */}
+      
       <AdminSidebar />
 
-      {/* Main Content */}
-      <div className="main-content">
-        <AdminTopbar title="View Food Menu" />
+      <div className="main-content1">
+        <AdminTopbar title="Food Menu Management" />
 
-        <div className="dashboard-content">
+        <div className="content">
 
-          <h2 className="page-title">Weekly Hostel Food Menu</h2>
+          <div className="menu-header">
+            <h2>Weekly Hostel Food Menu</h2>
 
-          <div className="table-card">
+            <button
+              className="edit-btn"
+              onClick={isEdit ? handleSave : () => setIsEdit(true)}
+            >
+              {isEdit ? "Save Menu" : "Edit Menu"}
+            </button>
+          </div>
+
+          <div className="menu-table-card">
             <table className="menu-table">
               <thead>
                 <tr>
@@ -41,21 +78,65 @@ function FoodMenu() {
               </thead>
 
               <tbody>
-                {menuData.map((item, index) => (
-                  <tr key={index}>
-                    <td>{item.day}</td>
-                    <td>{item.morning}</td>
-                    <td>{item.afternoon}</td>
-                    <td>{item.dinner}</td>
+                {menuData.length > 0 ? (
+                  menuData.map((item, index) => (
+                    <tr key={index}>
+                      <td>{item.day}</td>
+
+                      <td>
+                        {isEdit ? (
+                          <input
+                            value={item.morning}
+                            onChange={(e) =>
+                              handleChange(index, "morning", e.target.value)
+                            }
+                          />
+                        ) : (
+                          item.morning
+                        )}
+                      </td>
+
+                      <td>
+                        {isEdit ? (
+                          <input
+                            value={item.afternoon}
+                            onChange={(e) =>
+                              handleChange(index, "afternoon", e.target.value)
+                            }
+                          />
+                        ) : (
+                          item.afternoon
+                        )}
+                      </td>
+
+                      <td>
+                        {isEdit ? (
+                          <input
+                            value={item.dinner}
+                            onChange={(e) =>
+                              handleChange(index, "dinner", e.target.value)
+                            }
+                          />
+                        ) : (
+                          item.dinner
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="4" style={{ textAlign: "center" }}>
+                      No Menu Available
+                    </td>
                   </tr>
-                ))}
+                )}
               </tbody>
+
             </table>
           </div>
 
         </div>
       </div>
-
     </div>
   );
 }
