@@ -20,7 +20,7 @@ function ExecutiveSidebar() {
       <NavLink to="/executive/view-wardens">View Local Wardens</NavLink>
       <NavLink to="/executive/view-students">View Students</NavLink>
       <NavLink to="/executive/student-request"> Student Request</NavLink>
-      <NavLink to="/executive/fee-status">Fee Status</NavLink>
+      <NavLink to="/executive/fee-approval">Fee Status</NavLink>
       <NavLink to="/executive/allocate-rooms">Allocate Rooms</NavLink>
       <div className="logout" onClick={handleLogout}>
           Logout

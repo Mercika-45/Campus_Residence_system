@@ -1,82 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import ExecutiveSidebar from "../../components/ExecutiveSidebar";
 import ExecutiveTopbar from "../../components/ExecutiveTopbar";
 import "../../styles/ViewStudentsEW.css";
-
-/* ================= DATA ================= */
-
-const newStudentsData = [
-  { id: 1, name: "Aravinth B", year: "1", dept: "CSE", gender: "Boys" },
-  { id: 2, name: "Sriram T", year: "2", dept: "MECH", gender: "Girls" },
-];
-
-const existingStudentsData = [
-  {
-    id: 1,
-    name: "Gopika R",
-    year: "1",
-    dept: "CSE",
-    gender: "Girls",
-    hostel: "A Block",
-    room: "A-101",
-  },
-  {
-    id: 2,
-    name: "Vijay Selvan",
-    year: "2",
-    dept: "EEE",
-    gender: "Boys",
-    hostel: "B Block",
-    room: "B-204",
-  },
-  {
-    id: 3,
-    name: "Siva Gomathi",
-    year: "3",
-    dept: "ECE",
-    gender: "Girls",
-    hostel: "C Block",
-    room: "C-305",
-  },
-  {
-    id: 4,
-    name: "Karthick Raja",
-    year: "4",
-    dept: "IT",
-    gender: "Boys",
-    hostel: "A Block",
-    room: "A-402",
-  },
-];
-
-const oldStudentsData = [
-  {
-    id: 1,
-    name: "Anitha M",
-    year: "4",
-    dept: "CSE",
-    gender: "Girls",
-    vacatedYear: "2023",
-  },
-  {
-    id: 2,
-    name: "Praveen K",
-    year: "4",
-    dept: "EEE",
-    gender: "Boys",
-    vacatedYear: "2022",
-  },
-  {
-    id: 3,
-    name: "Deepa S",
-    year: "4",
-    dept: "ECE",
-    gender: "Girls",
-    vacatedYear: "2024",
-  },
-];
-
-/* ================= COMPONENT ================= */
 
 function ViewStudents() {
   const [activeTab, setActiveTab] = useState("new");
@@ -84,24 +10,96 @@ function ViewStudents() {
   const [vacatedFilter, setVacatedFilter] = useState("");
   const [genderFilter, setGenderFilter] = useState("");
 
-  /* ===== FILTERS ===== */
+  const [newStudentsData, setNewStudentsData] = useState([]);
+  const [approvedStudents, setApprovedStudents] = useState([]);
+  const [oldStudentsData, setOldStudentsData] = useState([]);
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  /* ===== FILTER ===== */
 
   const applyGender = (list) =>
-    genderFilter ? list.filter((s) => s.gender === genderFilter) : list;
+    genderFilter
+      ? list.filter(
+          (s) => s.gender?.toLowerCase() === genderFilter.toLowerCase()
+        )
+      : list;
+
+  const filteredNew = applyGender(newStudentsData);
 
   const filteredExisting = applyGender(
-    existingYearFilter
-      ? existingStudentsData.filter((s) => s.year === existingYearFilter)
-      : existingStudentsData
-  );
-
+  existingYearFilter
+    ? approvedStudents.filter(
+        (s) =>
+          Number(s?.college?.yearOfStudy) === Number(existingYearFilter)
+      )
+    : approvedStudents
+);
   const filteredOld = applyGender(
     vacatedFilter
-      ? oldStudentsData.filter((s) => s.vacatedYear === vacatedFilter)
+      ? oldStudentsData.filter(
+          (s) => Number(s.vacatedYear) === Number(vacatedFilter)
+        )
       : oldStudentsData
   );
 
-  const filteredNew = applyGender(newStudentsData);
+  /* ===== FETCH ===== */
+
+  const fetchNewStudents = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/student/new");
+      const data = await res.json();
+      setNewStudentsData(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const fetchApprovedStudents = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/student/approved");
+      const data = await res.json();
+      setApprovedStudents(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const fetchOldStudents = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/student/old");
+      const data = await res.json();
+
+      const students = Array.isArray(data) ? data : data.students || [];
+
+      const cleaned = students.map((s) => ({
+        ...s,
+        vacatedYear: s.vacatedYear || null,
+      }));
+
+      setOldStudentsData(cleaned);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tab = params.get("tab");
+
+    if (tab) setActiveTab(tab);
+
+    fetchNewStudents();
+    fetchApprovedStudents();
+    
+  }, [location]);
+
+  useEffect(() => {
+    setGenderFilter("");
+    setExistingYearFilter("");
+    setVacatedFilter("");
+  }, [activeTab]);
 
   return (
     <div className="dashboard-container">
@@ -111,7 +109,9 @@ function ViewStudents() {
         <ExecutiveTopbar title="Students" />
 
         <div className="dashboard-content">
-          {/* ================= TABS ================= */}
+
+          {/* ===== TABS ===== */}
+
           <div className="tabs">
             <button
               className={activeTab === "new" ? "active" : ""}
@@ -135,9 +135,13 @@ function ViewStudents() {
             </button>
           </div>
 
-          {/* ================= COMMON FILTERS ================= */}
+          {/* ===== FILTERS ===== */}
+
           <div className="filter-row">
-            <select onChange={(e) => setGenderFilter(e.target.value)}>
+            <select
+              value={genderFilter}
+              onChange={(e) => setGenderFilter(e.target.value)}
+            >
               <option value="">All Genders</option>
               <option value="Boys">Boys</option>
               <option value="Girls">Girls</option>
@@ -145,6 +149,7 @@ function ViewStudents() {
 
             {activeTab === "existing" && (
               <select
+                value={existingYearFilter}
                 onChange={(e) => setExistingYearFilter(e.target.value)}
               >
                 <option value="">All Years</option>
@@ -156,7 +161,8 @@ function ViewStudents() {
             )}
           </div>
 
-          {/* ================= NEW STUDENTS ================= */}
+          {/* ===== NEW STUDENTS ===== */}
+
           {activeTab === "new" && (
             <div className="table-container">
               <table className="students-table">
@@ -167,29 +173,45 @@ function ViewStudents() {
                     <th>Year</th>
                     <th>Department</th>
                     <th>Gender</th>
-                    <th>Actions</th>
+                    <th>View</th>
                   </tr>
                 </thead>
+
                 <tbody>
-                  {filteredNew.map((s, index) => (
-                    <tr key={s.id}>
-                      <td>{index + 1}</td>
-                      <td>{s.name}</td>
-                      <td>{s.year}</td>
-                      <td>{s.dept}</td>
-                      <td>{s.gender}</td>
-                      <td>
-                        <button className="reject">Reject</button>
-                        <button className="accept">Accept</button>
+                  {filteredNew.length === 0 ? (
+                    <tr>
+                      <td colSpan="6" className="no-data">
+                        No new registrations
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    filteredNew.map((s, index) => (
+                      <tr key={s._id}>
+                        <td>{index + 1}</td>
+                        <td>{s.studentName}</td>
+                        <td>{s?.college?.yearOfStudy || "-"}</td>
+                        <td>{s?.college?.department || "-"}</td>
+                        <td>{s.gender}</td>
+                        <td>
+                          <button
+                            className="view"
+                            onClick={() =>
+                              navigate(`/executive/student/${s._id}`)
+                            }
+                          >
+                            View
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
           )}
 
-          {/* ================= EXISTING STUDENTS ================= */}
+          {/* ===== EXISTING STUDENTS ===== */}
+
           {activeTab === "existing" && (
             <div className="table-container">
               <table className="students-table">
@@ -201,26 +223,41 @@ function ViewStudents() {
                     <th>Department</th>
                     <th>Gender</th>
                     <th>Hostel</th>
-                    <th>Room No</th>
+                    <th>Room</th>
+                    <th>View</th>
                   </tr>
                 </thead>
+
                 <tbody>
                   {filteredExisting.length === 0 ? (
                     <tr>
-                      <td colSpan="7" className="no-data">
+                      <td colSpan="8" className="no-data">
                         No students found
                       </td>
                     </tr>
                   ) : (
                     filteredExisting.map((s, index) => (
-                      <tr key={s.id}>
+                      <tr key={s._id}>
                         <td>{index + 1}</td>
-                        <td>{s.name}</td>
-                        <td>{s.year}</td>
-                        <td>{s.dept}</td>
+                        <td>{s.studentName}</td>
+                        <td>{s?.college?.yearOfStudy || "-"}</td>
+                        <td>{s?.college?.department || "-"}</td>
                         <td>{s.gender}</td>
-                        <td>{s.hostel}</td>
-                        <td>{s.room}</td>
+                        <td>{s?.hostel?.block || "-"}</td>
+                        <td>{s?.hostel?.room || "-"}</td>
+
+                        <td>
+                          <button
+                            className="view"
+                            onClick={() =>
+                              navigate(
+                                `/executive/student/${s._id}?tab=existing`
+                              )
+                            }
+                          >
+                            View
+                          </button>
+                        </td>
                       </tr>
                     ))
                   )}
@@ -229,28 +266,24 @@ function ViewStudents() {
             </div>
           )}
 
-          {/* ================= OLD STUDENTS ================= */}
+          {/* ===== OLD STUDENTS ===== */}
+
           {activeTab === "old" && (
             <>
               <div className="calendar-filter">
-                <label className="calendar-label">
-                  Select Vacated Year
-                </label>
+                <label className="calender-label">Select Vacated Year</label>
 
                 <input
                   type="number"
                   min="2000"
                   max="2100"
                   placeholder="Enter Year"
-                  className="year-only-picker"
+                   className="year-only-picker"
                   value={vacatedFilter}
                   onChange={(e) => setVacatedFilter(e.target.value)}
                 />
 
-                <button
-                  className="clear-btn"
-                  onClick={() => setVacatedFilter("")}
-                >
+                <button   className="clear-btn" onClick={() => setVacatedFilter("")}>
                   Clear
                 </button>
               </div>
@@ -265,25 +298,36 @@ function ViewStudents() {
                       <th>Department</th>
                       <th>Gender</th>
                       <th>Vacated Year</th>
+                      <th>View</th>
                     </tr>
                   </thead>
+
                   <tbody>
                     {filteredOld.length === 0 ? (
                       <tr>
-                        <td colSpan="6" className="no-data">
+                        <td colSpan="7" className="no-data">
                           No students found
                         </td>
                       </tr>
                     ) : (
                       filteredOld.map((s, index) => (
-                        <tr key={s.id}>
+                        <tr key={s._id}>
                           <td>{index + 1}</td>
-                          <td>{s.name}</td>
-                          <td>{s.year}</td>
-                          <td>{s.dept}</td>
+                          <td>{s.studentName}</td>
+                          <td>{s?.college?.yearOfStudy || "-"}</td>
+                          <td>{s?.college?.department || "-"}</td>
                           <td>{s.gender}</td>
-                          <td className="vacated">
-                            {s.vacatedYear}
+                          <td>{s.vacatedYear || "-"}</td>
+
+                          <td>
+                            <button
+                              className="view"
+                              onClick={() =>
+                                navigate(`/executive/student/${s._id}?tab=old`)
+                              }
+                            >
+                              View
+                            </button>
                           </td>
                         </tr>
                       ))

@@ -698,3 +698,273 @@
   background-color: #0a1f44;
   color: #fff;
 }
+
+.posted-by {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #444;
+}
+
+.announcement-time {
+  display: block;
+  margin-top: 5px;
+  font-size: 13px;
+  color: gray;
+}
+
+/*fee payment*/
+
+/* ================= PAGE ================= */
+
+.executive-content {
+  padding: 20px;
+  background: #f5f7fb;
+  min-height: 100vh;
+}
+
+.executive-content h2 {
+  margin-bottom: 20px;
+  color: #1e293b;
+}
+
+/* ================= MESSAGE ================= */
+
+.info-msg {
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 10px 15px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+}
+
+/* ================= CONTROL PANEL ================= */
+
+.control-panel {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 25px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.control-panel h3 {
+  margin-bottom: 10px;
+  color: #0f172a;
+}
+
+.control-panel h4 {
+  margin-top: 15px;
+  margin-bottom: 10px;
+  color: #334155;
+}
+
+.control-panel button {
+  margin: 5px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  transition: 0.2s;
+}
+
+/* ================= BUTTONS ================= */
+
+.open-btn {
+  background: #22c55e;
+  color: white;
+}
+
+.open-btn:hover {
+  background: #16a34a;
+}
+
+.close-btn {
+  background: #ef4444;
+  color: white;
+}
+
+.close-btn:hover {
+  background: #dc2626;
+}
+
+.approve-btn {
+  background: #2563eb;
+  color: white;
+}
+
+.approve-btn:hover {
+  background: #1d4ed8;
+}
+
+.reject-btn {
+  background: #f97316;
+  color: white;
+}
+
+.reject-btn:hover {
+  background: #ea580c;
+}
+
+.preview-btn {
+  background: #64748b;
+  color: white;
+}
+
+.preview-btn:hover {
+  background: #475569;
+}
+
+/* ================= TABLE ================= */
+
+.fee-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.fee-table th {
+  background: #1e293b;
+  color: white;
+  padding: 12px;
+  font-size: 14px;
+}
+
+.fee-table td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.fee-table tr:hover {
+  background: #f1f5f9;
+}
+
+.no-data {
+  padding: 20px;
+  color: #64748b;
+}
+
+/* ================= BADGES ================= */
+
+.badge {
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.badge.pending {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.badge.paid {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.badge.rejected {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* ================= ACTION BOX ================= */
+
+.action-box {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.action-box input {
+  padding: 6px;
+  border-radius: 5px;
+  border: 1px solid #cbd5f5;
+  font-size: 12px;
+}
+
+/* ================= MODAL ================= */
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: white;
+  width: 80%;
+  height: 80%;
+  padding: 15px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-content iframe {
+  flex: 1;
+  border: none;
+  margin-bottom: 10px;
+}
+
+.modal-content button {
+  align-self: flex-end;
+  padding: 8px 15px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.modal-content button:hover {
+  background: #dc2626;
+}
+
+/* ================= SMALL TEXT ================= */
+
+.no-file {
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+/* ================= PREVIEW BUTTON ================= */
+
+.preview-btn {
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  color: #fff;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Hover effect */
+.preview-btn:hover {
+  background: linear-gradient(135deg, #4f46e5, #4338ca);
+  transform: scale(1.05);
+}
+
+/* Click effect */
+.preview-btn:active {
+  transform: scale(0.95);
+}
+
+/* No file text */
+.no-file {
+  color: #94a3b8;
+  font-size: 13px;
+  font-style: italic;
+}

@@ -1,6 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "../../styles/Login.css";
+import axios from "axios";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 function AdminLogin() {
   const [captcha, setCaptcha] = useState("");
@@ -12,6 +14,7 @@ function AdminLogin() {
   const navigate = useNavigate();
   const passwordRef = useRef(null);
   const captchaRef = useRef(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   // Generate 5-char captcha
   const generateCaptcha = () => {
@@ -27,41 +30,35 @@ function AdminLogin() {
     generateCaptcha();
   }, []);
 
-  const handleLogin = () => {
-    setError("");
 
-    if (!email || !password) {
-      setError("Please fill all fields");
-      return;
-    }
+const handleLogin = async () => {
+  setError("");
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setError("Please enter a valid email address");
-      return;
-    }
+  try {
+    const res = await axios.post(
+      "http://localhost:5000/api/auth/login",
+      { email, password }
+    );
 
-    const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{6,}$/;
-    if (!passwordRegex.test(password)) {
-      setError(
-        "Password must be at least 6 characters, include 1 uppercase letter and 1 number"
-      );
-      return;
-    }
+    const { token, user } = res.data;
 
-    if (captchaInput.toUpperCase() !== captcha) {
-      setError("Invalid captcha");
-      generateCaptcha();
-      setCaptchaInput("");
-      return;
-    }
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(user));
 
-    // Save admin data
-    const adminData = { name: "Admin", email, role: "Administrator" };
-    localStorage.setItem("admin", JSON.stringify(adminData));
-    navigate("/admin/dashboard");
-  };
+    // Role-based navigation
+    if (user.role === "admin")
+      navigate("/admin/dashboard");
+    else if (user.role === "warden")
+      navigate("/warden/dashboard");
+    else if (user.role === "executive")
+      navigate("/executive/dashboard");
+    else
+      navigate("/student/dashboard");
 
+  } catch (err) {
+    setError(err.response?.data?.message || "Login failed");
+  }
+};
   return (
     <div className="login-container">
 
@@ -98,23 +95,25 @@ function AdminLogin() {
               }}
               required
             />
+<label>Password</label>
 
-            <label>Password</label>
-            <input
-              type="password"
-              value={password}
-              placeholder="Enter password"
-              ref={passwordRef}
-              onChange={(e) => setPassword(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  captchaRef.current.focus();
-                }
-              }}
-              required
-            />
+<div className="input-group">
+  <input
+    type={showPassword ? "text" : "password"}
+    value={password}
+    placeholder="Enter password"
+    ref={passwordRef}
+    onChange={(e) => setPassword(e.target.value)}
+    required
+  />
 
+  <span
+    className="toggle-password"
+    onClick={() => setShowPassword(!showPassword)}
+  >
+    {showPassword ? <FaEyeSlash /> : <FaEye />}
+  </span>
+</div>
             <div className="forgot-password">
               <Link to="/forgot-password?role=admin">Forgot Password?</Link>
             </div>

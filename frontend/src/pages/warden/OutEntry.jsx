@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import "../../styles/WardenPages.css";
 import WardenSidebar from "../../components/WardenSidebar";
 
 function OutEntry() {
-
   const [studentName, setStudentName] = useState("");
   const [regNo, setRegNo] = useState("");
   const [parentMobile, setParentMobile] = useState("");
@@ -11,6 +11,7 @@ function OutEntry() {
   const [outDate, setOutDate] = useState("");
   const [returnDate, setReturnDate] = useState("");
   const [reason, setReason] = useState("");
+
   const [entries, setEntries] = useState([]);
   const [message, setMessage] = useState("");
   const [showView, setShowView] = useState(false);
@@ -18,7 +19,36 @@ function OutEntry() {
   const [filterDate, setFilterDate] = useState("");
   const [filterYear, setFilterYear] = useState("");
 
-  const handleSubmit = (e) => {
+  const [editId, setEditId] = useState(null);
+
+  const API_URL = "http://localhost:5000/api/outentry";
+
+  /* ================= FETCH ENTRIES ================= */
+  const fetchEntries = async () => {
+    try {
+      let query = "";
+
+      if (filterYear) query += `year=${filterYear}`;
+      if (filterDate) {
+        if (query) query += "&";
+        query += `date=${filterDate}`;
+      }
+
+      const res = await axios.get(query ? `${API_URL}?${query}` : API_URL);
+      setEntries(res.data);
+    } catch (error) {
+      console.error("Error fetching entries:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (showView) {
+      fetchEntries();
+    }
+  }, [filterYear, filterDate, showView]);
+
+  /* ================= HANDLE SUBMIT ================= */
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!studentName || !regNo || !parentMobile || !outDate || !returnDate) {
@@ -26,70 +56,95 @@ function OutEntry() {
       return;
     }
 
-    const newEntry = {
-      id: Date.now(),
-      studentName,
-      regNo,
-      parentMobile,
-      year,
-      outDate,
-      returnDate,
-      reason
-    };
+    try {
+      if (editId) {
+        await axios.put(`${API_URL}/${editId}`, {
+          studentName,
+          regNo,
+          parentMobile,
+          year,
+          outDate,
+          returnDate,
+          reason,
+        });
+        setMessage("Entry updated successfully!");
+      } else {
+        await axios.post(API_URL, {
+          studentName,
+          regNo,
+          parentMobile,
+          year,
+          outDate,
+          returnDate,
+          reason,
+        });
+        setMessage("Out entry recorded & Parent notified successfully!");
+      }
 
-    setEntries([...entries, newEntry]);
+      setStudentName("");
+      setRegNo("");
+      setParentMobile("");
+      setYear("1");
+      setOutDate("");
+      setReturnDate("");
+      setReason("");
+      setEditId(null);
 
-    console.log(`SMS Sent to ${parentMobile}`);
+      setTimeout(() => setMessage(""), 3000);
 
-    setMessage("Out entry recorded & Parent notified successfully!");
-
-    setStudentName("");
-    setRegNo("");
-    setParentMobile("");
-    setYear("1");
-    setOutDate("");
-    setReturnDate("");
-    setReason("");
-
-    setTimeout(() => setMessage(""), 3000);
+      if (showView) fetchEntries();
+    } catch (error) {
+      console.error("Error saving entry:", error);
+      setMessage("Something went wrong!");
+    }
   };
 
-  // Filter Logic
-  const filteredEntries = entries.filter((entry) => {
-    return (
-      (filterYear ? entry.year === filterYear : true) &&
-      (filterDate
-        ? entry.outDate.slice(0, 10) === filterDate
-        : true)
-    );
-  });
+  /* ================= HANDLE DELETE ================= */
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete?");
+    if (!confirmDelete) return;
+
+    try {
+      await axios.delete(`${API_URL}/${id}`);
+      fetchEntries();
+    } catch (error) {
+      console.error("Delete error:", error);
+    }
+  };
+
+  /* ================= HANDLE EDIT ================= */
+  const handleEdit = (entry) => {
+    setEditId(entry._id);
+    setStudentName(entry.studentName);
+    setRegNo(entry.regNo);
+    setParentMobile(entry.parentMobile);
+    setYear(entry.year);
+    setOutDate(entry.outDate.slice(0, 16));
+    setReturnDate(entry.returnDate.slice(0, 16));
+    setReason(entry.reason || "");
+    setShowView(false);
+  };
 
   return (
     <div className="warden-layout">
       <WardenSidebar />
 
       <div className="warden-page">
-
         <div className="page-header">
           <h1>Out Entry Management</h1>
           <p className="breadcrumb">Dashboard / Out Entry</p>
         </div>
 
-        {/* Toggle Button */}
         <div style={{ textAlign: "right", marginBottom: "20px" }}>
-          <button
-            className="action-btn"
-            onClick={() => setShowView(!showView)}
-          >
+          <button className="action-btn" onClick={() => setShowView(!showView)}>
             {showView ? "Add Entry" : "View Entries"}
           </button>
         </div>
 
-        {/* ================= ADD ENTRY SECTION ================= */}
+        {/* ================= ADD ENTRY ================= */}
         {!showView && (
           <div className="form-card">
             <form className="warden-form" onSubmit={handleSubmit}>
-
               <div className="form-group">
                 <label>Student Name</label>
                 <input
@@ -112,10 +167,7 @@ function OutEntry() {
 
               <div className="form-group">
                 <label>Year</label>
-                <select
-                  value={year}
-                  onChange={(e) => setYear(e.target.value)}
-                >
+                <select value={year} onChange={(e) => setYear(e.target.value)}>
                   <option value="1">First Year</option>
                   <option value="2">Second Year</option>
                   <option value="3">Third Year</option>
@@ -162,21 +214,18 @@ function OutEntry() {
               </div>
 
               <button type="submit" className="primary-btn">
-                Save & Notify Parent
+                {editId ? "Update Entry" : "Save & Notify Parent"}
               </button>
 
-              {message && (
-                <div className="success-message">{message}</div>
-              )}
+              {message && <div className="success-message">{message}</div>}
             </form>
           </div>
         )}
 
-        {/* ================= VIEW ENTRY SECTION ================= */}
+        {/* ================= VIEW ENTRY ================= */}
         {showView && (
           <>
             <div className="attendance-controls1">
-
               <div>
                 <label>Filter by Date</label>
                 <input
@@ -199,7 +248,6 @@ function OutEntry() {
                   <option value="4">Fourth Year</option>
                 </select>
               </div>
-
             </div>
 
             <div className="table-card">
@@ -214,24 +262,36 @@ function OutEntry() {
                     <th>Out Time</th>
                     <th>Return Time</th>
                     <th>Parent Mobile</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
 
                 <tbody>
-                  {filteredEntries.length > 0 ? (
-                    filteredEntries.map((entry) => (
-                      <tr key={entry.id}>
+                  {entries.length > 0 ? (
+                    entries.map((entry) => (
+                      <tr key={entry._id}>
                         <td>{entry.studentName}</td>
                         <td>{entry.regNo}</td>
                         <td>{entry.year} Year</td>
-                        <td>{entry.outDate}</td>
-                        <td>{entry.returnDate}</td>
+                        <td>{new Date(entry.outDate).toLocaleString()}</td>
+                        <td>{new Date(entry.returnDate).toLocaleString()}</td>
                         <td>{entry.parentMobile}</td>
+                        <td>
+                          <button className="edit-btn" onClick={() => handleEdit(entry)}>
+                            Edit
+                          </button>
+                          <button
+                            className="delete-btn1"
+                            onClick={() => handleDelete(entry._id)}
+                          >
+                            Delete
+                          </button>
+                        </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="6" style={{ textAlign: "center" }}>
+                      <td colSpan="7" style={{ textAlign: "center" }}>
                         No records found
                       </td>
                     </tr>
@@ -241,7 +301,6 @@ function OutEntry() {
             </div>
           </>
         )}
-
       </div>
     </div>
   );

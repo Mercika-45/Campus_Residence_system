@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import ExecutiveSidebar from "../../components/ExecutiveSidebar";
 import ExecutiveTopbar from "../../components/ExecutiveTopbar";
 import "../../styles/ViewMenuEW.css";
@@ -6,17 +7,31 @@ import "../../styles/ViewMenuEW.css";
 function ViewMenuEW() {
 
   const [isEdit, setIsEdit] = useState(false);
+  const [menuData, setMenuData] = useState([]);
 
-  const [menuData, setMenuData] = useState([
-    { day: "Monday", morning: "Idli & Sambar", afternoon: "Rice, Sambar, Poriyal", dinner: "Chapati & Kurma" },
-    { day: "Tuesday", morning: "Dosa & Chutney", afternoon: "Rice, Rasam, Curry", dinner: "Veg Fried Rice" },
-    { day: "Wednesday", morning: "Pongal", afternoon: "Rice, Sambar, Kootu", dinner: "Chapati & Dal" },
-    { day: "Thursday", morning: "Poori & Masala", afternoon: "Rice, Curd, Pickle", dinner: "Upma" },
-    { day: "Friday", morning: "Idiyappam", afternoon: "Rice, Veg Curry", dinner: "Dosa" },
-    { day: "Saturday", morning: "Bread & Jam", afternoon: "Variety Rice", dinner: "Chapati & Kurma" },
-    { day: "Sunday", morning: "Special Breakfast", afternoon: "Biryani", dinner: "Light Dinner" }
-  ]);
+  // ✅ Fetch menu from backend when page loads
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/api/foodmenu")
+      .then((res) => setMenuData(res.data))
+      .catch((err) => console.log(err));
+  }, []);
 
+  // ✅ Save updated menu
+  const handleSave = async () => {
+    try {
+      await axios.put(
+        "http://localhost:5000/api/foodmenu/update",
+        menuData
+      );
+      alert("Menu Updated Successfully");
+      setIsEdit(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // ✅ Handle input change
   const handleChange = (index, field, value) => {
     const updatedMenu = [...menuData];
     updatedMenu[index][field] = value;
@@ -35,9 +50,10 @@ function ViewMenuEW() {
 
           <div className="menu-header">
             <h2>Weekly Hostel Food Menu</h2>
-            <button 
+
+            <button
               className="edit-btn"
-              onClick={() => setIsEdit(!isEdit)}
+              onClick={isEdit ? handleSave : () => setIsEdit(true)}
             >
               {isEdit ? "Save Menu" : "Edit Menu"}
             </button>
@@ -63,7 +79,9 @@ function ViewMenuEW() {
                       {isEdit ? (
                         <input
                           value={item.morning}
-                          onChange={(e) => handleChange(index, "morning", e.target.value)}
+                          onChange={(e) =>
+                            handleChange(index, "morning", e.target.value)
+                          }
                         />
                       ) : (
                         item.morning
@@ -74,7 +92,9 @@ function ViewMenuEW() {
                       {isEdit ? (
                         <input
                           value={item.afternoon}
-                          onChange={(e) => handleChange(index, "afternoon", e.target.value)}
+                          onChange={(e) =>
+                            handleChange(index, "afternoon", e.target.value)
+                          }
                         />
                       ) : (
                         item.afternoon
@@ -85,7 +105,9 @@ function ViewMenuEW() {
                       {isEdit ? (
                         <input
                           value={item.dinner}
-                          onChange={(e) => handleChange(index, "dinner", e.target.value)}
+                          onChange={(e) =>
+                            handleChange(index, "dinner", e.target.value)
+                          }
                         />
                       ) : (
                         item.dinner
@@ -94,6 +116,7 @@ function ViewMenuEW() {
                   </tr>
                 ))}
               </tbody>
+
             </table>
           </div>
 

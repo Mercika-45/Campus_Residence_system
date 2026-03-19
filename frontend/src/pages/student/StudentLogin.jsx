@@ -1,6 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../../styles/Login.css";
+import axios from "axios";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 function StudentLogin() {
   const [captcha, setCaptcha] = useState("");
@@ -8,6 +10,7 @@ function StudentLogin() {
   const [error, setError] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
 
@@ -28,54 +31,35 @@ function StudentLogin() {
     generateCaptcha();
   }, []);
 
-  const handleLogin = () => {
-    setError("");
 
-    // ✅ Empty validation
-    if (!email || !password) {
-      setError("Please fill all fields");
-      return;
-    }
+const handleLogin = async () => {
+  setError("");
 
-    // ✅ Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setError("Please enter a valid email address");
-      return;
-    }
+  try {
+    const res = await axios.post(
+      "http://localhost:5000/api/auth/login",
+      { email, password }
+    );
 
-    // ✅ Password validation
-    const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{6,}$/;
-    if (!passwordRegex.test(password)) {
-      setError(
-        "Password must be at least 6 characters, include 1 uppercase letter and 1 number"
-      );
-      return;
-    }
+    const { token, user } = res.data;
 
-    // ✅ Captcha validation
-    if (captchaInput !== captcha) {
-      setError("Invalid captcha");
-      generateCaptcha();
-      setCaptchaInput("");
-      return;
-    }
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(user));
 
-    // ✅ Dummy logged-in student data
-    const studentData = {
-      name: "Gopika R",
-      registerNo: "962822104030",
-      email: email,
-      department: "Computer Science and Engineering",
-      year: "IV",
-      hostel: "Girls Hostel",
-      roomNo: "G-203"
-    };
+    // Role-based navigation
+    if (user.role === "admin")
+      navigate("/admin/dashboard");
+    else if (user.role === "warden")
+      navigate("/warden/dashboard");
+    else if (user.role === "executive")
+      navigate("/executive/dashboard");
+    else
+      navigate("/student/dashboard");
 
-    localStorage.setItem("student", JSON.stringify(studentData));
-
-    navigate("/student/dashboard");
-  };
+  } catch (err) {
+    setError(err.response?.data?.message || "Login failed");
+  }
+};
 
   return (
     <div className="login-container">
@@ -111,20 +95,25 @@ function StudentLogin() {
               }}
             />
 
-            <label>Password</label>
-            <input
-              type="password"
-              value={password}
-              placeholder="Enter password"
-              ref={passwordRef}
-              onChange={(e) => setPassword(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  captchaRef.current.focus();
-                }
-              }}
-            />
+           <label>Password</label>
+
+<div className="input-group">
+  <input
+    type={showPassword ? "text" : "password"}
+    value={password}
+    placeholder="Enter password"
+    ref={passwordRef}
+    onChange={(e) => setPassword(e.target.value)}
+    required
+  />
+
+  <span
+    className="toggle-password"
+    onClick={() => setShowPassword(!showPassword)}
+  >
+    {showPassword ? <FaEyeSlash /> : <FaEye />}
+  </span>
+</div>
 
             <div className="forgot-password">
               <Link to="/forgot-password?role=student">Forgot Password?</Link>

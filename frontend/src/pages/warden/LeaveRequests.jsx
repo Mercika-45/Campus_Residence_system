@@ -1,76 +1,37 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import "../../styles/WardenPages.css";
 import WardenSidebar from "../../components/WardenSidebar";
 
 function LeaveRequests() {
-  // ✅ Sample data with mess reduction
-  const [requests, setRequests] = useState([
-    {
-      id: 1,
-      name: "Anitha",
-      reason: "Medical",
-      days: 2,
-      year: "2",
-      fromDate: "2026-02-20",
-      toDate: "2026-02-22",
-      appliedOn: "2026-02-18",
-      status: "Not Forwarded",
-      messReduction: false,
-      reductionStatus: "Not Applied",
-    },
-    {
-      id: 2,
-      name: "Karthik",
-      reason: "Family Function",
-      days: 7,
-      year: "3",
-      fromDate: "2026-03-01",
-      toDate: "2026-03-07",
-      appliedOn: "2026-02-25",
-      status: "Pending",
-      messReduction: true,
-      reductionStatus: "Not Forwarded",
-    },
-  ]);
+  const [requests, setRequests] = useState([]);
+  const [dateFilter, setDateFilter] = useState("");
 
-  const [yearFilter, setYearFilter] = useState("All");
+  const API = "http://localhost:5000/api";
 
-  // ✅ Forward leave to deputy
-  const handleForwardLeave = (id) => {
-    const updated = requests.map((req) =>
-      req.id === id ? { ...req, status: "Pending" } : req
-    );
-    setRequests(updated);
-    alert("Leave request forwarded to Deputy Warden");
+  useEffect(() => {
+    fetchLeaves();
+  }, []);
+
+  const fetchLeaves = async () => {
+    try {
+      const res = await axios.get(`${API}/leave`);
+      setRequests(res.data);
+    } catch (error) {
+      console.error("Error fetching leaves:", error);
+    }
   };
 
-  // ✅ Forward mess reduction
-  const handleForwardReduction = (id) => {
-    const updated = requests.map((req) =>
-      req.id === id
-        ? { ...req, reductionStatus: "Pending" }
-        : req
-    );
-    setRequests(updated);
-    alert("Mess reduction forwarded to Deputy Warden");
-  };
-
-  // ✅ Deputy approves reduction
-  const handleApproveReduction = (id) => {
-    const updated = requests.map((req) =>
-      req.id === id
-        ? { ...req, reductionStatus: "Approved" }
-        : req
-    );
-    setRequests(updated);
-    alert("Deputy approved mess reduction");
-  };
-
-  // ✅ Filter logic
+  // ✅ Filter by Applied On Date
   const filteredRequests =
-    yearFilter === "All"
+    dateFilter === ""
       ? requests
-      : requests.filter((req) => req.year === yearFilter);
+      : requests.filter((req) => {
+          const appliedDate = req.appliedOn
+            ? new Date(req.appliedOn).toISOString().substring(0, 10)
+            : "";
+          return appliedDate === dateFilter;
+        });
 
   return (
     <div className="warden-layout">
@@ -79,20 +40,24 @@ function LeaveRequests() {
       <div className="warden-page">
         <h1>Leave Requests</h1>
 
-        {/* ✅ Year Filter */}
-        <div className="filter-bar">
-          <label>Filter by Year:</label>
-          <select
-            value={yearFilter}
-            onChange={(e) => setYearFilter(e.target.value)}
-            className="filter-select"
-          >
-            <option value="All">All</option>
-            <option value="1">First Year</option>
-            <option value="2">Second Year</option>
-            <option value="3">Third Year</option>
-            <option value="4">Fourth Year</option>
-          </select>
+        {/* ✅ Smaller Filter */}
+        <div
+          className="filter-bar"
+          style={{ marginBottom: "15px" }}
+        >
+          <label style={{ marginRight: "10px" }}>
+            Filter by Applied Date:
+          </label>
+          <input
+            type="date"
+            value={dateFilter}
+            onChange={(e) => setDateFilter(e.target.value)}
+            style={{
+              width: "180px",
+              padding: "5px",
+              fontSize: "14px",
+            }}
+          />
         </div>
 
         <div className="table-card">
@@ -100,93 +65,98 @@ function LeaveRequests() {
             <thead>
               <tr>
                 <th>Name</th>
+                <th>Register No</th>
+                <th>Year</th> {/* ✅ Added Year */}
                 <th>Reason</th>
                 <th>From</th>
                 <th>To</th>
                 <th>Days</th>
-                <th>Year</th>
+                <th>Applied On</th>
                 <th>Leave Action</th>
                 <th>Mess Reduction</th>
-                <th>Reduction Status</th>
               </tr>
             </thead>
 
             <tbody>
               {filteredRequests.length > 0 ? (
                 filteredRequests.map((req) => (
-                  <tr key={req.id}>
-                    <td>{req.name}</td>
-                    <td>{req.reason}</td>
-                    <td>{req.fromDate}</td>
-                    <td>{req.toDate}</td>
-                    <td>{req.days}</td>
-                    <td>{req.year}</td>
+                  <tr key={req._id}>
+                    <td>{req.studentName}</td>
+                    <td>{req.registerNo}</td>
 
-                    {/* ✅ Leave forward */}
+                    {/* ✅ Year Column */}
+                    <td>{req.semester}</td>
+
+                    <td>{req.reason}</td>
+
                     <td>
-                      {req.status === "Not Forwarded" ? (
-                        <button
-                          className="action-btn"
-                          onClick={() =>
-                            handleForwardLeave(req.id)
-                          }
-                        >
-                          Forward Leave
-                        </button>
-                      ) : (
-                        <span className="forwarded-text">
-                          Forwarded
-                        </span>
-                      )}
+                      {req.fromDate
+                        ? new Date(req.fromDate)
+                            .toISOString()
+                            .substring(0, 10)
+                        : "-"}
                     </td>
 
-                    {/* ✅ Mess reduction column */}
                     <td>
-                      {!req.messReduction ? (
-                        <span className="forwarded-text">
-                          Not Applied
+                      {req.toDate
+                        ? new Date(req.toDate)
+                            .toISOString()
+                            .substring(0, 10)
+                        : "-"}
+                    </td>
+
+                    <td>{req.days}</td>
+
+                    <td>
+                      {req.appliedOn
+                        ? new Date(req.appliedOn)
+                            .toISOString()
+                            .substring(0, 10)
+                        : "-"}
+                    </td>
+
+                    {/* Leave Action */}
+                    <td>
+                      {req.status === "Pending" ? (
+                        <span className="status-badge pending">
+                          Pending
                         </span>
-                      ) : req.days <= 5 ? (
-                        <span className="wait-text">
-                          Not Eligible
-                        </span>
-                      ) : req.reductionStatus ===
-                        "Not Forwarded" ? (
-                        <button
-                          className="action-btn reduction"
-                          onClick={() =>
-                            handleForwardReduction(req.id)
-                          }
-                        >
-                          Forward Reduction
-                        </button>
-                      ) : req.reductionStatus === "Pending" ? (
-                        <button
-                          className="approve-btn"
-                          onClick={() =>
-                            handleApproveReduction(req.id)
-                          }
-                        >
-                          Approve (Deputy)
-                        </button>
-                      ) : (
+                      ) : req.status === "Approved" ? (
                         <span className="status-badge approved">
                           Approved
                         </span>
+                      ) : (
+                        <span className="forwarded-text">
+                          {req.status}
+                        </span>
                       )}
                     </td>
 
-                    {/* ✅ Reduction status */}
+                    {/* Mess Reduction */}
                     <td>
-                      <span className="status-badge pending">
-                        {req.reductionStatus}
-                      </span>
-                    </td>
+  {!req.messReduction ? (
+    <span className="forwarded-text">
+      Not Applied
+    </span>
+  ) : req.days <= 5 ? (
+    <span className="wait-text">
+      Not Eligible
+    </span>
+  ) : req.reductionApproved === true ? (
+    <span className="status-badge approved">
+      Approved
+    </span>
+  ) : (
+    <span className="status-badge pending">
+      Pending
+    </span>
+  )}
+</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="9" className="no-data">
+                  <td colSpan="10" className="no-data">
                     No leave requests found
                   </td>
                 </tr>

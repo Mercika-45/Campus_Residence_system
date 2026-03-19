@@ -1,31 +1,31 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
 import "../../styles/WardenPages.css";
 import WardenSidebar from "../../components/WardenSidebar";
 
 function ViewAnnouncements() {
+  const [announcements, setAnnouncements] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const announcements = [
-    {
-      id: 1,
-      title: "Hostel Fee Due",
-      content: "Please ensure hostel fees are paid before 25th February 2026.",
-      date: "20 Feb 2026",
-      icon: "📢"
-    },
-    {
-      id: 2,
-      title: "Maintenance Work",
-      content: "Water pipeline maintenance scheduled on 23rd February. Water supply may be interrupted.",
-      date: "18 Feb 2026",
-      icon: "🛠"
-    },
-    {
-      id: 3,
-      title: "Mess Menu Update",
-      content: "New healthy mess menu will be implemented from 1st March 2026.",
-      date: "15 Feb 2026",
-      icon: "🍽"
+  useEffect(() => {
+    fetchAnnouncements();
+  }, []);
+
+  const fetchAnnouncements = async () => {
+    try {
+      const res = await axios.get(
+        "http://localhost:5000/api/announcements?role=warden"
+      );
+
+      setAnnouncements(res.data);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to load announcements");
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
   return (
     <div className="warden-layout">
@@ -39,18 +39,32 @@ function ViewAnnouncements() {
         </div>
 
         <div className="announcement-grid">
-          {announcements.map((item) => (
-            <div key={item.id} className="announcement-card">
-              <h3>
-                <span className="announcement-icon">{item.icon}</span>
-                {item.title}
-              </h3>
-              <p>{item.content}</p>
-              <span className="announcement-date">
-                Posted on: {item.date}
-              </span>
-            </div>
-          ))}
+
+          {loading && <p>Loading announcements...</p>}
+
+          {error && <p className="error-text">{error}</p>}
+
+          {!loading && announcements.length === 0 && (
+            <p>No announcements available.</p>
+          )}
+
+          {!loading &&
+  announcements.map((item) => (
+    <div key={item._id} className="announcement-card">
+      <h3>{item.title}</h3>
+
+      <p>{item.message}</p>
+
+      <p className="posted-by">
+        Posted By: <strong>{item.createdBy.toUpperCase()}</strong>
+      </p>
+
+      <small className="announcement-time">
+        Posted on: {new Date(item.createdAt).toLocaleString()}
+      </small>
+    </div>
+))}
+
         </div>
 
       </div>

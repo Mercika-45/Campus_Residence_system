@@ -99,14 +99,17 @@ function Attendance() {
                       <td>{student.room}</td>
                       <td>
                         <select
-                          value={attendanceData[student.name] || ""}
-                          onChange={(e) =>
-                            handleAttendanceChange(
-                              student.name,
-                              e.target.value
-                            )
-                          }
-                        >
+  className="attendance-select"
+  value={attendanceData[student.name] || ""}
+  onChange={(e) =>
+    handleAttendanceChange(
+      student.name,
+      e.target.value
+    )
+  }
+>
+                          
+                  
                           <option value="">Select</option>
                           <option value="Present">Present</option>
                           <option value="Absent">Absent</option>

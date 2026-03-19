@@ -1,34 +1,67 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import Sidebar from "../../components/Sidebar";
 import Topbar from "../../components/Topbar";
 import "../../styles/ApplyLeave.css";
 
 function ApplyLeave() {
+  const API = "http://localhost:5000/api";
+
+  const today = new Date().toISOString().split("T")[0];
+
+  // ✅ Get student from localStorage
+  const storedStudent = JSON.parse(localStorage.getItem("student"));
+
   const [studentName, setStudentName] = useState("");
   const [registerNo, setRegisterNo] = useState("");
   const [semester, setSemester] = useState("");
+  const [hostelName, setHostelName] = useState("");
+  const [roomNo, setRoomNo] = useState("");
   const [leaveType, setLeaveType] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [reason, setReason] = useState("");
   const [messReduction, setMessReduction] = useState(false);
+  const [appliedOn] = useState(today);
 
-  const [leaves, setLeaves] = useState(
-    JSON.parse(localStorage.getItem("leaves")) || []
-  );
+  // ✅ Auto-fill student data
+  useEffect(() => {
+    if (storedStudent) {
+      setStudentName(storedStudent.studentName || "");
+      setRegisterNo(
+        storedStudent.registerNo
+          ? storedStudent.registerNo.toUpperCase()
+          : ""
+      );
+      setSemester(storedStudent.semester || "");
+      setHostelName(storedStudent.hostelName || "");
+      setRoomNo(storedStudent.roomNo || "");
+    }
+  }, []);
 
   const calculateDays = () => {
     if (!fromDate || !toDate) return 0;
     const start = new Date(fromDate);
     const end = new Date(toDate);
-    const diff = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
+    const diff =
+      Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
     return diff > 0 ? diff : 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!studentName || !registerNo || !semester || !leaveType || !fromDate || !toDate || !reason) {
+    if (
+      !studentName ||
+      !registerNo ||
+      !semester ||
+      !hostelName ||
+      !roomNo ||
+      !leaveType ||
+      !fromDate ||
+      !toDate ||
+      !reason
+    ) {
       alert("Please fill all fields");
       return;
     }
@@ -38,36 +71,34 @@ function ApplyLeave() {
       return;
     }
 
-    const days = calculateDays();
-
     const newLeave = {
-      id: Date.now(),
       studentName,
-      registerNo,
+      registerNo: registerNo.trim().toUpperCase(),
       semester,
+      hostelName,
+      roomNo,
       leaveType,
       fromDate,
       toDate,
-      days,
+      days: calculateDays(),
       reason,
-      messReduction: days > 5 ? messReduction : false,
-      status: "Pending",
-      appliedOn: new Date().toLocaleDateString(),
+      messReduction: calculateDays() > 5 ? messReduction : false,
+      appliedOn,
     };
 
-    const updatedLeaves = [newLeave, ...leaves];
-    setLeaves(updatedLeaves);
-    localStorage.setItem("leaves", JSON.stringify(updatedLeaves));
+    try {
+      await axios.post(`${API}/leave`, newLeave);
+      alert("Leave applied successfully");
 
-    // reset form
-    setStudentName("");
-    setRegisterNo("");
-    setSemester("");
-    setLeaveType("");
-    setFromDate("");
-    setToDate("");
-    setReason("");
-    setMessReduction(false);
+      setLeaveType("");
+      setFromDate("");
+      setToDate("");
+      setReason("");
+      setMessReduction(false);
+    } catch (error) {
+      console.error("Error applying leave:", error);
+      alert("Error applying leave");
+    }
   };
 
   return (
@@ -80,13 +111,14 @@ function ApplyLeave() {
           <h2>Apply Leave</h2>
           <p className="breadcrumb">Home / Apply Leave</p>
 
-          {/* Leave Form */}
           <form className="leave-form" onSubmit={handleSubmit}>
+            <label>Applied On</label>
+            <input type="date" value={appliedOn} readOnly />
+
             <label>Name of the Student</label>
             <input
               type="text"
               value={studentName}
-              placeholder="Enter student name"
               onChange={(e) => setStudentName(e.target.value)}
             />
 
@@ -94,7 +126,6 @@ function ApplyLeave() {
             <input
               type="text"
               value={registerNo}
-              placeholder="Enter register number"
               onChange={(e) => setRegisterNo(e.target.value)}
             />
 
@@ -102,8 +133,21 @@ function ApplyLeave() {
             <input
               type="text"
               value={semester}
-              placeholder="Enter semester / branch"
               onChange={(e) => setSemester(e.target.value)}
+            />
+
+            <label>Hostel Name</label>
+            <input
+              type="text"
+              value={hostelName}
+              onChange={(e) => setHostelName(e.target.value)}
+            />
+
+            <label>Room No</label>
+            <input
+              type="text"
+              value={roomNo}
+              onChange={(e) => setRoomNo(e.target.value)}
             />
 
             <label>Leave Type</label>
@@ -144,13 +188,15 @@ function ApplyLeave() {
 
             {calculateDays() > 5 && (
               <div className="mess-reduction-box">
-                <label className="checkbox-label">
+                <label>
                   <input
                     type="checkbox"
                     checked={messReduction}
-                    onChange={(e) => setMessReduction(e.target.checked)}
+                    onChange={(e) =>
+                      setMessReduction(e.target.checked)
+                    }
                   />
-                  Apply for Mess Reduction (Leave exceeds 5 days)
+                  Apply for Mess Reduction
                 </label>
               </div>
             )}
@@ -159,48 +205,11 @@ function ApplyLeave() {
             <textarea
               rows="3"
               value={reason}
-              placeholder="Enter reason for leave"
               onChange={(e) => setReason(e.target.value)}
             ></textarea>
 
             <button type="submit">Apply Leave</button>
           </form>
-
-          {/* Leave List */}
-          <div className="leave-list">
-            <h3>Leave History</h3>
-
-            {leaves.length === 0 ? (
-              <p className="no-leave">No leave applied yet</p>
-            ) : (
-              leaves.map((leave) => (
-                <div className="leave-card" key={leave.id}>
-                  <div className="leave-header">
-                    <span>{leave.leaveType}</span>
-                    <span className={`status ${leave.status.toLowerCase()}`}>
-                      {leave.status}
-                    </span>
-                  </div>
-
-                  <p>
-                    📌 {leave.studentName} | {leave.registerNo} | {leave.semester}
-                  </p>
-
-                  <p>
-                    📅 {leave.fromDate} → {leave.toDate} ({leave.days} days)
-                  </p>
-
-                  <p>📝 {leave.reason}</p>
-
-                  {leave.messReduction && (
-                    <p className="mess-tag">🍽️ Mess Reduction Applied</p>
-                  )}
-
-                  <small>Applied on {leave.appliedOn}</small>
-                </div>
-              ))
-            )}
-          </div>
         </div>
       </div>
     </div>

@@ -1,17 +1,20 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
 import Sidebar from "../../components/Sidebar";
 import Topbar from "../../components/Topbar";
 import "../../styles/ViewMenu.css";
 
 function ViewMenu() {
-  const menuData = [
-    { day: "Monday", morning: "Idli & Sambar", afternoon: "Rice, Sambar, Poriyal", dinner: "Chapati & Kurma" },
-    { day: "Tuesday", morning: "Dosa & Chutney", afternoon: "Rice, Rasam, Curry", dinner: "Veg Fried Rice" },
-    { day: "Wednesday", morning: "Pongal", afternoon: "Rice, Sambar, Kootu", dinner: "Chapati & Dal" },
-    { day: "Thursday", morning: "Poori & Masala", afternoon: "Rice, Curd, Pickle", dinner: "Upma" },
-    { day: "Friday", morning: "Idiyappam", afternoon: "Rice, Veg Curry", dinner: "Dosa" },
-    { day: "Saturday", morning: "Bread & Jam", afternoon: "Variety Rice", dinner: "Chapati & Kurma" },
-    { day: "Sunday", morning: "Special Breakfast", afternoon: "Biryani", dinner: "Light Dinner" }
-  ];
+
+  const [menuData, setMenuData] = useState([]);
+
+  // ✅ Fetch menu from backend
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/api/foodmenu")
+      .then((res) => setMenuData(res.data))
+      .catch((err) => console.log(err));
+  }, []);
 
   return (
     <div className="student-layout">
@@ -43,8 +46,8 @@ function ViewMenu() {
                 </tr>
               ))}
             </tbody>
-          </table>
 
+          </table>
         </div>
       </div>
     </div>
