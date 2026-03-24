@@ -21,6 +21,8 @@ import studentRoutes from "./routes/studentRoutes.js"
 import wardenRoutes from "./routes/wardenRoutes.js";
 import allocationRoutes from "./routes/allocationRoutes.js";
 import hostelRoutes from "./routes/hostelRoutes.js";
+import executiveRoutes from "./routes/executiveRoutes.js";
+import attendanceRoutes from "./routes/attendanceRoutes.js";
 
 dotenv.config();
 
@@ -68,6 +70,8 @@ app.use("/api/student", studentRoutes);
 app.use("/api/wardens", wardenRoutes);
 app.use("/api/allocations", allocationRoutes);
 app.use("/api/hostels", hostelRoutes);
+app.use("/api/executive", executiveRoutes);
+app.use("/api/attendance", attendanceRoutes);
 
 /* ================= SERVER ================= */
 

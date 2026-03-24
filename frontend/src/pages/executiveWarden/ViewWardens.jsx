@@ -5,48 +5,39 @@ import ExecutiveTopbar from "../../components/ExecutiveTopbar";
 import "../../styles/ViewWardensEW.css";
 
 function ViewWardens() {
-  /* ================= STATE ================= */
-
   const [localWardens, setLocalWardens] = useState([]);
 
-  /* ================= FETCH FROM BACKEND ================= */
-
+  // ================= FETCH FROM BACKEND =================
   useEffect(() => {
     axios
       .get("http://localhost:5000/api/allocations")
       .then((res) => {
-        const formatted = res.data
-          .filter(
-            (item) =>
-              item.warden &&
-              item.warden.role?.toLowerCase().includes("local")
-          )
-          .map((item) => ({
-            _id: item._id,
-            name: item.warden.name,
-            hostel: item.hostel,
-            phone: item.warden.phone,
-            photo: item.warden.image,
-            role: item.warden.role
-          }));
+        // Filter allocations for local wardens and format
+      // inside useEffect mapping
+const formatted = res.data
+  .filter(item => item.warden)
+  .map(item => ({
+    _id: item._id,
+    name: item.warden.name,
+    hostel: item.hostel || "N/A",
+    phone: item.warden.phone,
+    photo: item.warden.image
+      ? `http://localhost:5000${item.warden.image}` // ✅ prepend server URL
+      : "https://ui-avatars.com/api/?name=Warden&background=0A1F44&color=fff",
+    hostelType: item.warden.hostelType?.toLowerCase() || "N/A",
+  }))
+  .filter(w => w.hostelType === "boys" || w.hostelType === "girls"); // only valid hostel types
 
         setLocalWardens(formatted);
       })
-      .catch((err) => console.log(err));
+      .catch(err => console.log("Failed to fetch allocations:", err));
   }, []);
 
-  /* ================= FILTER ================= */
+  // ================= FILTER =================
+  const boysWardens = localWardens.filter(w => w.hostelType === "boys");
+  const girlsWardens = localWardens.filter(w => w.hostelType === "girls");
 
-  const boysWardens = localWardens.filter((w) =>
-    w.role?.toLowerCase().includes("boys")
-  );
-
-  const girlsWardens = localWardens.filter((w) =>
-    w.role?.toLowerCase().includes("girls")
-  );
-
-  /* ================= TABLE RENDER ================= */
-
+  // ================= TABLE RENDER =================
   const renderTable = (data) => (
     <div className="ew-table-card">
       <table className="ew-table">
@@ -57,16 +48,12 @@ function ViewWardens() {
             <th>Name</th>
             <th>Phone</th>
             <th>Hostel</th>
-            
           </tr>
         </thead>
-
         <tbody>
           {data.length === 0 ? (
             <tr>
-              <td colSpan="5" className="no-data">
-                No wardens available
-              </td>
+              <td colSpan="5" className="no-data">No wardens available</td>
             </tr>
           ) : (
             data.map((w, index) => (
@@ -74,20 +61,14 @@ function ViewWardens() {
                 <td>{index + 1}</td>
                 <td>
                   <img
-                    src={
-                      w.photo ||
-                      "https://ui-avatars.com/api/?name=Warden&background=0A1F44&color=fff"
-                    }
+                    src={w.photo}
                     alt={w.name}
                     className="ew-avatar"
                   />
                 </td>
                 <td>{w.name}</td>
                 <td>{w.phone}</td>
-                <td>
-                  <span className="hostel-badge">{w.hostel}</span>
-                </td>
-                
+                <td><span className="hostel-badge">{w.hostel}</span></td>
               </tr>
             ))
           )}
@@ -96,28 +77,21 @@ function ViewWardens() {
     </div>
   );
 
-  /* ================= UI ================= */
-
+  // ================= UI =================
   return (
     <div style={{ display: "flex", minHeight: "100vh" }}>
       <ExecutiveSidebar />
-
       <div style={{ flex: 1, background: "#f5f7fb", marginLeft: 240 }}>
         <ExecutiveTopbar title="View Local Wardens" />
-
         <div className="ew-container">
           <h2>Local Wardens</h2>
 
           {/* Boys */}
-          <h3 className="ew-section-title">
-            Boys Hostel Wardens
-          </h3>
+          <h3 className="ew-section-title">Boys Hostel Wardens</h3>
           {renderTable(boysWardens)}
 
           {/* Girls */}
-          <h3 className="ew-section-title">
-            Girls Hostel Wardens
-          </h3>
+          <h3 className="ew-section-title">Girls Hostel Wardens</h3>
           {renderTable(girlsWardens)}
         </div>
       </div>

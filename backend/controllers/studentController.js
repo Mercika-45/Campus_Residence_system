@@ -1,11 +1,12 @@
 import bcrypt from "bcryptjs";
 import Student from "../models/Student.js";
+import User from "../models/User.js";
 
 export const registerStudent = async (req, res) =>  {
   try {
 
     
-console.log("BODY:", req.body);
+
 
 // Convert hostel JSON string to object FIRST
 if (req.body.hostel && typeof req.body.hostel === "string") {
@@ -81,6 +82,7 @@ if (file.fieldname === "disabilityCertificate") {
   req.body.disabilityCertificate = file.filename;
 }
   if (file.fieldname === "feeReceipt") {
+  if (!req.body.hostel) req.body.hostel = {};
   req.body.hostel.feeReceipt = file.filename;
 }
 
@@ -92,34 +94,47 @@ if (file.fieldname === "disabilityCertificate") {
     if (req.body.password !== req.body.confirmPassword) {
       return res.status(400).json({ message: "Passwords do not match" });
     }
+// hash password
+const hashedPassword = await bcrypt.hash(req.body.password, 10);
+req.body.password = hashedPassword;
 
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+// check existing user
+const existingUser = await User.findOne({
+  email: req.body.email.toLowerCase()
+});
 
-    req.body.password = hashedPassword;
+if (existingUser) {
+  return res.status(400).json({ message: "Email already registered" });
+}
 
-    delete req.body.confirmPassword;
+delete req.body.confirmPassword;
 
-    let otherLanguage = [];
+// ✅ parse otherLanguage BEFORE using
+let otherLanguage = [];
 
-    if (req.body.otherLanguage) {
-      try {
-        otherLanguage = JSON.parse(req.body.otherLanguage);
-      } catch {
-        otherLanguage = [];
-      }
-    }
+if (req.body.otherLanguage) {
+  try {
+    otherLanguage = JSON.parse(req.body.otherLanguage);
+  } catch {
+    otherLanguage = [];
+  }
+}
+
     // Convert hostel JSON string to object
 // Convert hostel JSON string to object
 // Convert hostel JSON string to object ONLY if it is string
 
-
-
-
-   console.log("FINAL HOSTEL:", req.body.hostel);
-
+const newUser = new User({
+  name: req.body.studentName,   // ✅ FIX HERE
+  email: req.body.email.toLowerCase(),
+  password: hashedPassword,
+  role: "student"
+});
+const savedUser = await newUser.save();
 const newStudent = new Student({
       
       ...req.body,
+      email: req.body.email.toLowerCase(),
       status: "pending", 
       guardians,
       otherLanguage,
@@ -221,8 +236,10 @@ agreeRules: req.body.agreeRules
 
     });
 
-    console.log("Saving student:", newStudent);
+
+newStudent.userId = savedUser._id;
 await newStudent.save();
+
 
     res.status(201).json({
       message: "Student Registered Successfully 🎉"
@@ -239,6 +256,8 @@ await newStudent.save();
 
   }
 };
+
+
 export const getNewStudents = async (req, res) => {
   try {
     const students = await Student.find({ status: "pending" });
@@ -410,6 +429,15 @@ export const updateStudent = async (req, res) => {
     if (req.body.college) req.body.college = JSON.parse(req.body.college);
     if (req.body.family) req.body.family = JSON.parse(req.body.family);
     if (req.body.address) req.body.address = JSON.parse(req.body.address);
+   // ✅ SAFE hostel parsing
+if (req.body.hostel && typeof req.body.hostel === "string") {
+  try {
+    req.body.hostel = JSON.parse(req.body.hostel);
+  } catch (err) {
+    console.log("Hostel parse error:", err);
+    req.body.hostel = {};
+  }
+}
 
     if (req.body.counselling) req.body.counselling = JSON.parse(req.body.counselling);
 

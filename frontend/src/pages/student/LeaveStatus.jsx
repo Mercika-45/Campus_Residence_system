@@ -9,57 +9,87 @@ function LeaveStatus() {
   const [loading, setLoading] = useState(true);
 
   const API = "http://localhost:5000/api";
+  const [registerNo, setRegisterNo] = useState("");
 
-  // ✅ Safe localStorage handling
-  const student = JSON.parse(localStorage.getItem("student") || "{}");
+  /* ================= FETCH STUDENT ================= */
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem("user"));
 
-  // ✅ FIX: normalize register number
-  const registerNo = student?.registerNo
-    ? student.registerNo.trim().toUpperCase()
-    : "";
+    if (!userData) {
+      window.location.href = "/student-login";
+      return;
+    }
+
+    const fetchStudent = async () => {
+      try {
+        const res = await axios.get(
+          `${API}/student/profile/${userData.email}`
+        );
+
+        const data = res.data;
+
+        console.log("STUDENT DATA:", data);
+
+        // ✅ FIX: correct field
+        const reg = data?.registerNumber
+          ? data.registerNumber.trim().toUpperCase()
+          : "";
+
+        setRegisterNo(reg);
+
+        if (!reg) {
+          console.warn("Register number not found");
+          setLoading(false);
+        }
+
+      } catch (error) {
+        console.error("Student fetch error:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchStudent();
+  }, []);
 
   /* ================= FETCH LEAVES ================= */
-
-  const fetchLeaves = async () => {
+  const fetchLeaves = async (reg) => {
     try {
-      if (!registerNo) {
-        setLeaves([]);
-        setLoading(false);
-        return;
-      }
-
       const res = await axios.get(
-        `${API}/leave/student/${registerNo}`
+        `${API}/leave/student/${reg}`
       );
+
+      console.log("LEAVE DATA:", res.data);
 
       setLeaves(res.data || []);
       setLoading(false);
+
     } catch (error) {
       console.error("Error fetching leaves:", error);
+      setLeaves([]);
       setLoading(false);
     }
   };
 
-  /* ================= AUTO LOAD + AUTO REFRESH ================= */
-
+  /* ================= LOAD ================= */
   useEffect(() => {
-    fetchLeaves();
+    if (!registerNo) return;
+
+    setLoading(true);
+    fetchLeaves(registerNo);
 
     const interval = setInterval(() => {
-      fetchLeaves();
+      fetchLeaves(registerNo);
     }, 3000);
 
     return () => clearInterval(interval);
+
   }, [registerNo]);
 
-  /* ================= DATE FORMAT ================= */
-
+  /* ================= HELPERS ================= */
   const formatDate = (date) => {
     if (!date) return "-";
     return new Date(date).toLocaleDateString();
   };
-
-  /* ================= STATUS STYLE ================= */
 
   const getStatusClass = (status) => {
     if (!status) return "pending";
@@ -68,7 +98,7 @@ function LeaveStatus() {
       case "approved":
         return "approved";
       case "pending":
-        return "pending"; // ✅ fixed typo
+        return "pending";
       case "forwarded":
         return "forwarded";
       default:
@@ -77,7 +107,6 @@ function LeaveStatus() {
   };
 
   /* ================= UI ================= */
-
   return (
     <div className="dashboard-container">
       <Sidebar />
@@ -120,15 +149,10 @@ function LeaveStatus() {
                   leaves.map((leave) => (
                     <tr key={leave._id}>
                       <td>{leave.leaveType}</td>
-
                       <td>{formatDate(leave.fromDate)}</td>
-
                       <td>{formatDate(leave.toDate)}</td>
-
                       <td>{leave.days}</td>
-
                       <td>{leave.reason}</td>
-
                       <td>
                         <span
                           className={`status ${getStatusClass(
@@ -138,7 +162,6 @@ function LeaveStatus() {
                           {leave.status || "Pending"}
                         </span>
                       </td>
-
                       <td>{formatDate(leave.createdAt)}</td>
                     </tr>
                   ))

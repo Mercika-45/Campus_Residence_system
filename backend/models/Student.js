@@ -167,6 +167,11 @@ const studentSchema = new mongoose.Schema({
     default: false
   },
 
+  userId: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "User"
+},
+
   agreeRules: {
     type: Boolean,
     default: false

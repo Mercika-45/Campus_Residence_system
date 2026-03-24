@@ -1,20 +1,37 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
 import ExecutiveSidebar from "../../components/ExecutiveSidebar";
 import ExecutiveTopbar from "../../components/ExecutiveTopbar";
 import "../../styles/ExecutiveWarden.css";
 
 function ExecutiveDashboard() {
   const [executive, setExecutive] = useState(null);
+  const [stats, setStats] = useState({
+    blocks: 0,
+    students: 0,
+    wardens: 0
+  });
 
   useEffect(() => {
     const data = localStorage.getItem("executiveWarden");
 
     if (!data) {
       window.location.href = "/executive/login";
-    } else {
-      const parsed = JSON.parse(data);
-      setExecutive(parsed);
+      return;
     }
+
+    const parsed = JSON.parse(data);
+    setExecutive(parsed);
+
+    // ================= FETCH DATA BASED ON EXECUTIVE =================
+    axios
+      .get(`http://localhost:5000/api/executive/${parsed.email}/stats`)
+      .then(res => {
+        // Backend should return blocks, students, wardens count for this executive
+        setStats(res.data);
+      })
+      .catch(err => console.log("Failed to fetch executive stats:", err));
+
   }, []);
 
   if (!executive) return null;
@@ -45,7 +62,7 @@ function ExecutiveDashboard() {
             {/* Profile Card */}
             <div className="profile-card1">
               <img
-                src="/images/profile.jpg"
+                src={executive.image || "/images/profile.jpg"}
                 alt="profile"
                 className="profile-img"
               />
@@ -62,29 +79,14 @@ function ExecutiveDashboard() {
 
               <div className="info-grid">
                 <p><b>ROLE</b> : Executive Warden</p>
-                <p><b>EMPLOYEE ID</b> : EW1023</p>
 
-                {/* 🔥 Different Data */}
-                {isBoys && (
-                  <>
-                    <p><b>HOSTEL BLOCKS</b> : 6</p>
-                    <p><b>STUDENTS</b> : 1200+</p>
-                    <p><b>WARDENS</b> : 10</p>
-                  </>
-                )}
+                <p><b>HOSTEL BLOCKS</b> : {stats.blocks}</p>
+                <p><b>STUDENTS</b> : {stats.students}</p>
+                <p><b>WARDENS</b> : {stats.wardens}</p>
 
-                {isGirls && (
-                  <>
-                    <p><b>HOSTEL BLOCKS</b> : 4</p>
-                    <p><b>STUDENTS</b> : 850+</p>
-                    <p><b>WARDENS</b> : 7</p>
-                  </>
-                )}
-
-                <p><b>OFFICE</b> : Main Hostel Admin</p>
-                <p><b>MOBILE</b> : 9876543210</p>
+                <p><b>MOBILE</b> : {executive.phone || "9876543210"}</p>
                 <p><b>EMAIL</b> : {executive.email}</p>
-                <p><b>STATUS</b> : Active</p>
+                <p><b>STATUS</b> : {executive.status || "Active"}</p>
               </div>
             </div>
 

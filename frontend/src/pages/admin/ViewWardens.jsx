@@ -5,49 +5,38 @@ import AdminTopbar from "../../components/AdminTopbar";
 import "../../styles/Admin.css";
 
 function ViewWardens() {
-  /* ================= STATE ================= */
-
   const [wardens, setWardens] = useState([]);
 
-  /* ================= FETCH FROM ALLOCATIONS ================= */
-
+  // ================= FETCH ALLOCATIONS =================
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/api/allocations")
-      .then((res) => {
-        // ✅ Extract warden + hostel
-        const formatted = res.data.map((item) => ({
-          ...item.warden,
-          hostel: item.hostel,
-          _id: item._id, // unique key
-        }));
+  axios
+    .get("http://localhost:5000/api/allocations")
+    .then((res) => {
+      const formatted = res.data.map((item) => ({
+        ...item.warden,
+        hostel: item.hostel,
+        hostelType: item.warden.hostelType?.toLowerCase() || "N/A",
+        _id: item._id,
+      }));
 
-        setWardens(formatted);
-      })
-      .catch((err) => console.log(err));
-  }, []);
-
-  /* ================= FILTERING ================= */
-
+      setWardens(formatted);
+    })
+    .catch((err) => console.log("Fetch allocations error:", err));
+}, []);
+  // ================= FILTERING =================
   const deputyWardens = wardens.filter((w) =>
     w.role?.toLowerCase().includes("executive")
   );
 
-  const localWardens = wardens.filter((w) =>
-    w.role?.toLowerCase().includes("local")
-  );
+ const localWardens = wardens.filter((w) =>
+  w.role?.toLowerCase().includes("local")
+);
 
-  const localBoys = localWardens.filter((w) =>
-    w.role?.toLowerCase().includes("boys")
-  );
+const localBoys = localWardens.filter((w) => w.hostelType?.toLowerCase() === "boys");
+const localGirls = localWardens.filter((w) => w.hostelType?.toLowerCase() === "girls");
 
-  const localGirls = localWardens.filter((w) =>
-    w.role?.toLowerCase().includes("girls")
-  );
-
-  /* ================= TABLE RENDER ================= */
-
-  const renderTable = (data, showBlock = false) => (
+  // ================= TABLE RENDER =================
+  const renderTable = (data) => (
     <div className="table-card">
       <table className="custom-table">
         <thead>
@@ -59,11 +48,10 @@ function ViewWardens() {
             <th>Hostel</th>
           </tr>
         </thead>
-
         <tbody>
           {data.length === 0 ? (
             <tr>
-              <td colSpan={showBlock ? 6 : 5} className="no-data">
+              <td colSpan={5} className="no-data">
                 No wardens available
               </td>
             </tr>
@@ -72,7 +60,7 @@ function ViewWardens() {
               <tr key={w._id}>
                 <td>
                   <img
-                    src={w.image || "/images/profile.jpg"}
+                    src={w.image ? `http://localhost:5000${w.image}` : "/images/profile.jpg"}
                     alt="profile"
                     className="table-img"
                   />
@@ -81,9 +69,7 @@ function ViewWardens() {
                 <td>{w.email}</td>
                 <td>{w.phone}</td>
                 <td>
-                  <span className="hostel-badge">
-                    {w.hostel || "N/A"}
-                  </span>
+                  <span className="hostel-badge">{w.hostel || "N/A"}</span>
                 </td>
               </tr>
             ))
@@ -93,37 +79,28 @@ function ViewWardens() {
     </div>
   );
 
-  /* ================= UI ================= */
-
+  // ================= UI =================
   return (
     <div className="dashboard-container">
       <AdminSidebar />
-
       <div className="main-content">
         <AdminTopbar title="View Wardens" />
-
         <div className="dashboard-content">
           <h2 className="page-title">Hostel Wardens</h2>
-          <p className="page-subtitle">
-            View all deputy and local wardens
-          </p>
+          <p className="page-subtitle">View all deputy and local wardens</p>
 
-          {/* ================= DEPUTY ================= */}
+          {/* Deputy Wardens */}
           <h3 className="section-title">Deputy Wardens</h3>
-          {renderTable(deputyWardens, false)}
+          {renderTable(deputyWardens)}
 
-          {/* ================= LOCAL ================= */}
+          {/* Local Wardens */}
           <h3 className="section-title">Local Wardens</h3>
 
-          <h4 className="subsection-title">
-            Boys Hostel Wardens
-          </h4>
-          {renderTable(localBoys, true)}
+          <h4 className="subsection-title">Boys Hostel Wardens</h4>
+          {renderTable(localBoys)}
 
-          <h4 className="subsection-title">
-            Girls Hostel Wardens
-          </h4>
-          {renderTable(localGirls, true)}
+          <h4 className="subsection-title">Girls Hostel Wardens</h4>
+          {renderTable(localGirls)}
         </div>
       </div>
     </div>

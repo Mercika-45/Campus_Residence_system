@@ -236,3 +236,29 @@
 .remove-btn:hover {
   background: #b91c1c;
 }
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #dcdcdc;
+  font-size: 14px;
+  margin-top: 5px;
+  transition: 0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #0A1F44;
+  box-shadow: 0 0 5px rgba(10, 31, 68, 0.2);
+}
+.add-warden-card input,
+.add-warden-card select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #cfd8dc;
+  font-size: 14px;
+  margin-top: 10px;
+  box-sizing: border-box;
+}

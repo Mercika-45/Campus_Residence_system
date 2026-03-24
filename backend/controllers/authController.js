@@ -1,15 +1,30 @@
-const User = require("../models/User");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import Student from "../models/Student.js";
+import User from "../models/User.js";
 
-exports.loginUser = async (req, res) => {
+export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email: email.toLowerCase() });
+    const normalizedEmail = email.toLowerCase().trim();
+
+    const user = await User.findOne({ email: normalizedEmail });
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
+    }
+
+    if (user.role === "student") {
+      const student = await Student.findOne({ userId: user._id });
+
+      console.log("STUDENT STATUS:", student?.status);
+
+      if (!student || student.status !== "approved") {
+        return res.status(403).json({
+          message: "Access denied. Wait for admin approval."
+        });
+      }
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -27,16 +42,10 @@ exports.loginUser = async (req, res) => {
     res.status(200).json({
       message: "Login successful",
       token,
-      user: {
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        hostelType: user.hostelType || null,      // ✅ boys or girls
-        hostelBlock: user.hostelBlock || null,    // optional
-      },
+      user
     });
 
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: "Server error" });
   }
 };

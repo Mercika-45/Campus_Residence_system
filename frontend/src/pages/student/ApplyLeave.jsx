@@ -9,12 +9,10 @@ function ApplyLeave() {
 
   const today = new Date().toISOString().split("T")[0];
 
-  // ✅ Get student from localStorage
-  const storedStudent = JSON.parse(localStorage.getItem("student"));
-
   const [studentName, setStudentName] = useState("");
   const [registerNo, setRegisterNo] = useState("");
   const [semester, setSemester] = useState("");
+  const [branch, setBranch] = useState(""); // ✅ NEW
   const [hostelName, setHostelName] = useState("");
   const [roomNo, setRoomNo] = useState("");
   const [leaveType, setLeaveType] = useState("");
@@ -24,30 +22,60 @@ function ApplyLeave() {
   const [messReduction, setMessReduction] = useState(false);
   const [appliedOn] = useState(today);
 
-  // ✅ Auto-fill student data
+  /* ================= FETCH STUDENT ================= */
   useEffect(() => {
-    if (storedStudent) {
-      setStudentName(storedStudent.studentName || "");
-      setRegisterNo(
-        storedStudent.registerNo
-          ? storedStudent.registerNo.toUpperCase()
-          : ""
-      );
-      setSemester(storedStudent.semester || "");
-      setHostelName(storedStudent.hostelName || "");
-      setRoomNo(storedStudent.roomNo || "");
+    const userData = JSON.parse(localStorage.getItem("user"));
+
+    if (!userData) {
+      window.location.href = "/student-login";
+      return;
     }
+
+    const fetchStudent = async () => {
+      try {
+        const res = await axios.get(
+          `${API}/student/profile/${userData.email}`
+        );
+
+        const data = res.data;
+
+        setStudentName(data.studentName || "");
+
+        // normalize register number
+        const reg = data?.registerNumber
+          ? data.registerNumber.trim().toUpperCase()
+          : "";
+
+        setRegisterNo(reg);
+
+        setSemester(data.college?.yearOfStudy || "");
+        setBranch(data.college?.department || ""); // ✅ FIX
+
+        setHostelName(data.hostel?.hostelName || "");
+        setRoomNo(data.hostel?.room || "");
+
+      } catch (err) {
+        console.error("FETCH ERROR:", err);
+      }
+    };
+
+    fetchStudent();
   }, []);
 
+  /* ================= CALCULATE DAYS ================= */
   const calculateDays = () => {
     if (!fromDate || !toDate) return 0;
+
     const start = new Date(fromDate);
     const end = new Date(toDate);
+
     const diff =
       Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
+
     return diff > 0 ? diff : 0;
   };
 
+  /* ================= SUBMIT ================= */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -55,6 +83,7 @@ function ApplyLeave() {
       !studentName ||
       !registerNo ||
       !semester ||
+      !branch ||
       !hostelName ||
       !roomNo ||
       !leaveType ||
@@ -75,6 +104,7 @@ function ApplyLeave() {
       studentName,
       registerNo: registerNo.trim().toUpperCase(),
       semester,
+      branch, // ✅ included
       hostelName,
       roomNo,
       leaveType,
@@ -88,6 +118,7 @@ function ApplyLeave() {
 
     try {
       await axios.post(`${API}/leave`, newLeave);
+
       alert("Leave applied successfully");
 
       setLeaveType("");
@@ -95,6 +126,7 @@ function ApplyLeave() {
       setToDate("");
       setReason("");
       setMessReduction(false);
+
     } catch (error) {
       console.error("Error applying leave:", error);
       alert("Error applying leave");
@@ -104,6 +136,7 @@ function ApplyLeave() {
   return (
     <div className="dashboard-container">
       <Sidebar />
+
       <div className="main-content1">
         <Topbar title="Apply Leave" />
 
@@ -112,43 +145,28 @@ function ApplyLeave() {
           <p className="breadcrumb">Home / Apply Leave</p>
 
           <form className="leave-form" onSubmit={handleSubmit}>
+
             <label>Applied On</label>
             <input type="date" value={appliedOn} readOnly />
 
             <label>Name of the Student</label>
-            <input
-              type="text"
-              value={studentName}
-              onChange={(e) => setStudentName(e.target.value)}
-            />
+            <input type="text" value={studentName} readOnly />
 
             <label>Register No</label>
-            <input
-              type="text"
-              value={registerNo}
-              onChange={(e) => setRegisterNo(e.target.value)}
-            />
+            <input type="text" value={registerNo} readOnly />
 
             <label>Semester / Branch</label>
             <input
               type="text"
-              value={semester}
-              onChange={(e) => setSemester(e.target.value)}
+              value={`  ${semester}/ ${branch}`} // ✅ FIXED
+              readOnly
             />
 
             <label>Hostel Name</label>
-            <input
-              type="text"
-              value={hostelName}
-              onChange={(e) => setHostelName(e.target.value)}
-            />
+            <input type="text" value={hostelName} readOnly />
 
             <label>Room No</label>
-            <input
-              type="text"
-              value={roomNo}
-              onChange={(e) => setRoomNo(e.target.value)}
-            />
+            <input type="text" value={roomNo} readOnly />
 
             <label>Leave Type</label>
             <select
@@ -209,6 +227,7 @@ function ApplyLeave() {
             ></textarea>
 
             <button type="submit">Apply Leave</button>
+
           </form>
         </div>
       </div>

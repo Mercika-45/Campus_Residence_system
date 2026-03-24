@@ -8,54 +8,79 @@ function RaiseComplaint() {
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
   const [complaints, setComplaints] = useState([]);
+  const [student, setStudent] = useState(null);
 
   // 🔹 Fetch complaints from backend
   useEffect(() => {
-    fetchComplaints();
-  }, []);
+  const userData = JSON.parse(localStorage.getItem("user"));
 
-  const fetchComplaints = async () => {
-    try {
-      const res = await axios.get(
-        "http://localhost:5000/api/complaints"
-      );
-      setComplaints(res.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  if (!userData) {
+    window.location.href = "/student-login";
+    return;
+  }
 
+  fetchStudent(userData.email);
+}, []);
+
+const fetchStudent = async (email) => {
+  try {
+    const res = await axios.get(
+      `http://localhost:5000/api/student/profile/${email}`
+    );
+
+    setStudent(res.data);
+
+    // fetch complaints only after student loaded
+    fetchComplaints(res.data.registerNumber);
+
+  } catch (error) {
+    console.error("STUDENT FETCH ERROR:", error);
+  }
+};
+
+const fetchComplaints = async (registerNo) => {
+  try {
+    if (!registerNo) return; // safety check
+
+    const res = await axios.get(
+      `http://localhost:5000/api/complaints/student/${registerNo}`
+    );
+
+    setComplaints(res.data);
+  } catch (error) {
+    console.error(error);
+  }
+};
   // 🔹 Submit Complaint
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!category || !description) {
-      alert("Please fill all fields");
-      return;
-    }
+  if (!category || !description) {
+    alert("Please fill all fields");
+    return;
+  }
 
-    try {
-      await axios.post(
-        "http://localhost:5000/api/complaints",
-        {
-          studentName: "Demo Student",   // Replace with logged user
-          registerNo: "21CS001",
-          hostel: "Boys Hostel - A",
-          room: "101",
-          category,
-          description,
-        }
-      );
+  try {
+    await axios.post("http://localhost:5000/api/complaints", {
+      studentName: student.studentName,
+      registerNo: student.registerNumber,
+      hostel: student.hostel?.hostelName,
+      room: student.hostel?.room,
+      category,
+      description,
+    });
 
-      setCategory("");
-      setDescription("");
+    // Clear form
+    setCategory("");
+    setDescription("");
 
-      fetchComplaints();
-    } catch (error) {
-      console.error(error);
-    }
-  };
+    // 🔹 Fetch complaints immediately after submit
+    fetchComplaints(student.registerNumber);
 
+  } catch (error) {
+    console.error("COMPLAINT SUBMIT ERROR:", error.response?.data || error.message);
+  }
+};
   // 🔹 Approve Complaint (Student Action)
   const approveComplaint = async (id) => {
     try {

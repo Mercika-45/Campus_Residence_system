@@ -26,12 +26,12 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
 
-    // ✅ ADD THIS
+    // ✅ Hostel type required for all wardens (executive + local)
     hostelType: {
       type: String,
       enum: ["boys", "girls"],
       required: function () {
-        return this.role === "executive";
+        return this.role === "executive" || this.role === "warden";
       },
     },
 

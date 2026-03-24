@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "../../components/Sidebar";
 import Topbar from "../../components/Topbar";
@@ -9,8 +9,10 @@ function ApplyVacating() {
   const API = "http://localhost:5000/api";
 
   const getCurrentDate = () => {
-    return new Date().toISOString(); // ISO for backend
+    return new Date().toISOString();
   };
+
+  const [student, setStudent] = useState(null); // ✅ ADD
 
   const [vacatingData, setVacatingData] = useState({
     studentName: "",
@@ -40,6 +42,54 @@ function ApplyVacating() {
     department: "",
     appliedOn: getCurrentDate(),
   });
+
+  // ✅ FETCH STUDENT DATA
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem("user"));
+
+    if (!userData) {
+      window.location.href = "/student-login";
+      return;
+    }
+
+    fetchStudent(userData.email);
+  }, []);
+
+  const fetchStudent = async (email) => {
+    try {
+      const res = await axios.get(
+        `http://localhost:5000/api/student/profile/${email}`
+      );
+
+      const data = res.data;
+      setStudent(data);
+
+      // ✅ AUTO-FILL VACATING FORM
+      setVacatingData((prev) => ({
+        ...prev,
+        studentName: data.studentName || "",
+        registerNo: data.registerNumber || "",
+        branch: data.college?.department || "",
+        year: data.college?.yearOfStudy || "",
+        semester: data.college?.yearOfStudy || "",
+        hostelName: data.hostel?.hostelName || "",
+        roomNo: data.hostel?.room || "",
+        mobile: data.mobile || "",
+      }));
+
+      // ✅ AUTO-FILL DEPOSIT FORM
+      setDepositData((prev) => ({
+        ...prev,
+        studentName: data.studentName || "",
+        registerNo: data.registerNumber || "",
+        department: data.college?.department || "",
+        branchYearSemester: `${data.college?.department || ""} - ${data.college?.yearOfStudy || ""}`,
+      }));
+
+    } catch (error) {
+      console.error("FETCH ERROR:", error);
+    }
+  };
 
   const handleVacatingChange = (e) => {
     const { name, value } = e.target;
@@ -144,6 +194,9 @@ function ApplyVacating() {
       alert("Error submitting deposit form");
     }
   };
+
+  // ✅ PREVENT CRASH
+  if (!student) return <p>Loading...</p>;
 
   return (
     <div className="dashboard-container">

@@ -1,5 +1,16 @@
 import Complaint from "../models/Complaint.js";
 
+export const getComplaintsByRegisterNo = async (req, res) => {
+  try {
+    const complaints = await Complaint.find({
+      registerNo: req.params.registerNo,
+    }).sort({ createdAt: -1 });
+
+    res.json(complaints);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
 // 🟢 Student → Create Complaint
 export const createComplaint = async (req, res) => {

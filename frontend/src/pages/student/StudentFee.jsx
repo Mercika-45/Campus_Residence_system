@@ -5,8 +5,9 @@ import Topbar from "../../components/Topbar";
 import "../../styles/FeePage.css";
 
 function StudentFee() {
-  const studentName = "John";
-  const regNo = "22CS001";
+
+  const [studentName, setStudentName] = useState("");
+  const [regNo, setRegNo] = useState("");
 
   const [files, setFiles] = useState({});
   const [receipts, setReceipts] = useState([]);
@@ -16,17 +17,52 @@ function StudentFee() {
 
   const API = "http://localhost:5000/api/fees";
 
+  /* ================= FETCH STUDENT ================= */
   useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem("user"));
+
+    if (!userData) {
+      window.location.href = "/student-login";
+      return;
+    }
+
+    const fetchStudent = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:5000/api/student/profile/${userData.email}`
+        );
+
+        const data = res.data;
+
+        setStudentName(data.studentName || "");
+        setRegNo(
+          data.registerNumber
+            ? data.registerNumber.trim().toUpperCase()
+            : ""
+        );
+
+      } catch (error) {
+        console.error("Student fetch error:", error);
+      }
+    };
+
+    fetchStudent();
+  }, []);
+
+  /* ================= LOAD DATA AFTER regNo ================= */
+  useEffect(() => {
+    if (!regNo) return;
+
     fetchReceipts();
     fetchControls();
-  }, []);
+  }, [regNo]);
 
   /* ================= FETCH RECEIPTS ================= */
   const fetchReceipts = async () => {
     try {
       setLoading(true);
       const res = await axios.get(`${API}/student/${regNo}`);
-      setReceipts(res.data);
+      setReceipts(res.data || []);
     } catch {
       setMessage("Failed to fetch receipts");
     } finally {
@@ -38,7 +74,7 @@ function StudentFee() {
   const fetchControls = async () => {
     try {
       const res = await axios.get(`${API}/control`);
-      setControls(res.data);
+      setControls(res.data || []);
     } catch {
       setMessage("Failed to fetch global controls");
     }
@@ -64,6 +100,7 @@ function StudentFee() {
 
       setFiles((prev) => ({ ...prev, [period]: null }));
       fetchReceipts();
+
     } catch (err) {
       setMessage(err.response?.data?.message || "Upload failed");
     }
@@ -79,12 +116,17 @@ function StudentFee() {
 
   /* ================= BUTTON STATE ================= */
   const getButtonState = (record, control) => {
-    if (!control || !control.isOpen) return { text: "Locked", class: "locked-btn", disabled: true };
+    if (!control || !control.isOpen)
+      return { text: "Locked", class: "locked-btn", disabled: true };
 
-    if (!record) return { text: "Upload", class: "upload-btn", disabled: false };
+    if (!record)
+      return { text: "Upload", class: "upload-btn", disabled: false };
 
-    if (record.status === "Pending") return { text: "Pending", class: "pending-btn", disabled: true };
-    if (record.status === "Paid") return { text: "Paid", class: "paid-btn", disabled: true };
+    if (record.status === "Pending")
+      return { text: "Pending", class: "pending-btn", disabled: true };
+
+    if (record.status === "Paid")
+      return { text: "Paid", class: "paid-btn", disabled: true };
 
     return { text: "Upload", class: "upload-btn", disabled: false };
   };
@@ -108,16 +150,20 @@ function StudentFee() {
   return (
     <div className="dashboard-container">
       <Sidebar />
+
       <div className="main-content1">
         <Topbar title="Fee Payment" />
+
         <div className="content">
           <h2>Fee Payment</h2>
+
           {message && <p className="info-msg">{message}</p>}
           {loading && <p>Loading...</p>}
 
           {/* ================= HOSTEL ================= */}
           <div className="fee-section">
             <h3>Hostel Fee (Year-wise)</h3>
+
             {years.map((year) => {
               const record = getRecord("hostel", year);
               const control = getControl("hostel", year);
@@ -126,6 +172,7 @@ function StudentFee() {
               return (
                 <div className="fee-row" key={year}>
                   <span>{year}</span>
+
                   <input
                     type="file"
                     disabled={state.disabled}
@@ -133,6 +180,7 @@ function StudentFee() {
                       setFiles({ ...files, [year]: e.target.files[0] })
                     }
                   />
+
                   <button
                     className={state.class}
                     disabled={state.disabled}
@@ -148,6 +196,7 @@ function StudentFee() {
           {/* ================= MESS ================= */}
           <div className="fee-section">
             <h3>Mess Fee (Semester-wise)</h3>
+
             {semesters.map((sem) => {
               const record = getRecord("mess", sem);
               const control = getControl("mess", sem);
@@ -156,6 +205,7 @@ function StudentFee() {
               return (
                 <div className="fee-row" key={sem}>
                   <span>{sem}</span>
+
                   <input
                     type="file"
                     disabled={state.disabled}
@@ -163,6 +213,7 @@ function StudentFee() {
                       setFiles({ ...files, [sem]: e.target.files[0] })
                     }
                   />
+
                   <button
                     className={state.class}
                     disabled={state.disabled}
@@ -174,6 +225,7 @@ function StudentFee() {
               );
             })}
           </div>
+
         </div>
       </div>
     </div>

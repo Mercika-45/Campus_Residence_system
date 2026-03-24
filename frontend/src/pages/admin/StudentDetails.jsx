@@ -1518,10 +1518,10 @@ const handleGuardianChange = (index, field, value) => {
   <b>Hostel:</b>{" "}
   {editMode ? (
     <input
-      name="hostelName"
-      value={updatedStudent.hostelName || ""}
-      onChange={handleChange}
-    />
+  value={updatedStudent.hostel?.hostelName || ""}
+  onChange={(e) => handleHostelChange("hostelName", e.target.value)}
+/>
+
   ) : (
     student.hostel?.hostelName || student.hostelName || "-"
   )}
@@ -1551,11 +1551,10 @@ const handleGuardianChange = (index, field, value) => {
 <p>
   <b>Floor:</b>{" "}
   {editMode ? (
-    <input
-      name="floor"
-      value={updatedStudent.floor || ""}
-      onChange={handleChange}
-    />
+   <input
+  value={updatedStudent.hostel?.floor || ""}
+  onChange={(e) => handleHostelChange("floor", e.target.value)}
+/>
   ) : (
     student.hostel?.floor || student.floor || "-"
   )}
@@ -1565,10 +1564,9 @@ const handleGuardianChange = (index, field, value) => {
   <b>Room:</b>{" "}
   {editMode ? (
     <input
-      name="room"
-      value={updatedStudent.room || ""}
-      onChange={handleChange}
-    />
+  value={updatedStudent.hostel?.room || ""}
+  onChange={(e) => handleHostelChange("room", e.target.value)}
+/>
   ) : (
     student.hostel?.room || student.room || "-"
   )}

@@ -1,57 +1,71 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
 import Sidebar from "../../components/Sidebar";
 import Topbar from "../../components/Topbar";
-import "../../styles/StudentDashboard.css";
 
 function StudentDashboard() {
   const [student, setStudent] = useState(null);
 
   useEffect(() => {
-    const data = localStorage.getItem("student");
-    if (!data) {
-      window.location.href = "/student-login";
-    } else {
-      setStudent(JSON.parse(data));
-    }
-  }, []);
+  const userData = JSON.parse(localStorage.getItem("user"));
 
-  if (!student) return null;
+  if (!userData) {
+    window.location.href = "/student-login";
+    return;
+  }
+
+  const fetchStudent = async () => {
+    try {
+      const res = await axios.get(
+        `http://localhost:5000/api/student/profile/${userData.email}`
+      );
+
+      setStudent(res.data);
+
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  fetchStudent();
+}, []);
+
+  if (!student) return <h2>Loading...</h2>;
 
   return (
     <div className="dashboard-container">
       <Sidebar />
 
       <div className="main-content1">
-        <Topbar name={student.name} />
+        <Topbar name={student.studentName} />
 
         <div className="content">
           <h2>Dashboard</h2>
-          <p className="breadcrumb">Home / Dashboard</p>
 
           <div className="info-wrapper">
-            {/* Profile Card */}
             <div className="profile-card1">
               <img
-                src="/images/profile.jpg"
-                alt="profile"
-                className="profile-img"
-              />
-              <h3>{student.name}</h3>
-              <p>{student.registerNo}</p>
+  src={`http://localhost:5000/uploads/${student.photo}`}
+  alt="profile"
+  className="profile-img"
+  onError={(e) => {
+    e.target.src = "/images/profile.jpg";
+  }}
+/>
+              <h3>{student.studentName}</h3>
+              <p>{student.registerNumber}</p>
             </div>
 
-            {/* General Info */}
             <div className="general-card">
               <h3>📄 General Information</h3>
 
               <div className="info-grid">
-                <p><b>DEGREE</b> : B.E.</p>
-                <p><b>BRANCH</b> : {student.department}</p>
-                <p><b>SEMESTER</b> : 8</p>
-                <p><b>CAMPUS</b> : UCE, NAGERCOIL</p>
-                <p><b>DOB</b> : 31-JAN-05</p>
-                <p><b>GENDER</b> : Female</p>
-                <p><b>MOBILE</b> : 9688027985</p>
+                <p><b>DEGREE</b> : {student.college?.degree}</p>
+                <p><b>BRANCH</b> : {student.college?.department}</p>
+                <p><b>SEMESTER</b> : {student.college?.yearOfStudy}</p>
+                <p><b>DOB</b> : {student.dob}</p>
+                <p><b>GENDER</b> : {student.gender}</p>
+                <p><b>MOBILE</b> : {student.mobile}</p>
                 <p><b>EMAIL</b> : {student.email}</p>
               </div>
             </div>
