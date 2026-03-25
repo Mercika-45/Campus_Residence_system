@@ -1,56 +1,85 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
 import "../../styles/WardenPages.css";
 import WardenSidebar from "../../components/WardenSidebar";
 
 function WardenDashboard() {
   const [warden, setWarden] = useState(null);
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
 
+  /* ================= FETCH DATA ================= */
   useEffect(() => {
-    const data = localStorage.getItem("warden");
+    const fetchData = async () => {
+      try {
+        const wardenData = JSON.parse(localStorage.getItem("warden"));
 
-    if (!data) {
-      window.location.href = "/warden/login";
-    } else {
-      setWarden(JSON.parse(data));
-    }
+        if (!wardenData) {
+          window.location.href = "/warden/login";
+          return;
+        }
+
+        setWarden(wardenData);
+
+        // ✅ Fetch dashboard stats
+        const res = await axios.get(
+          `http://localhost:5000/api/dashboard?hostelType=${wardenData.hostelType}`
+        );
+
+        setStats(res.data);
+
+      } catch (err) {
+        console.error("Dashboard error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
-  if (!warden) return null;
+  /* ================= LOADING ================= */
+  if (loading) {
+    return (
+      <div className="warden-layout">
+        <WardenSidebar />
+        <div className="warden-main">
+          <h2>Loading dashboard...</h2>
+        </div>
+      </div>
+    );
+  }
+
+  /* ================= SAFETY ================= */
+  if (!warden || !stats) {
+    return (
+      <div className="warden-layout">
+        <WardenSidebar />
+        <div className="warden-main">
+          <h2>Failed to load dashboard</h2>
+        </div>
+      </div>
+    );
+  }
 
   const isBoys = warden.hostelType === "boys";
-  const isGirls = warden.hostelType === "girls";
 
   return (
     <div className="warden-layout">
-
       <WardenSidebar />
 
       <div className="warden-main">
 
         {/* 🔔 Notifications */}
         <div className="warden-notification">
-          {isBoys && (
-            <>
-              <span>🔔 3 Boys Leave Requests</span>
-              <span>⚠ 2 Boys Complaints Pending</span>
-              <span>📅 Attendance Pending for Boys 2nd Year</span>
-            </>
-          )}
-
-          {isGirls && (
-            <>
-              <span>🔔 5 Girls Leave Requests</span>
-              <span>⚠ 1 Girls Complaint Pending</span>
-              <span>📅 Attendance Pending for Girls 3rd Year</span>
-            </>
-          )}
+          <span>🔔 {stats.pendingLeaves || 0} Leave Requests</span>
+          <span>⚠ {stats.complaints || 0} Complaints Pending</span>
+          <span>📅 Attendance: {stats.attendancePercent || 0}%</span>
         </div>
 
-        {/* Welcome Section */}
+        {/* Welcome */}
         <div className="warden-welcome">
-          <h1>
-            Welcome Back, {warden.name}
-          </h1>
+          <h1>Welcome Back, {warden.name}</h1>
           <p>
             {isBoys
               ? "Overview of Boys Hostel activities."
@@ -58,96 +87,65 @@ function WardenDashboard() {
           </p>
         </div>
 
-        {/* Profile Card */}
+        {/* Profile */}
         <div className="warden-profile-card">
           <img
-            src="/images/profile.jpg"
+            src={warden.image || "/images/profile.jpg"}
             alt="profile"
             className="warden-profile-img"
           />
-          <h2>
-            {isBoys ? "Boys Warden" : "Girls Warden"}
-          </h2>
-          <p>
-            Responsible for student discipline, leave approvals,
-            complaint handling, attendance monitoring and hostel administration.
-          </p>
+          <h2>{isBoys ? "Boys Warden" : "Girls Warden"}</h2>
+          <p>{warden.dept}</p>
         </div>
 
-        {/* Stats Section */}
+        {/* Stats */}
         <div className="warden-stats-grid">
 
-          {isBoys && (
-            <>
-              <div className="warden-stat blue">
-                <h3>Total Students</h3>
-                <p>420</p>
-              </div>
+          <div className="warden-stat blue">
+            <h3>Total Students</h3>
+            <p>{stats.totalStudents || 0}</p>
+          </div>
 
-              <div className="warden-stat orange">
-                <h3>Pending Leaves</h3>
-                <p>8</p>
-              </div>
+          <div className="warden-stat orange">
+            <h3>Pending Leaves</h3>
+            <p>{stats.pendingLeaves || 0}</p>
+          </div>
 
-              <div className="warden-stat red">
-                <h3>Complaints</h3>
-                <p>5</p>
-              </div>
+          <div className="warden-stat red">
+            <h3>Complaints</h3>
+            <p>{stats.complaints || 0}</p>
+          </div>
 
-              <div className="warden-stat green">
-                <h3>Attendance %</h3>
-                <p>92%</p>
-              </div>
-            </>
-          )}
-
-          {isGirls && (
-            <>
-              <div className="warden-stat blue">
-                <h3>Total Students</h3>
-                <p>350</p>
-              </div>
-
-              <div className="warden-stat orange">
-                <h3>Pending Leaves</h3>
-                <p>6</p>
-              </div>
-
-              <div className="warden-stat red">
-                <h3>Complaints</h3>
-                <p>2</p>
-              </div>
-
-              <div className="warden-stat green">
-                <h3>Attendance %</h3>
-                <p>95%</p>
-              </div>
-            </>
-          )}
+          <div className="warden-stat green">
+            <h3>Attendance %</h3>
+            <p>{stats.attendancePercent || 0}%</p>
+          </div>
 
         </div>
 
-        {/* Activity Section */}
+        {/* Activity */}
         <div className="warden-activity-card">
           <h3>Recent Activity</h3>
 
           <ul>
-            {isBoys && (
-              <>
-                <li>✔ Arjun applied for 2 days leave</li>
-                <li>✔ Room 204 complaint resolved</li>
-                <li>✔ Sanitization completed for Block B</li>
-                <li>✔ Attendance marked for Boys 1st Year</li>
-              </>
+            {stats.recentLeaves?.length > 0 ? (
+              stats.recentLeaves.map((leave, i) => (
+                <li key={i}>
+                  ✔ {leave.studentName} applied leave
+                </li>
+              ))
+            ) : (
+              <li>No recent leave activity</li>
             )}
 
-            {isGirls && (
-              <>
-                <li>✔ Anitha applied for 1 day leave</li>
-                <li>✔ Room 105 complaint resolved</li>
-                <li>✔ Sanitization completed for Block A</li>
-                <li>✔ Attendance marked for Girls 2nd Year</li>
-              </>
+            {stats.recentComplaints?.length > 0 ? (
+              stats.recentComplaints.map((c, i) => (
+                <li key={i}>
+                  ✔ Complaint: {c.category}
+                </li>
+              ))
+            ) : (
+              <li>No recent complaints</li>
             )}
           </ul>
         </div>

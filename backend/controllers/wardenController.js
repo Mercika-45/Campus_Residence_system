@@ -138,3 +138,22 @@ export const getWardens = async (req, res) => {
     res.status(500).json({ message: "Error fetching wardens" });
   }
 };
+
+// ================= GET SINGLE WARDEN =================
+export const getWardenByEmail = async (req, res) => {
+  try {
+    const { email } = req.query;
+
+    const warden = await Warden.findOne({ email });
+
+    if (!warden) {
+      return res.status(404).json({ message: "Warden not found" });
+    }
+
+    res.json(warden);
+
+  } catch (err) {
+    console.error("Get Warden Error:", err.message);
+    res.status(500).json({ message: "Error fetching warden" });
+  }
+};

@@ -23,6 +23,7 @@ import allocationRoutes from "./routes/allocationRoutes.js";
 import hostelRoutes from "./routes/hostelRoutes.js";
 import executiveRoutes from "./routes/executiveRoutes.js";
 import attendanceRoutes from "./routes/attendanceRoutes.js";
+import dashboardRoutes from "./routes/dashboardRoutes.js";
 
 dotenv.config();
 
@@ -72,6 +73,7 @@ app.use("/api/allocations", allocationRoutes);
 app.use("/api/hostels", hostelRoutes);
 app.use("/api/executive", executiveRoutes);
 app.use("/api/attendance", attendanceRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 /* ================= SERVER ================= */
 

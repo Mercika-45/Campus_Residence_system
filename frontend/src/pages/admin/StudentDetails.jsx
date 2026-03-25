@@ -1546,7 +1546,23 @@ const handleGuardianChange = (index, field, value) => {
     student.hostel?.block || "-"
   )}
 </p>
-
+<p>
+  <b>Hostel Type:</b>{" "}
+  {editMode ? (
+    <select
+      value={updatedStudent.hostel?.hostelType || ""}
+      onChange={(e) =>
+        handleHostelChange("hostelType", e.target.value)
+      }
+    >
+      <option value="">Select</option>
+      <option value="Boys">Boys</option>
+      <option value="Girls">Girls</option>
+    </select>
+  ) : (
+    student.hostel?.hostelType || "-"
+  )}
+</p>
 
 <p>
   <b>Floor:</b>{" "}

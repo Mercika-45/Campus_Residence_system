@@ -209,6 +209,7 @@ useEffect(() => {
                     <th>Year</th>
                     <th>Department</th>
                     <th>Gender</th>
+                    <th>Hostel Type</th>
                     <th>Hostel</th>
                     <th>Room No</th>
                     <th>view Details</th>
@@ -229,6 +230,7 @@ useEffect(() => {
     <td>{s?.college?.yearOfStudy || "-"}</td>
     <td>{s?.college?.department || "-"}</td>
     <td>{s.gender}</td>
+    <td>{s?.hostel?.hostelType || "-"}</td>
     <td>{s?.hostel?.block || "-"}</td>
     <td>{s?.hostel?.room || "-"}</td>
      <td>

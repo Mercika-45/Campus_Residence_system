@@ -118,6 +118,7 @@ year: "",
 hostel: {
   hostelName: "",
   block: "",
+  hostelType: "",
   floor: "",
   room: "",
   bedNumber: "",  
@@ -242,7 +243,8 @@ useEffect(() => {
         ...prev,
         hostel: {
           ...prev.hostel,
-          hostelName: hostel.name
+          hostelName: hostel.name,
+          hostelType: student.gender
         }
       }));
     }
@@ -1654,7 +1656,8 @@ onChange={(e) => handleFileChange(e, "diplomaTransferCertificate")}
             <option value="A">Block A</option>
             <option value="B">Block B</option>
           </select>
-
+          Hostel Type
+<input value={student.hostel.hostelType} readOnly />
           Food Preference
           <select
             value={student.hostel.foodPreference}

@@ -79,6 +79,7 @@ const addressSchema = new mongoose.Schema({
 });
 
 const hostelSchema = new mongoose.Schema({
+  hostelType: String,
   hostelName: String,
   block: String,
   floor: String,

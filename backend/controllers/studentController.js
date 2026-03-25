@@ -222,11 +222,12 @@ address: {
   pincode: req.body.pincode
 },
 hostel: {
+  hostelType: req.body.hostel?.hostelType,   // ✅ ADD THIS
   hostelName: req.body.hostel?.hostelName,
   block: req.body.hostel?.block,
   floor: req.body.hostel?.floor,
   room: req.body.hostel?.room,
-  bedNumber: req.body.hostel?.bedNumber || "",  // ✅ matches schema
+  bedNumber: req.body.hostel?.bedNumber || "",
   foodPreference: req.body.hostel?.foodPreference,
   feeReceipt: req.body.hostel?.feeReceipt || ""
 },
