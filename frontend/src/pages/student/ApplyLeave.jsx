@@ -21,6 +21,7 @@ function ApplyLeave() {
   const [reason, setReason] = useState("");
   const [messReduction, setMessReduction] = useState(false);
   const [appliedOn] = useState(today);
+  const [hostelType, setHostelType] = useState("");
 
   /* ================= FETCH STUDENT ================= */
   useEffect(() => {
@@ -53,7 +54,7 @@ function ApplyLeave() {
 
         setHostelName(data.hostel?.hostelName || "");
         setRoomNo(data.hostel?.room || "");
-
+        setHostelType(data.hostel?.hostelType || "");
       } catch (err) {
         console.error("FETCH ERROR:", err);
       }
@@ -85,6 +86,7 @@ function ApplyLeave() {
       !semester ||
       !branch ||
       !hostelName ||
+      !hostelType ||
       !roomNo ||
       !leaveType ||
       !fromDate ||
@@ -106,6 +108,7 @@ function ApplyLeave() {
       semester,
       branch, // ✅ included
       hostelName,
+      hostelType,
       roomNo,
       leaveType,
       fromDate,

@@ -5,22 +5,19 @@ import Announcement from "../models/Announcement.js";
 ================================ */
 export const createAnnouncement = async (req, res) => {
   try {
-    const { title, message, target, createdBy } = req.body;
-
-    if (!title || !message || !target || !createdBy) {
-      return res.status(400).json({ message: "All fields required" });
-    }
+    const { title, message, target, gender, createdBy } = req.body;
 
     const newAnnouncement = await Announcement.create({
       title,
       message,
       target,
+      gender,
       createdBy,
     });
 
     res.status(201).json(newAnnouncement);
+
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: "Server Error" });
   }
 };
@@ -32,24 +29,40 @@ export const createAnnouncement = async (req, res) => {
 ================================ */
 export const getAnnouncementsByRole = async (req, res) => {
   try {
-    const { role, createdBy } = req.query;
+    const { role, gender, createdBy } = req.query;
 
-    // 🔹 If fetching own announcements
+    /* ================================
+       MY ANNOUNCEMENTS
+    ================================= */
     if (createdBy) {
       const myData = await Announcement.find({ createdBy })
         .sort({ createdAt: -1 });
+
       return res.json(myData);
     }
 
-    // 🔹 Role-based filtering
     if (!role) {
       return res.status(400).json({ message: "Role required" });
     }
 
+    /* ================================
+       ROLE + GENDER FILTER
+    ================================= */
+
     const data = await Announcement.find({
-      $or: [
-        { target: role },
-        { target: "all" }
+      $and: [
+        {
+          $or: [
+            { target: role },
+            { target: "all" }
+          ]
+        },
+        {
+          $or: [
+            { gender: gender },
+            { gender: "all" }
+          ]
+        }
       ]
     }).sort({ createdAt: -1 });
 

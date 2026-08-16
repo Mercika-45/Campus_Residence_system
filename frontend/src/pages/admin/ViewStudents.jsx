@@ -25,11 +25,13 @@ const navigate = useNavigate();
 
 
 
-  const filteredOld = applyGender(
-    vacatedFilter
-      ? oldStudentsData.filter((s) => s.vacatedYear === vacatedFilter)
-      : oldStudentsData
-  );
+ const filteredOld = applyGender(
+  vacatedFilter
+    ? oldStudentsData.filter(
+        (s) => Number(s.vacatedYear) === Number(vacatedFilter)
+      )
+    : oldStudentsData
+);
 
   const filteredNew = applyGender(newStudentsData);
 
@@ -91,7 +93,7 @@ useEffect(() => {
 
   fetchNewStudents();
   fetchApprovedStudents();
-   // ✅ ADD THIS
+  fetchOldStudents(); // ✅ FIXED
 }, [location]);
 useEffect(() => {
   setGenderFilter("");
@@ -209,7 +211,6 @@ useEffect(() => {
                     <th>Year</th>
                     <th>Department</th>
                     <th>Gender</th>
-                    <th>Hostel Type</th>
                     <th>Hostel</th>
                     <th>Room No</th>
                     <th>view Details</th>
@@ -230,7 +231,6 @@ useEffect(() => {
     <td>{s?.college?.yearOfStudy || "-"}</td>
     <td>{s?.college?.department || "-"}</td>
     <td>{s.gender}</td>
-    <td>{s?.hostel?.hostelType || "-"}</td>
     <td>{s?.hostel?.block || "-"}</td>
     <td>{s?.hostel?.room || "-"}</td>
      <td>

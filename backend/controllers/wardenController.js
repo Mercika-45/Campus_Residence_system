@@ -1,5 +1,6 @@
 import Warden from "../models/Warden.js";
 import User from "../models/User.js";
+
 import bcrypt from "bcryptjs";
 
 // ================= ADD WARDEN =================
@@ -157,3 +158,4 @@ export const getWardenByEmail = async (req, res) => {
     res.status(500).json({ message: "Error fetching warden" });
   }
 };
+ 

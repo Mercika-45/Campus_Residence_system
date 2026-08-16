@@ -34,7 +34,18 @@ function ControlLogin() {
     console.error(err);
   }
 };
+const promoteSemester = async () => {
+  try {
+    const res = await fetch("http://localhost:5000/api/student/promote-semester", {
+      method: "PUT",
+    });
 
+    const data = await res.json();
+    console.log("RESPONSE:", data);
+  } catch (err) {
+    console.error("API ERROR:", err);
+  }
+};
   useEffect(() => {
     fetchStudents();
   }, []);
@@ -123,6 +134,9 @@ function ControlLogin() {
               <option value="Female">Girls</option>
             </select>
 
+  <button className="btn promote" onClick={promoteSemester}>
+    Promote Semester
+  </button>
             <button
               className="clear-btn"
               onClick={() => {

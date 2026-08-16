@@ -57,7 +57,7 @@ router.get("/approved", studentController.getApprovedStudents);
 router.get("/old", studentController.getOldStudents);
 
 // Get single student
-router.get("/:id", studentController.getStudentById);
+
 
 /* ================= ACTIONS ================= */
 
@@ -66,11 +66,13 @@ router.put("/accept/:id", studentController.acceptStudent);
 router.put("/reject/:id", studentController.rejectStudent);
 
 router.put("/promote-year", studentController.promoteYear);
-
+router.put("/promote-semester", studentController.promoteSemester);
 router.put(
   "/update/:id",
   upload.any(),
   studentController.updateStudent
 );
+router.get("/reg/:regNo", studentController.getStudentByRegNo);
+router.get("/:id", studentController.getStudentById);
 
 export default router;

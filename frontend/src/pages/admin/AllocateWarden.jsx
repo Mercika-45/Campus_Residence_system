@@ -20,6 +20,7 @@ function AllocateWarden() {
   const [showAddWarden, setShowAddWarden] = useState(false);
   const [hostels, setHostels] = useState([]);
   const [showAddHostel, setShowAddHostel] = useState(false);
+  const [phoneError, setPhoneError] = useState("");
 
   const [newHostel, setNewHostel] = useState({ name: "", type: "" });
 
@@ -96,7 +97,7 @@ function AllocateWarden() {
 
   const fetchHostels = () => {
     axios
-      .get("http://localhost:5000/api/hostels")
+      .get("http://localhost:5000/api/admin/hostels")
       .then((res) => setHostels(res.data))
       .catch((err) => console.log(err));
   };
@@ -196,33 +197,55 @@ function AllocateWarden() {
   };
 
   // ===== Handle Hostels =====
-  const handleAddHostel = async (e) => {
-    e.preventDefault();
-    setHostelError("");
-    setHostelSuccess("");
-    if (!newHostel.name || !newHostel.type) {
-      setHostelError("Please fill hostel details");
-      return;
-    }
-    try {
-      await axios.post("http://localhost:5000/api/hostels/add", newHostel);
-      setHostelSuccess("Hostel added successfully");
-      setShowAddHostel(false);
-      setNewHostel({ name: "", type: "" });
-      fetchHostels();
-    } catch (err) {
-      setHostelError(err.response?.data?.message || "Error adding hostel");
-    }
-  };
+ const handleAddHostel = async (e) => {
+  e.preventDefault();
+  setHostelError("");
+  setHostelSuccess("");
 
+  if (!newHostel.name || !newHostel.type) {
+    setHostelError("Please fill hostel details");
+    return;
+  }
+
+  try {
+    await axios.post("http://localhost:5000/api/admin/hostels/add", {
+      name: newHostel.name,
+      type: newHostel.type.toLowerCase(), // save consistently
+    });
+
+    setHostelSuccess("Hostel added successfully");
+    setNewHostel({ name: "", type: "" });
+    fetchHostels();
+
+    // Hide form after 2 seconds to show message
+    setTimeout(() => setShowAddHostel(false), 2000);
+  } catch (err) {
+    setHostelError(err.response?.data?.message || "Error adding hostel");
+  }
+};
   const handleDeleteHostel = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/hostels/${id}`);
+      axios.delete(`http://localhost:5000/api/admin/hostels/${id}`);
       fetchHostels();
     } catch (err) {
       console.log(err);
     }
   };
+
+  const handlePhoneChange = (e) => {
+  const value = e.target.value.replace(/\D/g, ""); // numbers only
+
+  setNewWarden({ ...newWarden, phone: value });
+
+  // realtime validation
+  if (value.length === 0) {
+    setPhoneError("Phone number is required");
+  } else if (value.length < 10) {
+    setPhoneError("Phone number must be 10 digits");
+  } else {
+    setPhoneError("");
+  }
+};
 
   // ===== Handle Allocation =====
   const handleSubmit = async (e) => {
@@ -298,12 +321,19 @@ function AllocateWarden() {
                     <option key={idx} value={dept}>{dept}</option>
                   ))}
                 </select>
-                <input
-                  type="text"
-                  placeholder="Phone"
-                  value={newWarden.phone}
-                  onChange={(e) => setNewWarden({ ...newWarden, phone: e.target.value })}
-                />
+               <input
+  type="tel"
+  placeholder="Phone"
+  value={newWarden.phone}
+  maxLength={10}
+  required
+  onChange={handlePhoneChange}
+/>
+{phoneError && (
+  <p style={{ color: "red", fontSize: "14px" }}>
+    {phoneError}
+  </p>
+)}
                 <input
                   type="email"
                   placeholder="Email Address"
@@ -395,6 +425,7 @@ function AllocateWarden() {
           )}
 
           {/* Add Hostel Form */}
+          
           {showAddHostel && (
             <div className="add-warden-card">
               <h3>Add Hostel</h3>
@@ -546,7 +577,6 @@ function AllocateWarden() {
           <th>Profile</th>
           <th>Name</th>
           <th>Role</th>
-          <th>Department</th>
           <th>Phone</th>
           <th>Email</th>
           <th>Hostel</th>
@@ -570,7 +600,6 @@ function AllocateWarden() {
             </td>
             <td>{item.warden?.name}</td>
             <td>{item.warden?.role}</td>
-            <td>{item.warden?.dept}</td>
             <td>{item.warden?.phone}</td>
             <td>{item.warden?.email}</td>
             <td>{item.hostel}</td>

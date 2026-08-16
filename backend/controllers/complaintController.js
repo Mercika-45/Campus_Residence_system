@@ -26,13 +26,27 @@ export const createComplaint = async (req, res) => {
 // 🟢 All Roles → Get Complaints
 export const getComplaints = async (req, res) => {
   try {
-    const complaints = await Complaint.find().sort({ createdAt: -1 });
+    const { hostelType } = req.query;
+
+    let complaints;
+
+    // ✅ Admin → get ALL complaints
+    if (!hostelType) {
+      complaints = await Complaint.find().sort({ createdAt: -1 });
+    } 
+    // ✅ Executive/Warden → filtered complaints
+    else {
+      complaints = await Complaint.find({
+        hostelType: new RegExp(`^${hostelType}$`, "i"),
+      }).sort({ createdAt: -1 });
+    }
+
     res.json(complaints);
+
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
-
 
 // 🟢 Warden/Admin → Mark Completed
 export const markCompleted = async (req, res) => {

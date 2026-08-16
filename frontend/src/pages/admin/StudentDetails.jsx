@@ -36,14 +36,17 @@ const handleTwelfthChange = (field, value) => {
 
 const handleAccept = async (id) => {
   try {
-    await fetch(`http://localhost:5000/api/student/accept/${id}`, {
-      method: "PUT",
+    const res = await fetch(`http://localhost:5000/api/student/accept/${id}`, {
+      method: "PUT"
     });
 
-    fetchNewStudents();     // refresh new students
-    fetchApprovedStudents(); // refresh existing students
-  } catch (error) {
-    console.error("Error approving student", error);
+    if (!res.ok) {
+      throw new Error("Failed to accept student");
+    }
+
+    alert("Student accepted ✅");
+  } catch (err) {
+    console.error(err);
   }
 };
   const [student, setStudent] = useState(null);
@@ -1201,7 +1204,29 @@ const handleGuardianChange = (index, field, value) => {
     student.college?.yearOfStudy || "-"
   )}
 </p>
-
+<p>
+  <b>Semester:</b>{" "}
+  {editMode ? (
+    <select
+      value={updatedStudent.college?.semester || ""}
+      onChange={(e) =>
+        handleCollegeChange("semester", e.target.value)
+      }
+    >
+      <option value="">Select Semester</option>
+      <option value="1">Semester 1</option>
+      <option value="2">Semester 2</option>
+      <option value="3">Semester 3</option>
+      <option value="4">Semester 4</option>
+      <option value="5">Semester 5</option>
+      <option value="6">Semester 6</option>
+      <option value="7">Semester 7</option>
+      <option value="8">Semester 8</option>
+    </select>
+  ) : (
+    student.college?.semester || "-"
+  )}
+</p>
 <p>
   <b>Year of Passing:</b>{" "}
   {editMode ? (

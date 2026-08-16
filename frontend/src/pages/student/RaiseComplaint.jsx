@@ -59,16 +59,22 @@ const fetchComplaints = async (registerNo) => {
     alert("Please fill all fields");
     return;
   }
+  const type = student.hostel?.hostelType?.toLowerCase();
 
   try {
     await axios.post("http://localhost:5000/api/complaints", {
-      studentName: student.studentName,
-      registerNo: student.registerNumber,
-      hostel: student.hostel?.hostelName,
-      room: student.hostel?.room,
-      category,
-      description,
-    });
+  studentName: student.studentName,
+  registerNo: student.registerNumber,
+  hostel: student.hostel?.hostelName,
+
+  hostelType: type.includes("girls")
+    ? "girls"
+    : "boys",   // ✅ ADD THIS
+
+  room: student.hostel?.room,
+  category,
+  description,
+});
 
     // Clear form
     setCategory("");

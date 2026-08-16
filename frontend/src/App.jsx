@@ -17,7 +17,8 @@ import ApplyVacating from "./pages/student/ApplyVacating";
 import LeaveStatus from "./pages/student/LeaveStatus";
 import ViewAnnouncementsst from "./pages/student/ViewAnnouncements";
 import StudentFee from "./pages/student/StudentFee";
-
+import DummyBankPayment from "./pages/student/DummyBankPayment";
+import PaymentSuccess from "./pages/student/PaymentSuccess";
 /* Admin */
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -44,7 +45,8 @@ import ExecutiveWardenRequests from "./pages/executiveWarden/ExecutiveWardenRequ
 import ViewStudentsEW from "./pages/executiveWarden/ViewStudents";
 import AllocateRoomsEW from "./pages/executiveWarden/AllocateRooms";
 import FeeApproval from "./pages/executiveWarden/FeeApproval";
-
+import HostelStructureView from "./pages/executiveWarden/HostelStructureView";
+import StudentFeeView from "./pages/executiveWarden/StudentFeeView";
 /* Warden */
 import WardenLogin from "./pages/warden/WardenLogin";
 import WardenDashboard from "./pages/warden/WardenDashboard";
@@ -77,7 +79,8 @@ function App() {
       <Route path="/student/leave-status" element={<LeaveStatus />} />
       <Route path="/student/view-announcements" element={<ViewAnnouncementsst />} />
       <Route path="/student/student-fee" element={<StudentFee />} />
-      
+      <Route path="/dummy-payment" element={<DummyBankPayment />} />
+      <Route path="/student/payment-success" element={<PaymentSuccess />} />
       {/* Admin */}
       <Route path="/admin/login" element={<AdminLogin />} />
       <Route path="/admin/dashboard" element={<AdminDashboard />} />
@@ -104,6 +107,11 @@ function App() {
       <Route path="/executive/allocate-rooms" element={<AllocateRoomsEW />} />
       <Route path="/executive/fee-approval" element={<FeeApproval />} />
       <Route path="/executive/student/:id" element={<StudentDetails />} />
+     <Route path="/executive/fee-view/:regNo" element={<StudentFeeView />} />
+      <Route
+  path="/hostel/:id"
+  element={<HostelStructureView />}
+/>
          {/* WARDEN LOGIN */}
       <Route path="/warden/login" element={<WardenLogin />} />
       <Route path="/warden/dashboard" element={<WardenDashboard />} />

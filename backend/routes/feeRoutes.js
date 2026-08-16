@@ -1,70 +1,52 @@
 import express from "express";
 import multer from "multer";
+
 import {
-  uploadReceipt,
   getStudentReceipts,
-  getAllReceipts,
-  approveReceipt,
-  rejectReceipt
+  makePayment,
+   deleteFee,
+   getAllFees,
+   
 } from "../controllers/feeController.js";
 
 import {
   getControls,
-  updateControl
-} from "../controllers/feeControlController.js"; // 🔥 NEW
+  updateControl,
+  
+} from "../controllers/feeControlController.js";
 
 const router = express.Router();
 
-/* ================= STORAGE CONFIG ================= */
-
+/* ================= MULTER CONFIG (for future use) ================= */
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
+  destination: (req, file, cb) => {
     cb(null, "uploads/");
   },
-  filename: function (req, file, cb) {
+  filename: (req, file, cb) => {
     cb(null, Date.now() + "-" + file.originalname);
   }
 });
 
-/* ================= FILE VALIDATION ================= */
+const upload = multer({ storage });
 
-const fileFilter = (req, file, cb) => {
-  if (file.mimetype === "application/pdf") {
-    cb(null, true);
-  } else {
-    cb(new Error("Only PDF files allowed"), false);
-  }
-};
+/* ================= PAYMENT ROUTES ================= */
 
-const upload = multer({
-  storage,
-  fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 }
-});
+// ✅ Online Payment (VERY IMPORTANT)
+router.post("/pay", makePayment);
 
-/* ================= RECEIPT ROUTES ================= */
-
-/* Student upload */
-router.post("/upload", upload.single("receipt"), uploadReceipt);
-
-/* Student view */
+// ✅ Get student payment status
 router.get("/student/:regNo", getStudentReceipts);
+router.get("/all", getAllFees); // ✅ ADD THIS
+/* ================= DELETE ROUTE ================= */
 
-/* Executive view */
-router.get("/all", getAllReceipts);
+router.delete("/delete", deleteFee);
+/* ================= CONTROL ROUTES ================= */
 
-/* Approve */
-router.put("/approve/:id", approveReceipt);
-
-/* Reject */
-router.put("/reject/:id", rejectReceipt);
-
-/* ================= 🔥 GLOBAL CONTROL ROUTES ================= */
-
-/* Get all controls */
+// ✅ Get all controls
 router.get("/control", getControls);
 
-/* Open / Close upload globally */
+// ✅ Open / Close fee payment
 router.put("/control", updateControl);
+
 
 export default router;

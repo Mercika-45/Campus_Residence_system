@@ -16,7 +16,12 @@ function InEntry() {
   const fetchStudentsOut = async () => {
     try {
 
-      const res = await axios.get(`${API_URL}/students-out`);
+      const warden = JSON.parse(localStorage.getItem("warden"));
+const wardenType = warden?.hostelType?.toLowerCase();
+
+const res = await axios.get(
+  `${API_URL}/students-out?wardenType=${wardenType}`
+);
       setEntries(res.data);
 
     } catch (error) {
@@ -29,7 +34,9 @@ function InEntry() {
   const fetchReturnedEntries = async () => {
     try {
 
-      const res = await axios.get(`${API_URL}/returned`);
+     const res = await axios.get(
+  `${API_URL}/returned?wardenType=${wardenType}`
+);
       setReturnedEntries(res.data);
 
     } catch (error) {

@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import AdminSidebar from "../../components/AdminSidebar";
 import AdminTopbar from "../../components/AdminTopbar";
 import "../../styles/Admin.css";
@@ -6,96 +8,76 @@ import "../../styles/FeeStatus.css";
 
 function FeeStatus() {
   const [fees, setFees] = useState([]);
-  const [filteredFees, setFilteredFees] = useState([]);
+  const [activeTab, setActiveTab] = useState("hostel");
 
-  // 🔹 Filters
-  const [statusFilter, setStatusFilter] = useState("");
-  const [yearFilter, setYearFilter] = useState("");
-  const [hostelFilter, setHostelFilter] = useState("");
+  const API = "http://localhost:5000";
+  const navigate = useNavigate();
 
-  // ✅ Sample Data (fallback)
-  const sampleFees = [
-    {
-      _id: "1",
-      name: "Arun Kumar",
-      room: "A-101",
-      hostel: "Boys",
-      year: "1",
-      status: "Paid",
-    },
-    {
-      _id: "2",
-      name: "Priya Sharma",
-      room: "G-202",
-      hostel: "Girls",
-      year: "2",
-      status: "Pending",
-    },
-    {
-      _id: "3",
-      name: "Rahul Verma",
-      room: "B-303",
-      hostel: "Boys",
-      year: "3",
-      status: "Paid",
-    },
-    {
-      _id: "4",
-      name: "Sneha Reddy",
-      room: "G-105",
-      hostel: "Girls",
-      year: "4",
-      status: "Pending",
-    },
-  ];
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-  // ✅ Fetch Fee Status
-  const fetchFees = async () => {
+  const fetchData = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/admin/fee-status");
-      const data = await res.json();
+      const feeRes = await axios.get(`${API}/api/fees/all`);
+      const studentRes = await axios.get(`${API}/api/student/approved`);
 
-      if (data && data.length > 0) {
-        setFees(data);
-        setFilteredFees(data);
-      } else {
-        // fallback
-        setFees(sampleFees);
-        setFilteredFees(sampleFees);
-      }
+      const merged = studentRes.data.flatMap((student) => {
+        const regNo = student.registerNumber?.trim();
+
+        // ✅ HOSTEL (YEAR BASED)
+        const hostelFee = feeRes.data.find(
+          (f) =>
+            f.regNo?.trim() === regNo &&
+            f.feeType === "hostel" &&
+            f.period?.toLowerCase() ===
+              `year ${student?.college?.yearOfStudy}`.toLowerCase()
+        );
+
+        const hostelRow = {
+          name: student.studentName,
+          room: student?.hostel?.room,
+          hostel: student?.hostel?.hostelType,
+          period: `Year ${student?.college?.yearOfStudy}`,
+          regNo,
+          type: "hostel",
+          status: hostelFee?.status || "Not Paid",
+        };
+
+        // ✅ MESS (ONLY CURRENT SEMESTER)
+        const currentSem = `semester ${student?.college?.semester}`.toLowerCase();
+
+        const messFee = feeRes.data.find(
+          (f) =>
+            f.regNo?.trim() === regNo &&
+            f.feeType === "mess" &&
+            f.period?.toLowerCase() === currentSem
+        );
+
+        const messRow = {
+          name: student.studentName,
+          room: student?.hostel?.room,
+          hostel: student?.hostel?.hostelType,
+          period: `Semester ${student?.college?.semester}`,
+          regNo,
+          type: "mess",
+          status: messFee?.status || "Not Paid",
+        };
+
+        return [hostelRow, messRow];
+      });
+
+      setFees(merged);
     } catch (err) {
-      console.log("Error fetching fee status, using sample data");
-      setFees(sampleFees);
-      setFilteredFees(sampleFees);
+      console.log(err);
     }
   };
 
-  useEffect(() => {
-    fetchFees();
-  }, []);
+  const handleView = (regNo) => {
+    navigate(`/admin/fee-view/${regNo}`);
+  };
 
-  // ✅ Apply Filters
-  useEffect(() => {
-    let temp = [...fees];
-
-    if (statusFilter) {
-      temp = temp.filter(
-        (f) => f.status.toLowerCase() === statusFilter.toLowerCase()
-      );
-    }
-
-    if (yearFilter) {
-      temp = temp.filter((f) => String(f.year) === String(yearFilter));
-    }
-
-    if (hostelFilter) {
-      temp = temp.filter(
-        (f) => f.hostel?.toLowerCase() === hostelFilter.toLowerCase()
-      );
-    }
-
-    setFilteredFees(temp);
-  }, [statusFilter, yearFilter, hostelFilter, fees]);
+  const filteredFees = fees.filter((f) => f.type === activeTab);
 
   return (
     <div className="dashboard-container">
@@ -107,84 +89,64 @@ function FeeStatus() {
         <div className="dashboard-content">
           <h2 className="page-title">Student Fee Status</h2>
 
-          {/* 🔹 FILTER BAR */}
-          <div className="filter-bar">
-
-            {/* Status Filter */}
-            <select
-              className="filter-select"
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
+          {/* TABS */}
+          <div className="tabs">
+            <button
+              className={activeTab === "hostel" ? "active" : ""}
+              onClick={() => setActiveTab("hostel")}
             >
-              <option value="">All Status</option>
-              <option value="Paid">Paid</option>
-              <option value="Pending">Pending</option>
-            </select>
+              Hostel Fee
+            </button>
 
-            {/* Year Filter */}
-            <select
-              className="filter-select"
-              value={yearFilter}
-              onChange={(e) => setYearFilter(e.target.value)}
+            <button
+              className={activeTab === "mess" ? "active" : ""}
+              onClick={() => setActiveTab("mess")}
             >
-              <option value="">All</option>
-              <option value="1">First Year</option>
-              <option value="2">Second Year</option>
-              <option value="3">Third Year</option>
-              <option value="4">Fourth Year</option>
-            </select>
-
-            {/* Hostel Filter */}
-            <select
-              className="filter-select"
-              value={hostelFilter}
-              onChange={(e) => setHostelFilter(e.target.value)}
-            >
-              <option value="">All Hostels</option>
-              <option value="Girls">Girls Hostel</option>
-              <option value="Boys">Boys Hostel</option>
-            </select>
-
+              Mess Fee
+            </button>
           </div>
 
-          {/* 🔹 TABLE */}
-          <div className="table-card">
-            <table className="fee-table">
-              <thead>
-                <tr>
-                  <th>Student Name</th>
-                  <th>Room No</th>
-                  <th>Hostel</th>
-                  <th>Year</th>
-                  <th>Fee Status</th>
+          {/* TABLE */}
+          <table className="fee-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Room</th>
+                <th>Hostel</th>
+                <th>Period</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {filteredFees.map((f, i) => (
+                <tr key={i}>
+                  <td>{f.name}</td>
+                  <td>{f.room}</td>
+                  <td>{f.hostel}</td>
+                  <td>{f.period}</td>
+
+                  <td>{f.status}</td>
+
+                  <td>
+                    {f.status === "Paid" ? (
+                      <button
+                        className="view-btn1"
+                        onClick={() => handleView(f.regNo)}
+                      >
+                        View Receipt
+                      </button>
+                    ) : (
+                      <span style={{ color: "gray" }}>
+                        Not Paid
+                      </span>
+                    )}
+                  </td>
                 </tr>
-              </thead>
-
-              <tbody>
-                {filteredFees.length === 0 ? (
-                  <tr>
-                    <td colSpan="5" className="no-data">
-                      No records found
-                    </td>
-                  </tr>
-                ) : (
-                  filteredFees.map((f) => (
-                    <tr key={f._id}>
-                      <td>{f.name}</td>
-                      <td>{f.room}</td>
-                      <td>{f.hostel}</td>
-                      <td>{f.year}</td>
-                      <td>
-                        <span className={`status ${f.status?.toLowerCase()}`}>
-                          {f.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

@@ -39,6 +39,7 @@ function FoodMenu() {
       alert("Menu Updated Successfully");
       setIsEdit(false);
       fetchMenu(); // refresh after save
+      
     } catch (error) {
       console.log(error);
       alert("Failed to update menu");
@@ -47,7 +48,6 @@ function FoodMenu() {
 
   return (
     <div className="dashboard-container">
-      
       <AdminSidebar />
 
       <div className="main-content1">

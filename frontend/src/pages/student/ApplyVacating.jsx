@@ -23,6 +23,7 @@ function ApplyVacating() {
     semester: "",
     registerNo: "",
     hostelName: "",
+    hostelType: "",
     roomNo: "",
     dateJoining: "",
     dateVacating: "",
@@ -73,6 +74,7 @@ function ApplyVacating() {
         year: data.college?.yearOfStudy || "",
         semester: data.college?.yearOfStudy || "",
         hostelName: data.hostel?.hostelName || "",
+        hostelType: data.hostel?.hostelType || "",
         roomNo: data.hostel?.room || "",
         mobile: data.mobile || "",
       }));

@@ -1,66 +1,41 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import "../../styles/WardenPages.css";
 import WardenSidebar from "../../components/WardenSidebar";
+import "../../styles/WardenPages.css"; // Same as ViewMenu
 
 function WardenDashboard() {
+  const API = "http://localhost:5000";
+
   const [warden, setWarden] = useState(null);
-  const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  /* ================= FETCH DATA ================= */
+  // Load warden from localStorage
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const wardenData = JSON.parse(localStorage.getItem("warden"));
-
-        if (!wardenData) {
-          window.location.href = "/warden/login";
-          return;
-        }
-
-        setWarden(wardenData);
-
-        // ✅ Fetch dashboard stats
-        const res = await axios.get(
-          `http://localhost:5000/api/dashboard?hostelType=${wardenData.hostelType}`
-        );
-
-        setStats(res.data);
-
-      } catch (err) {
-        console.error("Dashboard error:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+    const data = localStorage.getItem("warden");
+    if (!data) {
+      window.location.href = "/warden/login";
+      return;
+    }
+    const parsed = JSON.parse(data);
+    fetchWardenData(parsed.email);
   }, []);
 
-  /* ================= LOADING ================= */
-  if (loading) {
-    return (
-      <div className="warden-layout">
-        <WardenSidebar />
-        <div className="warden-main">
-          <h2>Loading dashboard...</h2>
-        </div>
-      </div>
-    );
-  }
+  // Fetch warden data from backend
+  const fetchWardenData = async (email) => {
+    try {
+      const res = await axios.get(`${API}/api/warden-dashboard/stats`, {
+        params: { email },
+      });
+      setWarden(res.data.warden);
+    } catch (err) {
+      console.error("Failed fetching warden data:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  /* ================= SAFETY ================= */
-  if (!warden || !stats) {
-    return (
-      <div className="warden-layout">
-        <WardenSidebar />
-        <div className="warden-main">
-          <h2>Failed to load dashboard</h2>
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <h2>Loading dashboard...</h2>;
+  if (!warden) return <h2>No Warden Data Found</h2>;
 
   const isBoys = warden.hostelType === "boys";
 
@@ -68,88 +43,40 @@ function WardenDashboard() {
     <div className="warden-layout">
       <WardenSidebar />
 
-      <div className="warden-main">
-
-        {/* 🔔 Notifications */}
-        <div className="warden-notification">
-          <span>🔔 {stats.pendingLeaves || 0} Leave Requests</span>
-          <span>⚠ {stats.complaints || 0} Complaints Pending</span>
-          <span>📅 Attendance: {stats.attendancePercent || 0}%</span>
+      <div className="warden-page">
+        {/* Page Header */}
+        <div className="page-header">
+          <h1>{isBoys ? "Boys Local Warden Dashboard" : "Girls Local Warden Dashboard"}</h1>
+          <p className="breadcrumb">Dashboard / Local Warden</p>
         </div>
 
-        {/* Welcome */}
-        <div className="warden-welcome">
-          <h1>Welcome Back, {warden.name}</h1>
-          <p>
-            {isBoys
-              ? "Overview of Boys Hostel activities."
-              : "Overview of Girls Hostel activities."}
-          </p>
-        </div>
-
-        {/* Profile */}
-        <div className="warden-profile-card">
-          <img
-            src={warden.image || "/images/profile.jpg"}
-            alt="profile"
-            className="warden-profile-img"
-          />
-          <h2>{isBoys ? "Boys Warden" : "Girls Warden"}</h2>
-          <p>{warden.dept}</p>
-        </div>
-
-        {/* Stats */}
-        <div className="warden-stats-grid">
-
-          <div className="warden-stat blue">
-            <h3>Total Students</h3>
-            <p>{stats.totalStudents || 0}</p>
+        <div className="info-wrapper">
+          {/* Profile Card */}
+          <div className="profile-card">
+            <img
+              src={warden.image ? `${API}${warden.image}` : "/images/profile.jpg"}
+              alt="profile"
+              className="profile-img"
+              onError={(e) => (e.target.src = "/images/profile.jpg")}
+            />
+            <h3>{warden.name}</h3>
+            <p>{warden.email}</p>
+            <p>
+              <b>Hostel Type:</b> {isBoys ? "Boys Hostel" : "Girls Hostel"}
+            </p>
           </div>
 
-          <div className="warden-stat orange">
-            <h3>Pending Leaves</h3>
-            <p>{stats.pendingLeaves || 0}</p>
+          {/* General Info Card */}
+          <div className="general-card">
+            <h3>📄 Warden Information</h3>
+            <div className="info-grid">
+              <p><b>ROLE</b> : Local Warden</p>
+              <p><b>MOBILE</b> : {warden.phone || "Not Available"}</p>
+              <p><b>EMAIL</b> : {warden.email}</p>
+              <p><b>STATUS</b> : Active</p>
+            </div>
           </div>
-
-          <div className="warden-stat red">
-            <h3>Complaints</h3>
-            <p>{stats.complaints || 0}</p>
-          </div>
-
-          <div className="warden-stat green">
-            <h3>Attendance %</h3>
-            <p>{stats.attendancePercent || 0}%</p>
-          </div>
-
         </div>
-
-        {/* Activity */}
-        <div className="warden-activity-card">
-          <h3>Recent Activity</h3>
-
-          <ul>
-            {stats.recentLeaves?.length > 0 ? (
-              stats.recentLeaves.map((leave, i) => (
-                <li key={i}>
-                  ✔ {leave.studentName} applied leave
-                </li>
-              ))
-            ) : (
-              <li>No recent leave activity</li>
-            )}
-
-            {stats.recentComplaints?.length > 0 ? (
-              stats.recentComplaints.map((c, i) => (
-                <li key={i}>
-                  ✔ Complaint: {c.category}
-                </li>
-              ))
-            ) : (
-              <li>No recent complaints</li>
-            )}
-          </ul>
-        </div>
-
       </div>
     </div>
   );

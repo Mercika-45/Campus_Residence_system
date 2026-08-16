@@ -1,6 +1,6 @@
 import "../../styles/WardenPages.css";
 import WardenSidebar from "../../components/WardenSidebar";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 
 function Sanitization() {
   const [area, setArea] = useState("");
@@ -15,25 +15,38 @@ function Sanitization() {
   const [filterDate, setFilterDate] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (!area || !areaType || !date || !status) {
-      setMessage("Please fill all required fields.");
-      return;
-    }
+  if (!area || !areaType || !date || !status) {
+    setMessage("Please fill all required fields.");
+    return;
+  }
 
-    const newRecord = {
-      id: Date.now(),
-      area,
-      areaType,
-      date,
-      status,
-      notes,
-    };
+  const warden = JSON.parse(localStorage.getItem("warden"));
+  const wardenType = warden?.hostelType?.toLowerCase();
 
-    setRecords([...records, newRecord]);
-    setMessage("Sanitization record added successfully!");
+  try {
+    const res = await fetch("http://localhost:5000/api/sanitization/add", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        area,
+        areaType,
+        date,
+        status,
+        notes,
+        wardenType
+      })
+    });
+
+    const data = await res.json();
+
+    setMessage(data.message || "Saved successfully!");
+
+    fetchRecords(); // refresh from DB
 
     setArea("");
     setAreaType("");
@@ -42,16 +55,39 @@ function Sanitization() {
     setNotes("");
 
     setTimeout(() => setMessage(""), 3000);
-  };
+
+  } catch (err) {
+    console.error(err);
+    setMessage("Error saving record");
+  }
+};
+const fetchRecords = async () => {
+  try {
+    const warden = JSON.parse(localStorage.getItem("warden"));
+    const wardenType = warden?.hostelType;
+
+    const res = await fetch(
+      `http://localhost:5000/api/sanitization?wardenType=${wardenType}`
+    );
+
+    const data = await res.json();
+    setRecords(data);
+
+  } catch (err) {
+    console.error(err);
+  }
+};
 
   // ✅ Filter logic
-  const filteredRecords = records.filter((rec) => {
-    return (
-      (filterDate ? rec.date === filterDate : true) &&
-      (filterStatus ? rec.status === filterStatus : true)
-    );
-  });
-
+ const filteredRecords = records.filter((rec) => {
+  return (
+    (filterDate ? rec.date === filterDate : true) &&
+    (filterStatus ? rec.status === filterStatus : true)
+  );
+});
+useEffect(() => {
+  fetchRecords();
+}, []);
   return (
     <div className="warden-layout">
       <WardenSidebar />

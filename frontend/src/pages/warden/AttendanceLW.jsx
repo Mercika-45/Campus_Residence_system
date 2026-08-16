@@ -9,26 +9,34 @@ function Attendance() {
   const [showView, setShowView] = useState(false);
   const [students, setStudents] = useState([]);
 
-  /* ================= FETCH STUDENTS ================= */
+  // ✅ Get warden info from localStorage
+  const warden = JSON.parse(localStorage.getItem("warden"));
+  const wardenType = warden?.hostelType?.toLowerCase(); // "boys" or "girls"
 
+  /* ================= FETCH STUDENTS ================= */
   const fetchStudents = async () => {
-    try {
-      const res = await fetch(
-        `http://localhost:5000/api/attendance/students?year=${year}`
-      );
-      const data = await res.json();
-      setStudents(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  try {
+    const res = await fetch(
+      `http://localhost:5000/api/attendance/students?year=${year}`
+    );
+    let data = await res.json();
+
+    // Filter students by warden type correctly
+    data = Array.isArray(data)
+      ? data.filter((s) => s.hostel?.hostelType?.toLowerCase() === wardenType)
+      : [];
+
+    setStudents(data);
+  } catch (err) {
+    console.error(err);
+  }
+};
 
   useEffect(() => {
     fetchStudents();
   }, [year]);
 
   /* ================= HANDLE CHANGE ================= */
-
   const handleAttendanceChange = (id, value) => {
     setAttendanceData((prev) => ({
       ...prev,
@@ -37,7 +45,6 @@ function Attendance() {
   };
 
   /* ================= SUBMIT ================= */
-
   const handleSubmit = async () => {
     try {
       if (!date) {
@@ -55,18 +62,12 @@ function Attendance() {
 
       const res = await fetch("http://localhost:5000/api/attendance/mark", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          date,
-          attendance: payload
-        })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ date, attendance: payload })
       });
 
       const data = await res.json();
       alert(data.message || "Attendance submitted!");
-
     } catch (err) {
       console.error(err);
       alert("Error submitting attendance");
@@ -74,7 +75,6 @@ function Attendance() {
   };
 
   /* ================= FETCH VIEW ================= */
-
   const fetchAttendance = async () => {
     try {
       if (!date) return;
@@ -87,16 +87,11 @@ function Attendance() {
 
       const mapped = {};
       data.forEach((item) => {
-        const student = students.find(
-          (s) => s.studentName === item.studentName
-        );
-        if (student) {
-          mapped[student._id] = item.status;
-        }
+        const student = students.find((s) => s.studentName === item.studentName);
+        if (student) mapped[student._id] = item.status;
       });
 
       setAttendanceData(mapped);
-
     } catch (err) {
       console.error(err);
     }
@@ -111,7 +106,6 @@ function Attendance() {
   return (
     <div className="warden-layout">
       <WardenSidebar />
-
       <div className="warden-page attendance-page">
         <div className="page-header">
           <h1>Attendance Management</h1>
@@ -120,10 +114,7 @@ function Attendance() {
 
         {/* Toggle Button */}
         <div style={{ textAlign: "right", marginBottom: "20px" }}>
-          <button
-            className="action-btn"
-            onClick={() => setShowView(!showView)}
-          >
+          <button className="action-btn" onClick={() => setShowView(!showView)}>
             {showView ? "Mark Attendance" : "View Attendance"}
           </button>
         </div>
@@ -134,11 +125,7 @@ function Attendance() {
             <div className="attendance-controls">
               <div>
                 <label>Select Date</label>
-                <input
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                />
+                <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
               </div>
 
               <div className="year-buttons">
@@ -174,12 +161,7 @@ function Attendance() {
                           <select
                             className="attendance-select"
                             value={attendanceData[student._id] || ""}
-                            onChange={(e) =>
-                              handleAttendanceChange(
-                                student._id,
-                                e.target.value
-                              )
-                            }
+                            onChange={(e) => handleAttendanceChange(student._id, e.target.value)}
                           >
                             <option value="">Select</option>
                             <option value="Present">Present</option>
@@ -207,11 +189,7 @@ function Attendance() {
             <div className="attendance-controls">
               <div>
                 <label>Select Date</label>
-                <input
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                />
+                <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
               </div>
 
               <div className="year-buttons">
@@ -245,9 +223,7 @@ function Attendance() {
                         <td>{student?.hostel?.hostelName || "-"}</td>
                         <td>{year} Year</td>
                         <td>{student?.hostel?.room || "-"}</td>
-                        <td>
-                          {attendanceData[student._id] || "Not Marked"}
-                        </td>
+                        <td>{attendanceData[student._id] || "Not Marked"}</td>
                       </tr>
                     ))
                   )}

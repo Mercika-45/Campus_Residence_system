@@ -1,5 +1,5 @@
 import express from "express";
-
+import { getStudentByRegNo } from "../controllers/outEntryController.js";
 import {
   createOutEntry,
   getOutEntries,
@@ -9,6 +9,7 @@ import {
 
 const router = express.Router();
 
+router.get("/regno/:regNo", getStudentByRegNo);
 router.post("/", createOutEntry);
 router.get("/", getOutEntries);
 router.put("/:id", updateOutEntry);

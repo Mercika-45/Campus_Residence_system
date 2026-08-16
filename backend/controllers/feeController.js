@@ -1,156 +1,169 @@
-import FeeReceipt from "../models/FeeReceipt.js";
-import FeeControl from "../models/FeeControl.js"; // 🔥 NEW
+import Fee from "../models/Fee.js";
 
-/* ================= UPLOAD RECEIPT ================= */
-
-export const uploadReceipt = async (req, res) => {
-  try {
-    const { studentName, regNo, feeType, period } = req.body;
-
-    /* 🔥 CHECK GLOBAL CONTROL */
-    const control = await FeeControl.findOne({ feeType, period });
-
-    if (!control || !control.isOpen) {
-      return res.status(400).json({
-        message: "Upload not allowed for this period"
-      });
-    }
-
-    /* 🔍 FIND EXISTING RECEIPT */
-    let fee = await FeeReceipt.findOne({
-      regNo,
-      feeType,
-      period
-    });
-
-    /* ❌ Already paid */
-    if (fee && fee.status === "Paid") {
-      return res.status(400).json({
-        message: "Already paid"
-      });
-    }
-
-    /* ❌ No file */
-    if (!req.file) {
-      return res.status(400).json({
-        message: "No file uploaded"
-      });
-    }
-
-    /* ✅ CREATE OR UPDATE */
-    if (fee) {
-      fee.receipt = req.file.filename;
-      fee.status = "Pending";
-      fee.rejectReason = "";
-      fee.uploadedAt = new Date();
-    } else {
-      fee = new FeeReceipt({
-        studentName,
-        regNo,
-        feeType,
-        period,
-        receipt: req.file.filename,
-        status: "Pending"
-      });
-    }
-
-    await fee.save();
-
-    res.json({ message: "Receipt uploaded successfully" });
-
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-/* ================= STUDENT RECEIPTS ================= */
-
+/* ================= GET STUDENT RECEIPTS ================= */
 export const getStudentReceipts = async (req, res) => {
   try {
-    const receipts = await FeeReceipt.find({
-      regNo: req.params.regNo
-    }).sort({ feeType: 1, period: 1 });
+    const regNo = req.params.regNo.trim();
 
-    res.json(receipts);
+ console.log("FETCH PARAM 👉", regNo);
 
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+const data = await Fee.find({
+  regNo: { $regex: `^${regNo}$`, $options: "i" }
+});
+
+console.log("DB RESULT 👉", data);
+
+    console.log("FETCHED RECEIPTS 👉", data);
+
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching data" });
   }
 };
 
-/* ================= ALL RECEIPTS ================= */
-
-export const getAllReceipts = async (req, res) => {
+/* ================= MAKE PAYMENT ================= */
+export const makePayment = async (req, res) => {
   try {
-    const { status, feeType } = req.query;
+    console.log("REQ BODY 👉", req.body);
 
-    let filter = {};
-    if (status) filter.status = status;
-    if (feeType) filter.feeType = feeType;
+    // 🔥 CLEAN DATA (VERY IMPORTANT)
+    const regNo = req.body.regNo.trim().toUpperCase();
+   const period = req.body.period.trim().toLowerCase();
+const feeType = req.body.feeType.trim().toLowerCase();
 
-    const receipts = await FeeReceipt.find(filter)
-      .sort({ uploadedAt: -1 });
+    const { studentName, amount, txnId } = req.body;
 
-    res.json(receipts);
+    console.log("CLEAN DATA 👉", { regNo, feeType, period });
 
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+    // 🔍 Check if record already exists
+    let record = await Fee.findOne({ regNo, feeType, period });
 
-/* ================= APPROVE ================= */
+    if (record) {
+      // ✅ UPDATE EXISTING
+      record.status = "Paid";
+      record.amount = amount;
+      record.txnId = txnId;
+      record.paymentMethod = "Online";
 
-export const approveReceipt = async (req, res) => {
-  try {
-    const fee = await FeeReceipt.findById(req.params.id);
+      await record.save();
 
-    if (!fee) {
-      return res.status(404).json({
-        message: "Receipt not found"
+      console.log("UPDATED 👉", record);
+    } else {
+      // ✅ CREATE NEW
+      record = await Fee.create({
+        regNo,
+        studentName,
+        feeType,
+        period,
+        amount,
+        txnId,
+        paymentMethod: "Online",
+        status: "Paid",
       });
+
+      console.log("CREATED 👉", record);
     }
 
-    if (fee.status === "Paid") {
+    res.json({
+      success: true,
+      message: "Payment saved successfully",
+      record,
+    });
+
+  } catch (err) {
+    console.error("ERROR 👉", err);
+
+    // 🔥 HANDLE DUPLICATE ERROR
+    if (err.code === 11000) {
       return res.status(400).json({
-        message: "Already approved"
+        message: "Payment already exists",
       });
     }
 
-    fee.status = "Paid";
-    fee.approvedAt = new Date();
+    res.status(500).json({
+      message: "Payment failed",
+    });
+  }
+};
+/* ================= DELETE FEE ================= */
 
-    await fee.save();
+export const deleteFee = async (req, res) => {
+  try {
+    const { regNo, feeType, period } = req.body;
 
-    res.json({ message: "Payment Approved" });
+    const cleanRegNo = regNo.trim();
+    const cleanType = feeType.toLowerCase().trim();
+    const cleanPeriod = period.toLowerCase().trim();
+
+    const deleted = await Fee.findOneAndDelete({
+      regNo: cleanRegNo,
+      feeType: cleanType,
+      period: cleanPeriod,
+    });
+
+    if (!deleted) {
+      return res.status(404).json({ message: "Record not found" });
+    }
+
+    res.json({ message: "Deleted successfully" });
 
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+/* ================= GET ALL FEES ================= */
 
-/* ================= REJECT ================= */
-
-export const rejectReceipt = async (req, res) => {
+export const getAllFees = async (req, res) => {
   try {
-    const { reason } = req.body;
+    const data = await Fee.find();
 
-    const fee = await FeeReceipt.findById(req.params.id);
+    console.log("ALL FEES 👉", data);
 
-    if (!fee) {
-      return res.status(404).json({
-        message: "Receipt not found"
-      });
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching all fees" });
+  }
+};
+export const promoteSemester = async (req, res) => {
+  try {
+    const students = await Student.find({
+      status: "approved",
+      vacated: false
+    });
+
+    const year = new Date().getFullYear();
+
+    for (const student of students) {
+
+      let sem = Number(student?.college?.semester);
+
+      if (!sem) continue;
+
+      // promote semester
+      if (sem < 8) {
+        student.college.semester = sem + 1;
+      }
+
+      // final semester → mark vacated
+      else if (sem === 8) {
+        student.vacated = true;
+        student.vacatedYear = year;
+      }
+
+      await student.save();
     }
 
-    fee.status = "Rejected";
-    fee.rejectReason = reason || "Invalid receipt";
-    fee.rejectedAt = new Date();
+    res.json({
+      message: "Semester promoted successfully from Fee Controller"
+    });
 
-    await fee.save();
-
-    res.json({ message: "Receipt Rejected" });
-
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch (err) {
+    console.error("PROMOTE ERROR:", err);
+    res.status(500).json({
+      message: "Promotion failed",
+      error: err.message
+    });
   }
 };

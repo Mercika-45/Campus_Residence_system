@@ -1,0 +1,127 @@
+/* MAIN WRAPPER */
+.dummy-bank-page {
+  min-height: 100vh;
+  background: #f4f6f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* CARD */
+.dummy-card {
+  width: 600px;
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* HEADINGS */
+.dummy-card h2 {
+  text-align: center;
+  color: #1e88e5;
+}
+
+.dummy-card h3 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* DROPDOWN */
+.dropdown-box {
+  margin-bottom: 15px;
+}
+
+.dropdown-box label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.dropdown-box select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+/* FORM */
+.dummy-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.dummy-form input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+/* FULL WIDTH INPUT */
+.full-input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+/* PAYMENT METHOD */
+.payment-method {
+  margin-bottom: 15px;
+}
+
+.payment-method label {
+  margin-right: 20px;
+}
+
+/* CARD BOX */
+.card-box {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.card-box input {
+  flex: 1;
+  padding: 10px;
+}
+
+/* FEE BOX */
+.fee-box {
+  background: #f1f5f9;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.fee-box p,
+.fee-box h3 {
+  display: flex;
+  justify-content: space-between;
+}
+
+.fee-box h3 {
+  color: #1e88e5;
+}
+
+/* BUTTON */
+.pay-btn {
+  
+  padding: 12px;
+  background: linear-gradient(90deg, #1e88e5, #1565c0);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.pay-btn:hover {
+  background: #0d47a1;
+}
+
+.pay-btn:disabled {
+  background: gray;
+}

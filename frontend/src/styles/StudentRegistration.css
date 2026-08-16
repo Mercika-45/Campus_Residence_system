@@ -332,8 +332,9 @@ th {
 
 .room-card {
   border: 1px solid #ccc;
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 10px;
+  width: 150px;
   text-align: center;
   background: #f9f9f9;
 }
@@ -373,4 +374,103 @@ th {
   margin-top: 15px;
   color: green;
   font-weight: 600;
+}
+.room-card {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 10px;
+  width: 150px;
+  text-align: center;
+  background: #f9f9f9;
+}
+
+.bed-container {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.bed-btn {
+  padding: 8px 12px;
+  margin: 5px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* ✅ FREE BED (Green) */
+.bed-btn.free {
+  background-color: #4CAF50;
+  color: white;
+}
+
+/* ❌ OCCUPIED BED (Red) */
+.bed-btn.occupied {
+  background-color: #e74c3c;
+  color: white;
+  cursor: not-allowed;
+}
+
+/* ⭐ SELECTED BED (Blue) */
+.bed-btn.selected {
+  background-color: #3498db;
+  color: white;
+}
+.room-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.room-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  transition: 0.2s;
+}
+
+.room-card:hover {
+  transform: translateY(-3px);
+}
+
+.room-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.room-btn {
+  width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
+  background: #007bff;
+  color: white;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.room-btn.active {
+  background: green;
+}
+
+.bed-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.bed {
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: white;
+  cursor: pointer;
+}
+
+.bed.active-bed {
+  background: green;
+  color: white;
 }

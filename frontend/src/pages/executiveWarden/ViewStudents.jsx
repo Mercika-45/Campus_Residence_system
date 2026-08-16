@@ -18,14 +18,30 @@ function ViewStudents() {
   const location = useLocation();
 
   /* ===== FILTER ===== */
+// ✅ FIRST define this
+const executive = JSON.parse(localStorage.getItem("executiveWarden"));
+const wardenType = executive?.hostelType;
 
-  const applyGender = (list) =>
-    genderFilter
-      ? list.filter(
-          (s) => s.gender?.toLowerCase() === genderFilter.toLowerCase()
-        )
-      : list;
+// ✅ THEN use it
+const applyGender = (list) => {
+  let filtered = list;
 
+  if (wardenType) {
+    filtered = filtered.filter(
+      (s) =>
+        s.gender?.toLowerCase() === wardenType.toLowerCase()
+    );
+  }
+
+  if (genderFilter) {
+    filtered = filtered.filter(
+      (s) =>
+        s.gender?.toLowerCase() === genderFilter.toLowerCase()
+    );
+  }
+
+  return filtered;
+};
   const filteredNew = applyGender(newStudentsData);
 
   const filteredExisting = applyGender(
@@ -92,7 +108,7 @@ function ViewStudents() {
 
     fetchNewStudents();
     fetchApprovedStudents();
-    
+     fetchOldStudents();
   }, [location]);
 
   useEffect(() => {

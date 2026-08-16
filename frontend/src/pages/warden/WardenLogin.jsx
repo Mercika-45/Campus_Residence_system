@@ -44,10 +44,16 @@ const handleLogin = async () => {
     localStorage.setItem("token", token);
 
     // 🔥 Store separately based on role
-    if (user.role === "warden") {
-      localStorage.setItem("warden", JSON.stringify(user));
-      navigate("/warden/dashboard");
-    } 
+   if (user.role === "warden") {
+  localStorage.setItem("warden", JSON.stringify({
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    hostelType: user.hostelType // ✅ important for filtering complaints
+  }));
+  navigate("/warden/dashboard");
+}
     else if (user.role === "executive") {
       localStorage.setItem("executiveWarden", JSON.stringify(user));
       navigate("/executive/dashboard");

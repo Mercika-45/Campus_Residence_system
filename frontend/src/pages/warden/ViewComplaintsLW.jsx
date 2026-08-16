@@ -6,22 +6,25 @@ import WardenSidebar from "../../components/WardenSidebar";
 function ViewComplaints() {
   const [complaints, setComplaints] = useState([]);
   const [filter, setFilter] = useState("All");
-
+  const warden = JSON.parse(localStorage.getItem("warden"));
+const wardenType = warden?.hostelType?.toLowerCase(); // "boys" or "girls"/ "boys" or "girls"
   // 🔹 Fetch complaints from backend
   useEffect(() => {
     fetchComplaints();
   }, []);
 
   const fetchComplaints = async () => {
-    try {
-      const res = await axios.get(
-        "http://localhost:5000/api/complaints"
-      );
-      setComplaints(res.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  try {
+    const token = localStorage.getItem("token"); // if your API requires authentication
+    const res = await axios.get(
+      `http://localhost:5000/api/complaints?hostelType=${wardenType}`,
+      { headers: { Authorization: `Bearer ${token}` } } // optional
+    );
+    setComplaints(res.data);
+  } catch (error) {
+    console.error(error);
+  }
+};
 
   // 🔹 Warden marks complaint as Completed
   const markCompleted = async (id) => {
@@ -43,11 +46,14 @@ function ViewComplaints() {
   });
 
   // 🔹 Apply Filter
-  const filteredComplaints =
-    filter === "All"
-      ? sortedComplaints
-      : sortedComplaints.filter((c) => c.status === filter);
+  const filteredComplaints = sortedComplaints.filter((c) => {
+  // ✅ Only complaints for this warden's hostel
+  if (!c.hostelType.toLowerCase().includes(wardenType)) return false;
 
+  // ✅ Apply Pending/Resolved filter
+  if (filter === "All") return true;
+  return c.status === filter;
+});
   return (
     <div className="warden-layout">
       <WardenSidebar />

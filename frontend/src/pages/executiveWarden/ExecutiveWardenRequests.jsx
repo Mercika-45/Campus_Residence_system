@@ -65,10 +65,17 @@ function ExecutiveWardenRequests() {
         fetchLeaves();
       }
 
-      if (type === "vacating") {
-        await axios.put(`${API}/vacating/approve/${id}`);
-        fetchVacating();
-      }
+     if (type === "vacating") {
+  await axios.put(`${API}/vacating/approve/${id}`);
+  console.log("✅ VACATING API CALLED");
+
+  // 🔥 REMOVE approved request from UI instantly
+  setVacatingRequests((prev) =>
+    prev.map((req) =>
+      req._id === id ? { ...req, status: "Approved" } : req
+    )
+  );
+}
 
       setSelectedRequest(null);
       setModalType(null);
@@ -160,62 +167,67 @@ function ExecutiveWardenRequests() {
   );
 
   const renderTable = (data, type) => {
-    const filtered = filterByAppliedDate(data);
-    const sorted = sortRequests(filtered, type);
+  const executive = JSON.parse(localStorage.getItem("executiveWarden"));
+  const wardenType = executive?.hostelType; // boys / girls
+
+  // ✅ Filter hostel type
+  let filteredData = data.filter((req) => {
+    if (!wardenType) return true;
 
     return (
-      <>
-       <div style={{ marginBottom: "8px", display: "flex", alignItems: "center", gap: "8px" }}>
-  <label style={{ fontSize: "15px" }}>
-    Applied On:
-  </label>
-  <input
-    type="date"
-    value={appliedDateFilter}
-    onChange={(e) => setAppliedDateFilter(e.target.value)}
-    style={{
-      padding: "3px 6px",
-      fontSize: "14px",
-      height: "38px",
-      width: "160px"
-    }}
-  />
-</div>
+  req.hostelType === wardenType ||
+  req.hostelName?.toLowerCase().includes(wardenType.toLowerCase())
+);
+  });
 
-        <table className="request-table">
-          <thead>
+  // ✅ Filter by date
+  filteredData = filterByAppliedDate(filteredData);
+
+  // ✅ Sort
+  const sorted = sortRequests(filteredData, type);
+
+  return (
+    <>
+      <div style={{ marginBottom: "8px", display: "flex", gap: "8px" }}>
+        <label>Applied On:</label>
+        <input
+          type="date"
+          value={appliedDateFilter}
+          onChange={(e) => setAppliedDateFilter(e.target.value)}
+        />
+      </div>
+
+      <table className="request-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Register No</th>
+            <th>Semester</th>
+            <th>Hostel</th>
+            <th>Room No</th>
+            {type === "leave" && <th>Leave Type</th>}
+            <th>From Date</th>
+            <th>To Date</th>
+            <th>Applied On</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {sorted.length === 0 ? (
             <tr>
-              <th>Name</th>
-              <th>Register No</th>
-              <th>Semester</th>
-              <th>Hostel</th>
-              <th>Room No</th>
-              {type === "leave" && <th>Leave Type</th>}
-              <th>From Date</th>
-              <th>To Date</th>
-              <th>Applied On</th>
-              <th>Status</th>
+              <td colSpan={type === "leave" ? 10 : 9}>
+                No requests
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {sorted.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={type === "leave" ? 10 : 9}
-                  style={{ textAlign: "center" }}
-                >
-                  No requests
-                </td>
-              </tr>
-            ) : (
-              sorted.map((req) => renderTableRow(req, type))
-            )}
-          </tbody>
-        </table>
-      </>
-    );
-  };
-
+          ) : (
+            sorted.map((req) => renderTableRow(req, type))
+          )}
+        </tbody>
+      </table>
+    </>
+  );
+};
   // 🔒 Vacating logic unchanged
   const renderVacatingRow = (req) => (
     <tr
@@ -242,36 +254,62 @@ function ExecutiveWardenRequests() {
     </tr>
   );
 
-  const renderVacatingTable = (data) => (
-    <table className="request-table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Branch</th>
-          <th>Year</th>
-          <th>Semester</th>
-          <th>Hostel</th>
-          <th>Date Joining</th>
-          <th>Date Vacating</th>
-          <th>Reason</th>
-          <th>No Dues</th>
-          <th>Applied On</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {data.length === 0 ? (
-          <tr>
-            <td colSpan="12" style={{ textAlign: "center" }}>
-              No requests
-            </td>
-          </tr>
-        ) : (
-          data.map((req) => renderVacatingRow(req))
-        )}
-      </tbody>
-    </table>
+  const renderVacatingTable = (data) => {
+  const executive = JSON.parse(localStorage.getItem("executiveWarden"));
+  const wardenType = executive?.hostelType;
+
+  let filteredData = data.filter((req) => {
+  if (!wardenType) return true;
+
+  return (
+    req.hostelType === wardenType ||
+    req.hostelName?.toLowerCase().includes(wardenType.toLowerCase())
   );
+});
+
+  filteredData = filterByAppliedDate(filteredData);
+
+  return (
+    <>
+      <div style={{ marginBottom: "8px", display: "flex", gap: "8px" }}>
+        <label>Applied On:</label>
+        <input
+          type="date"
+          value={appliedDateFilter}
+          onChange={(e) => setAppliedDateFilter(e.target.value)}
+        />
+      </div>
+
+      <table className="request-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Branch</th>
+            <th>Year</th>
+            <th>Semester</th>
+            <th>Hostel</th>
+            <th>Date Joining</th>
+            <th>Date Vacating</th>
+            <th>Reason</th>
+            <th>No Dues</th>
+            <th>Applied On</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {filteredData.length === 0 ? (
+            <tr>
+              <td colSpan="12">No requests</td>
+            </tr>
+          ) : (
+            filteredData.map((req) => renderVacatingRow(req))
+          )}
+        </tbody>
+      </table>
+    </>
+  );
+};
 
   return (
     <div className="executive-page">
@@ -319,7 +357,10 @@ function ExecutiveWardenRequests() {
               >
                 <h3>Request Details</h3>
                 <p><strong>Name:</strong> {selectedRequest.studentName}</p>
-                <p><strong>Register No:</strong> {selectedRequest.registerNo}</p>
+                <p>
+  <strong>Register No:</strong>{" "}
+  {selectedRequest.registerNo || selectedRequest.registerNumber || "-"}
+</p>
                 <p><strong>Semester:</strong> {selectedRequest.semester}</p>
                 <p><strong>Hostel:</strong> {selectedRequest.hostelName}</p>
                 <p><strong>Room No:</strong> {selectedRequest.roomNo}</p>
@@ -328,9 +369,21 @@ function ExecutiveWardenRequests() {
                   <p><strong>Leave Type:</strong> {selectedRequest.leaveType}</p>
                 )}
 
-                <p><strong>From:</strong> {selectedRequest.fromDate?.substring(0, 10)}</p>
-                <p><strong>To:</strong> {selectedRequest.toDate?.substring(0, 10)}</p>
-                <p><strong>Applied On:</strong> {selectedRequest.appliedOn?.substring(0, 10)}</p>
+                {modalType === "vacating" && (
+  <>
+    <p><strong>Date Joining:</strong> {selectedRequest.dateJoining?.substring(0, 10)}</p>
+    <p><strong>Date Vacating:</strong> {selectedRequest.dateVacating?.substring(0, 10)}</p>
+    <p><strong>Reason:</strong> {selectedRequest.reason}</p>
+    <p><strong>No Dues:</strong> {selectedRequest.noDues}</p>
+    <p><strong>Remarks:</strong> {selectedRequest.remarks}</p>
+  </>
+)}
+               <p>
+  <strong>Applied On:</strong>{" "}
+  {selectedRequest.appliedOn
+    ? new Date(selectedRequest.appliedOn).toISOString().substring(0, 10)
+    : "-"}
+</p>
 
                 {modalType === "reduction" &&
                   !selectedRequest.reductionApproved && (
@@ -353,6 +406,15 @@ function ExecutiveWardenRequests() {
                       Approve Leave
                     </button>
                   )}
+                 {modalType === "vacating" && selectedRequest.status !== "Approved" && (
+  <button
+    onClick={() =>
+      handleApprove("vacating", selectedRequest._id)
+    }
+  >
+    Approve Vacating
+  </button>
+)}
 
                 <button
                   className="close-btn"

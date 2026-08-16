@@ -1,56 +1,38 @@
 import mongoose from "mongoose";
 
-const feeReceiptSchema = new mongoose.Schema({
+const FeeReceiptSchema = new mongoose.Schema(
+{
+  studentName: String,
+  regNo: String,
 
-  studentName: {
-    type: String,
-    required: true
-  },
+  gender: String,
+  year: String,
 
-  regNo: {
-    type: String,
-    required: true
-  },
+  hostel: String,
+  room: String,
+  hostelType: String, // boys / girls
 
-  feeType: {
-    type: String,
-    enum: ["hostel", "mess"],
-    required: true
-  },
+  feeType: String, // hostel | mess
+  period: String,
 
-  period: {
-    type: String,
-    required: true
-  },
-
-  receipt: {
-    type: String,
-    default: ""
-  },
+  receipt: String,
 
   status: {
     type: String,
-    enum: ["NotUploaded", "Pending", "Paid", "Rejected"],
-    default: "NotUploaded"
+    default: "Pending"
   },
 
-  rejectReason: {
-    type: String,
-    default: ""
-  },
-
-
-  /* 🔥 TRACK APPROVAL */
-  approvedAt: Date,
-
-  /* 🔥 TRACK REJECTION */
-  rejectedAt: Date,
+  rejectReason: String,
 
   uploadedAt: {
     type: Date,
     default: Date.now
-  }
+  },
 
-});
+  approvedAt: Date,
+  rejectedAt: Date
+},
+{ timestamps: true }
+);
 
-export default mongoose.model("FeeReceipt", feeReceiptSchema);
+export default mongoose.model("FeeReceipt", FeeReceiptSchema);

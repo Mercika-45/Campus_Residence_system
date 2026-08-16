@@ -10,6 +10,7 @@ const vacatingSchema = new mongoose.Schema(
     semester: { type: String, required: true },
     registerNo: { type: String, required: true },
     hostelName: { type: String, required: true },
+    hostelType: { type: String, required: true },
     roomNo: { type: String, required: true },
     dateJoining: { type: Date, required: true },
     dateVacating: { type: Date, required: true },

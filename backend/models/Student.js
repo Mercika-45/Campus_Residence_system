@@ -44,6 +44,7 @@ const collegeSchema = new mongoose.Schema({
   degree: String,
   department: String,
   yearOfStudy: String,
+   semester: String,
   yearOfPassing: String,
   regulation: String,
   admissionYear: String

@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import Student from "../models/Student.js";
 import User from "../models/User.js";
-
+import Hostel from "../models/Hostel.js";
 export const registerStudent = async (req, res) =>  {
   try {
 
@@ -191,6 +191,7 @@ const newStudent = new Student({
   degree: req.body.degree,
   department: req.body.department,
   yearOfStudy: req.body.yearOfStudy,
+  semester: req.body.semester,
   yearOfPassing: req.body.collegeYearOfPassing,
   regulation: req.body.collegeRegulation,
   admissionYear: req.body.collegeAdmissionYear
@@ -329,21 +330,85 @@ export const getStudentById = async (req, res) => {
 
 
 
-
-// Accept student
-// Accept student
 export const acceptStudent = async (req, res) => {
   try {
-    const student = await Student.findById(req.params.id);
-    if (!student) return res.status(404).json({ message: "Student not found" });
+    console.log("Accept ID:", req.params.id);
+    const student = await Student.findById(req.params.id).populate("userId");
+    console.log("Student Found:", student);
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
 
+    const { hostelName, block, room } = student.hostel || {};
+
+    if (!hostelName || !block || !room) {
+      return res.status(400).json({
+        message: "Hostel details missing for student"
+      });
+    }
+
+   const hostelData = await Hostel.findOne({
+  name: { $regex: `^${hostelName}$`, $options: "i" }
+});
+
+    if (!hostelData) {
+      return res.status(404).json({ message: "Hostel not found" });
+    }
+
+   console.log("Hostel Found:", hostelData?.name);
+
+console.log(
+  "Available Blocks:",
+  hostelData?.blocks.map(b => b.name)
+);
+
+const blockData = hostelData.blocks.find(
+  b => b.name.toLowerCase().includes(block.toLowerCase())
+);
+
+console.log("Matched Block:", blockData);
+
+if (blockData) {
+  console.log(
+    "Available Rooms:",
+    blockData.rooms.map(r => r.roomNo)
+  );
+}
+
+const roomData = blockData?.rooms.find(
+  r => String(r.roomNo) === String(room)
+);
+
+console.log("Matched Room:", roomData);
+    if (!roomData) {
+      return res.status(404).json({ message: "Room not found" });
+    }
+
+    if (roomData.students.length >= roomData.totalBeds) {
+      return res.status(400).json({ message: "No beds available" });
+    }
+
+    // ✅ APPROVE STUDENT
     student.status = "approved";
+
+    roomData.students.push({
+      regNo: student.regNo || student.registerNumber || "",
+      studentName: student.userId?.name || "Unknown",
+      year: student.college?.yearOfStudy || "",
+      department: student.college?.department || "Not Assigned",
+      hostelType: student.hostel?.hostelType || ""
+    });
+
+    roomData.occupied = roomData.students.length;
+
+    await hostelData.save();
     await student.save();
 
-    res.json({ message: "Student accepted", student });
+    return res.json({ message: "Student approved successfully" });
+
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
+    console.error("ACCEPT ERROR:", err);
+    return res.status(500).json({ message: err.message });
   }
 };
 export const rejectStudent = async (req, res) => {
@@ -412,6 +477,43 @@ export const promoteYear = async (req, res) => {
 
   }
 };
+
+export const promoteSemester = async (req, res) => {
+  try {
+    const students = await Student.find({
+      status: "approved",
+      vacated: false,
+    });
+
+    let updatedCount = 0;
+
+    for (const student of students) {
+      let sem = student?.college?.semester;
+
+      // convert safely (handles "1", 1, "Semester 1")
+      sem = Number(String(sem).match(/\d+/)?.[0]);
+
+      if (!sem) continue;
+
+      if (sem < 8) {
+        await Student.updateOne(
+          { _id: student._id },
+          { $set: { "college.semester": sem + 1 } }
+        );
+        updatedCount++;
+      }
+    }
+
+    res.json({
+      message: "Semester promoted successfully",
+      updatedCount
+    });
+
+  } catch (err) {
+    console.error("PROMOTE SEM ERROR:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
 // GET OLD / VACATED STUDENTS
 
 export const updateStudent = async (req, res) => {
@@ -478,5 +580,23 @@ if (req.body.hostel && typeof req.body.hostel === "string") {
       error: error.message
     });
 
+  }
+};
+// GET STUDENT BY REGISTER NUMBER
+export const getStudentByRegNo = async (req, res) => {
+  try {
+    const regNo = req.params.regNo.trim();
+
+    const student = await Student.findOne({
+      registerNumber: { $regex: `^${regNo}$`, $options: "i" }
+    });
+
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    res.json(student);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };

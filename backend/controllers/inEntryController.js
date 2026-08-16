@@ -5,36 +5,38 @@ import InEntry from "../models/InEntry.js";
 
 export const getStudentsOut = async (req, res) => {
   try {
+    const { wardenType } = req.query;
 
-    const outEntries = await OutEntry.find();
-    const returnedEntries = await InEntry.find();
+    let filter = { status: "Out" };
 
-    const returnedIds = returnedEntries.map(
-      (entry) => entry.outEntryId.toString()
-    );
+    if (wardenType) {
+      filter.wardenType = wardenType.toLowerCase();
+    }
 
-    const studentsOut = outEntries.filter(
-      (entry) => !returnedIds.includes(entry._id.toString())
-    );
+    const data = await OutEntry.find(filter);
 
-    res.json(studentsOut);
-
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };
-
 /* GET RETURNED STUDENTS */
 
 export const getReturnedEntries = async (req, res) => {
   try {
+    const { wardenType } = req.query;
 
-    const entries = await InEntry.find().sort({ actualReturn: -1 });
+    let filter = { status: "In" };
 
-    res.json(entries);
+    if (wardenType) {
+      filter.wardenType = wardenType.toLowerCase();
+    }
 
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+    const data = await OutEntry.find(filter);
+
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };
 

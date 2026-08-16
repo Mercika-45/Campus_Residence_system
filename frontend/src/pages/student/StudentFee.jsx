@@ -1,20 +1,22 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Sidebar from "../../components/Sidebar";
 import Topbar from "../../components/Topbar";
 import "../../styles/FeePage.css";
 
 function StudentFee() {
-
   const [studentName, setStudentName] = useState("");
   const [regNo, setRegNo] = useState("");
+  const [studentYear, setStudentYear] = useState("");
+  const [studentSemester, setStudentSemester] = useState("");
 
-  const [files, setFiles] = useState({});
   const [receipts, setReceipts] = useState([]);
   const [controls, setControls] = useState([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
+  const navigate = useNavigate();
   const API = "http://localhost:5000/api/fees";
 
   /* ================= FETCH STUDENT ================= */
@@ -35,29 +37,27 @@ function StudentFee() {
         const data = res.data;
 
         setStudentName(data.studentName || "");
-        setRegNo(
-          data.registerNumber
-            ? data.registerNumber.trim().toUpperCase()
-            : ""
-        );
+        setRegNo(data.registerNumber?.trim().toUpperCase() || "");
 
-      } catch (error) {
-        console.error("Student fetch error:", error);
+        // ✅ FIXED FIELDS
+        setStudentYear(data?.college?.yearOfStudy || "");
+        setStudentSemester(data?.college?.semester || "");
+
+      } catch (err) {
+        console.error(err);
       }
     };
 
     fetchStudent();
   }, []);
 
-  /* ================= LOAD DATA AFTER regNo ================= */
+  /* ================= LOAD RECEIPTS + CONTROL ================= */
   useEffect(() => {
     if (!regNo) return;
-
     fetchReceipts();
     fetchControls();
   }, [regNo]);
 
-  /* ================= FETCH RECEIPTS ================= */
   const fetchReceipts = async () => {
     try {
       setLoading(true);
@@ -70,65 +70,74 @@ function StudentFee() {
     }
   };
 
-  /* ================= FETCH GLOBAL CONTROL ================= */
   const fetchControls = async () => {
     try {
       const res = await axios.get(`${API}/control`);
       setControls(res.data || []);
     } catch {
-      setMessage("Failed to fetch global controls");
+      setMessage("Failed to fetch controls");
     }
   };
 
-  /* ================= UPLOAD ================= */
-  const uploadReceipt = async (type, period) => {
-    const file = files[period];
-
-    if (!file) return setMessage("Select file first");
-
-    const formData = new FormData();
-    formData.append("studentName", studentName);
-    formData.append("regNo", regNo);
-    formData.append("feeType", type);
-    formData.append("period", period);
-    formData.append("receipt", file);
-
-    try {
-      await axios.post(`${API}/upload`, formData);
-
-      setMessage("Uploaded successfully");
-
-      setFiles((prev) => ({ ...prev, [period]: null }));
-      fetchReceipts();
-
-    } catch (err) {
-      setMessage(err.response?.data?.message || "Upload failed");
-    }
-  };
-
-  /* ================= FIND RECORD ================= */
+  /* ================= HELPERS ================= */
   const getRecord = (type, period) =>
-    receipts.find((r) => r.feeType === type && r.period === period);
+    receipts.find(
+      (r) =>
+        r.feeType?.toLowerCase() === type.toLowerCase() &&
+        r.period?.toLowerCase() === period.toLowerCase()
+    );
 
-  /* ================= GET CONTROL ================= */
   const getControl = (type, period) =>
-    controls.find((c) => c.feeType === type && c.period === period);
+    controls.find(
+      (c) =>
+        c.feeType?.toLowerCase() === type.toLowerCase() &&
+        c.period?.toLowerCase() === period.toLowerCase()
+    );
 
   /* ================= BUTTON STATE ================= */
   const getButtonState = (record, control) => {
+    if (record?.status?.toLowerCase() === "paid")
+      return { text: "Paid", class: "paid-btn" };
+
+    if (record?.status?.toLowerCase() === "pending")
+      return { text: "Pending", class: "pending-btn" };
+
     if (!control || !control.isOpen)
-      return { text: "Locked", class: "locked-btn", disabled: true };
+      return { text: "Locked", class: "locked-btn" };
 
-    if (!record)
-      return { text: "Upload", class: "upload-btn", disabled: false };
+    return { text: "Pay Fee", class: "pay-btn" };
+  };
 
-    if (record.status === "Pending")
-      return { text: "Pending", class: "pending-btn", disabled: true };
+  /* ================= ACTION ================= */
+  const handleAction = (type, period, record) => {
+    // ✅ PAID → OPEN RECEIPT
+    if (record?.status?.toLowerCase() === "paid") {
+      navigate("/student/payment-success", {
+        state: {
+          txnId: record.txnId,
+          form: {
+            applicationNo: regNo,
+            studentName,
+            year: studentYear,
+            semester: studentSemester,
+          },
+          total: record.amount,
+          viewOnly: true,
+        },
+      });
+      return;
+    }
 
-    if (record.status === "Paid")
-      return { text: "Paid", class: "paid-btn", disabled: true };
+    // ⏳ PENDING
+    if (record?.status?.toLowerCase() === "pending") {
+      alert("⏳ Payment under verification");
+      return;
+    }
 
-    return { text: "Upload", class: "upload-btn", disabled: false };
+    // 💳 NEW PAYMENT
+    navigate("/dummy-payment", {
+      state: { feeType: type, period, regNo },
+    });
   };
 
   /* ================= DATA ================= */
@@ -139,14 +148,10 @@ function StudentFee() {
 
   const years = ["Year 1","Year 2","Year 3","Year 4"];
 
-  /* ================= AUTO CLEAR MESSAGE ================= */
-  useEffect(() => {
-    if (message) {
-      const timer = setTimeout(() => setMessage(""), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [message]);
+  const allowedYear = `Year ${studentYear}`;
+  const allowedSemester = `Semester ${studentSemester}`;
 
+  /* ================= UI ================= */
   return (
     <div className="dashboard-container">
       <Sidebar />
@@ -169,24 +174,20 @@ function StudentFee() {
               const control = getControl("hostel", year);
               const state = getButtonState(record, control);
 
+              const isAllowed = year === allowedYear;
+
               return (
                 <div className="fee-row" key={year}>
                   <span>{year}</span>
 
-                  <input
-                    type="file"
-                    disabled={state.disabled}
-                    onChange={(e) =>
-                      setFiles({ ...files, [year]: e.target.files[0] })
-                    }
-                  />
-
                   <button
                     className={state.class}
-                    disabled={state.disabled}
-                    onClick={() => uploadReceipt("hostel", year)}
+                    disabled={!isAllowed && state.text !== "Paid"}
+                    onClick={() => handleAction("hostel", year, record)}
                   >
-                    {state.text}
+                    {!isAllowed && state.text !== "Paid"
+                      ? "Not Allowed"
+                      : state.text}
                   </button>
                 </div>
               );
@@ -202,30 +203,25 @@ function StudentFee() {
               const control = getControl("mess", sem);
               const state = getButtonState(record, control);
 
+              const isAllowed = sem === allowedSemester;
+
               return (
                 <div className="fee-row" key={sem}>
                   <span>{sem}</span>
 
-                  <input
-                    type="file"
-                    disabled={state.disabled}
-                    onChange={(e) =>
-                      setFiles({ ...files, [sem]: e.target.files[0] })
-                    }
-                  />
-
                   <button
                     className={state.class}
-                    disabled={state.disabled}
-                    onClick={() => uploadReceipt("mess", sem)}
+                    disabled={!isAllowed && state.text !== "Paid"}
+                    onClick={() => handleAction("mess", sem, record)}
                   >
-                    {state.text}
+                    {!isAllowed && state.text !== "Paid"
+                      ? "Not Allowed"
+                      : state.text}
                   </button>
                 </div>
               );
             })}
           </div>
-
         </div>
       </div>
     </div>

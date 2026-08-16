@@ -5,6 +5,7 @@ const leaveSchema = new mongoose.Schema({
   registerNo: String,
   semester: String,
   hostelName: String,
+  hostelType: String,
   roomNo: String,
   leaveType: String,
   fromDate: Date,

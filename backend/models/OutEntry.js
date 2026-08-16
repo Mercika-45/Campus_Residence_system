@@ -48,7 +48,11 @@ const outEntrySchema = new mongoose.Schema(
 
   actualReturn: {
     type: Date
-  }
+  },
+  wardenType: {
+  type: String,
+  required: true
+}
 
 },
 { timestamps: true }

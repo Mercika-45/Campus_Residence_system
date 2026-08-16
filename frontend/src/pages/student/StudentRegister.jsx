@@ -3,16 +3,20 @@ import { useState, useEffect } from "react";
 import "../../styles/StudentRegistration.css";
 
 function StudentRegister() {
-  const [step, setStep] = useState(1);
+  
   
   const [captcha, setCaptcha] = useState("");
   const [captchaInput, setCaptchaInput] = useState("");
-  const [error, setError] = useState("");
-  
+  const [errors, setErrors] = useState({});
+  const [guardianErrors, setGuardianErrors] = useState([]);
+  const [hostels, setHostels] = useState([]);
+  const [step, setStep] = useState(1);
+  const [blocks, setBlocks] = useState([]);
+
 
   const [selectedBed, setSelectedBed] = useState("");
  
-  const [block, setBlock] = useState("");
+  
 
 
 
@@ -36,6 +40,235 @@ const handleGuardianChange = (index, field, value) => {
   setGuardians(updated);
 };
 
+const validateGuardians = () => {
+  let errors = [];
+
+  guardians.forEach((guardian, index) => {
+    let gError = {};
+
+    // Name
+    if (!guardian.name.trim())
+      gError.name = "Guardian name required";
+
+    // Contact Number
+    if (!guardian.contact)
+      gError.contact = "Contact number required";
+    else if (!/^[6-9]\d{9}$/.test(guardian.contact))
+      gError.contact = "Invalid mobile number";
+
+    // Relationship
+    if (!guardian.relationship)
+      gError.relationship = "Select relationship";
+
+    // Email
+    if (!guardian.email)
+      gError.email = "Email required";
+    else if (!/^\S+@\S+\.\S+$/.test(guardian.email))
+      gError.email = "Invalid email";
+
+    // Aadhaar
+    if (!guardian.aadhaarNumber)
+      gError.aadhaarNumber = "Aadhaar required";
+    else if (!/^\d{12}$/.test(guardian.aadhaarNumber))
+      gError.aadhaarNumber = "Aadhaar must be 12 digits";
+
+    // Photo
+    if (!guardian.photo)
+      gError.photo = "Upload guardian photo";
+
+    // Aadhaar Card
+    if (!guardian.aadhaarCard)
+      gError.aadhaarCard = "Upload Aadhaar card";
+
+    errors[index] = gError;
+  });
+
+  setGuardianErrors(errors);
+
+  return errors.every(err => Object.keys(err).length === 0);
+};
+
+
+const validateStep = (step) => {
+  let newErrors = {};
+
+  // ======================
+  // STEP 1 VALIDATION
+  // ======================
+  if (step === 1) {
+
+    if (!student.studentName.trim())
+      newErrors.studentName = "Student name required";
+
+    if (!student.registerNumber)
+      newErrors.registerNumber = "Register number required";
+
+    if (!student.dob)
+      newErrors.dob = "Date of birth required";
+
+    if (!student.gender)
+      newErrors.gender = "Select gender";
+
+    // Email
+    if (!student.email)
+      newErrors.email = "Email required";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(student.email))
+      newErrors.email = "Invalid email";
+
+    // Mobile
+    if (!student.mobile)
+      newErrors.mobile = "Mobile required";
+    else if (!/^[6-9]\d{9}$/.test(student.mobile))
+      newErrors.mobile = "Invalid mobile number";
+
+    // Password strength
+    if (!student.password)
+      newErrors.password = "Password required";
+    else if (
+      !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/.test(
+        student.password
+      )
+    )
+      newErrors.password =
+        "8+ chars, Upper, Lower, Number & Special character";
+
+    // Confirm password
+    if (student.password !== student.confirmPassword)
+      newErrors.confirmPassword = "Passwords do not match";
+
+    if (!student.bloodGroup)
+  newErrors.bloodGroup = "Select blood group";
+
+    if (!student.nationality)
+      newErrors.nationality = "Select nationality";
+  
+  if (!student.religion)
+  newErrors.religion = "Select religion";
+
+  if (!student.community)
+ newErrors.community = "Select community";
+  
+  if (!student.caste.trim())
+  newErrors.caste = "Caste required";
+else if (!/^[A-Za-z\s]+$/.test(student.caste))
+  newErrors.caste = "Only letters allowed";
+
+if (!student.aadhaarNumber)
+  newErrors.aadhaarNumber = "Aadhaar number required";
+else if (!/^\d{12}$/.test(student.aadhaarNumber))
+  newErrors.aadhaarNumber = "Aadhaar must be 12 digits";
+
+
+
+  if (!student.whatsapp) {
+    newErrors.whatsapp = "WhatsApp number is required";
+  } else if (!/^[6-9]\d{9}$/.test(student.whatsapp)) {
+    newErrors.whatsapp = "Enter valid 10-digit mobile number";
+  }
+
+  // Alternate Contact
+  if (student.alternateContact) {
+    if (!/^[6-9]\d{9}$/.test(student.alternateContact)) {
+      newErrors.alternateContact =
+        "Enter valid alternate mobile number";
+    }
+  }
+
+
+
+    if (!student.majorIllness) {
+    newErrors.majorIllness = "Please select illness option";
+  }
+
+  if (
+    student.majorIllness === "Yes" &&
+    !student.medicalNotes
+  ) {
+    newErrors.medicalNotes =
+      "Medical condition details required";
+  }
+
+  /* -------- Allergy -------- */
+  if (!student.allergy) {
+    newErrors.allergy = "Please select allergy option";
+  }
+
+  if (
+    student.allergy === "Yes" &&
+    !student.allergyDetails
+  ) {
+    newErrors.allergyDetails =
+      "Specify allergic medicine";
+  }
+
+  /* -------- Disability -------- */
+  if (!student.disability) {
+    newErrors.disability = "Select disability option";
+  }
+
+  if (
+    student.disability === "Yes" &&
+    !student.disabilityCertificate
+  ) {
+    newErrors.disabilityCertificate =
+      "Upload disability certificate";
+  }
+
+
+  if (!student.motherTongue) {
+  newErrors.motherTongue = "Select mother tongue";
+}
+
+if (student.otherLanguage.length === 0)
+  newErrors.otherLanguage = "Select known languages";
+
+}
+
+  // ======================
+  // STEP 2 VALIDATION
+  // ======================
+  if (step === 2) {
+    if (!student.tenthRegister)
+      newErrors.tenthRegister = "10th register number required";
+
+    if (!student.tenthSchool)
+      newErrors.tenthSchool = "School name required";
+
+    if (!student.tenthPercentage)
+      newErrors.tenthPercentage = "Percentage required";
+  }
+
+  setErrors(newErrors);
+
+  return Object.keys(newErrors).length === 0;
+};
+
+const addGuardian = () => {
+
+  const last = guardians[guardians.length - 1];
+
+  if (
+    !last.name ||
+    !last.contact ||
+    !last.relationship
+  ) {
+    alert("Complete current guardian first");
+    return;
+  }
+
+  setGuardians([
+    ...guardians,
+    {
+      name: "",
+      contact: "",
+      relationship: "",
+      email: "",
+      photo: null,
+      aadhaarNumber: "",
+      aadhaarCard: null
+    }
+  ]);
+};
 
   const generateCaptcha = () => {
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -109,6 +342,7 @@ diplomaTransferCertificate: null,
 department: "",
 course: "",
 year: "",
+semester: "",
     section: "",
     rollNumber: "",
     
@@ -167,8 +401,16 @@ addressLine2: "",
      confirmDetails: false,
   agreeRules: false
   });
- const handleSubmitStep1 = (e) => {
+
+
+const handleSubmitStep1 = (e) => {
   e.preventDefault();
+
+  const stepValid = validateStep(1);
+  const guardianValid = validateGuardians();
+
+  if (!stepValid || !guardianValid) return;
+
   next();
 };
  
@@ -180,76 +422,95 @@ const handleFileChange = (e, fieldName) => {
     [fieldName || e.target.name]: file
   }));
 };
-const handleChange = (e) => {
-  const { name, value } = e.target;
+const handleChange = ({ target }) => {
+  const { name, value } = target;
 
   setStudent(prev => ({
     ...prev,
     [name]: value
   }));
+
+  setErrors(prev => ({
+    ...prev,
+    [name]: ""
+  }));
 };
-const handleBedSelect = (floor, roomNo, bedIndex) => {
-  const bedNumber = `Bed ${bedIndex + 1} (${floor} - Room ${roomNo})`;
-  
-  setSelectedBed(bedNumber);
+
+
+const handleBedSelect = (blockName, roomNo, bedIndex) => {
+  setSelectedBed(`${roomNo}-${bedIndex}`);
 
   setStudent(prev => ({
     ...prev,
     hostel: {
       ...prev.hostel,
-      bedNumber: bedNumber
+      block: blockName,
+      room: roomNo,
+      bedNumber: bedIndex + 1   // ✅ ONLY NUMBER
     }
   }));
 };
 
-const generateHostel = () => {
-  const floors = {};
-  const floorNames = ["Ground Floor", "First Floor", "Second Floor", "Third Floor"];
 
-  floorNames.forEach((floor, fIndex) => {
-    floors[floor] = {};
+  // ✅ THEN use it
+  
 
-    for (let r = 1; r <= 5; r++) {
-      const roomNo = `${fIndex + 1}${String(r).padStart(2, "0")}`;
-      floors[floor][roomNo] = Array.from({ length: 4 }, () =>
-        Math.random() > 0.5 ? "free" : "occupied"
-      );
-    }
-  });
-
-  return floors;
-};
-
-const [hostelData, setHostelData] = useState({
-  Boys: {
-    junior: { name: "Boys Hostel - Junior", blocks: { A: generateHostel(), B: generateHostel() } },
-    senior: { name: "Boys Hostel - Senior", blocks: { A: generateHostel(), B: generateHostel() } }
-  },
-  Girls: {
-    junior: { name: "Girls Hostel - Junior", blocks: { A: generateHostel(), B: generateHostel() } },
-    senior: { name: "Girls Hostel - Senior", blocks: { A: generateHostel(), B: generateHostel() } }
-  }
-});
-const goToStep = (stepNumber) => {
-  setStep(stepNumber);
+const goToStep = (n) => {
+  setStep(n);
 };
 
 useEffect(() => {
-  if (student.gender && student.year) {
-    const hostel = hostelData?.[student.gender]?.[student.year];
+  if (student.dob) {
+    const birth = new Date(student.dob);
+    const today = new Date();
 
-    if (hostel) {
-      setStudent(prev => ({
-        ...prev,
-        hostel: {
-          ...prev.hostel,
-          hostelName: hostel.name,
-          hostelType: student.gender
-        }
-      }));
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+      age--;
     }
+
+    setStudent(prev => ({ ...prev, age }));
   }
-}, [student.gender, student.year, hostelData]);
+}, [student.dob]);
+
+
+useEffect(() => {
+  const fetchHostels = async () => {
+    try {
+      if (!student.gender) return;
+
+      // 1️⃣ Fetch hostels filtered by gender
+      const res = await fetch(
+        `http://localhost:5000/api/hostels/${student.gender.toLowerCase()}`
+      );
+      const data = await res.json();
+
+      // 2️⃣ Set all hostels in state for student to choose from
+      setHostels(data); // This will contain blocks and rooms
+
+      // 3️⃣ Optional: Pre-select first hostel if needed
+      if (data.length > 0) {
+        setBlocks(data[0].blocks);
+        setStudent(prev => ({
+          ...prev,
+          hostel: {
+            hostelId: data[0]._id,         // ID of the first hostel
+            hostelName: data[0].name,
+            hostelType: data[0].hostelType,
+            selectedBlock: null,
+            selectedRoom: null
+          }
+        }));
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  fetchHostels();
+}, [student.gender]);
 
   useEffect(() => {
     if (step === 5) generateCaptcha();
@@ -265,11 +526,11 @@ useEffect(() => {
 
    <div className="reg-steps">
   <span
-    className={step === 1 ? "active" : ""}
-    onClick={() => goToStep(1)}
-  >
-    Basic
-  </span>
+        className={step === 1 ? "active" : ""}
+        onClick={() => goToStep(1)}
+      >
+        Basic
+      </span>
 
   <span
     className={step === 2 ? "active" : ""}
@@ -317,10 +578,13 @@ useEffect(() => {
               Student Name
 <input
 name="studentName"
-placeholder="Student Name"
 value={student.studentName}
 onChange={handleChange}
 />
+
+{errors.studentName && (
+<p className="error">{errors.studentName}</p>
+)}
 
 
       Profile Photo
@@ -359,6 +623,9 @@ placeholder="Register Number"
 value={student.registerNumber}
 onChange={handleChange}
 />
+{errors.registerNumber && (
+  <p className="error">{errors.registerNumber}</p>
+)}
 
 Date of Birth
 <input
@@ -367,6 +634,7 @@ name="dob"
 value={student.dob}
 onChange={handleChange}
 />
+{errors.dob && <p className="error">{errors.dob}</p>}
 
 Age
 <input
@@ -379,10 +647,11 @@ onChange={handleChange}
 Gender
 <select name="gender" value={student.gender} onChange={handleChange}>
   <option value="">Select Gender</option>
-  <option value="Boys">Male</option>
-<option value="Girls">Female</option>
+  <option value="boys">Male</option>
+<option value="girls">Female</option>
   <option value="Other">Other</option>
 </select>
+{errors.gender && <p className="error">{errors.gender}</p>}
 
 Blood Group
 <select
@@ -400,14 +669,23 @@ onChange={handleChange}
 <option>AB+</option>
 <option>AB-</option>
 </select>
+{errors.bloodGroup && (
+    <p className="error">{errors.bloodGroup}</p>
+  )}
 
 Nationality
-<input
-name="nationality"
-placeholder="Nationality"
-value={student.nationality}
-onChange={handleChange}
-/>
+<select
+  name="nationality"
+  value={student.nationality}
+  onChange={handleChange}
+>
+  <option value="">Select Nationality</option>
+  <option value="Indian">Indian</option>
+  <option value="Others">Others</option>
+</select>
+{errors.nationality && (
+    <p className="error">{errors.nationality}</p>
+  )}
 
 Religion
 <select
@@ -421,6 +699,7 @@ onChange={handleChange}
 <option>Muslim</option>
 <option>Others</option>
 </select>
+{errors.religion && <p className="error">{errors.religion}</p>}
 
 Community
 <select
@@ -435,6 +714,7 @@ onChange={handleChange}
 <option>SC</option>
 <option>ST</option>
 </select>
+{errors.community && <p className="error">{errors.community}</p>}
 
 Caste
 <input
@@ -443,6 +723,7 @@ placeholder="Caste"
 value={student.caste}
 onChange={handleChange}
 />
+{errors.caste && <p className="error">{errors.caste}</p>}
 
 Aadhaar Number
 <input
@@ -451,6 +732,9 @@ placeholder="Aadhaar Number"
 value={student.aadhaarNumber}
 onChange={handleChange}
 />
+{errors.aadhaarNumber && (
+    <p className="error">{errors.aadhaarNumber}</p>
+  )}
 
 Aadhaar Card
 <div style={{ display: "flex", flexDirection: "column" }}>
@@ -478,6 +762,9 @@ Aadhaar Card
     </a>
   )}
 </div>
+{errors.aadhaarCard && (
+  <p className="error">{errors.aadhaarCard}</p>
+)}
 
             </div>
             <h4 className="section-title">Contact Details</h4>
@@ -485,27 +772,34 @@ Aadhaar Card
              Email ID
 <input
 name="email"
-placeholder="youremail@gmail.com"
 value={student.email}
 onChange={handleChange}
 />
+
+{errors.email && <p className="error">{errors.email}</p>}
 
 Password
 <input
 type="password"
 name="password"
-placeholder="Password"
 value={student.password}
 onChange={handleChange}
 />
 
+{errors.password && <p className="error">{errors.password}</p>}
+
 Confirm Password
 <input
-type="password"
-name="confirmPassword"
-placeholder="Confirm Password"
-onChange={handleChange}
+  type="password"
+  name="confirmPassword"
+  placeholder="Confirm Password"
+  value={student.confirmPassword}
+  onChange={handleChange}
 />
+
+{errors.confirmPassword && (
+<p className="error">{errors.confirmPassword}</p>
+)}
 
 Mobile Number
 <input
@@ -514,6 +808,7 @@ placeholder="Mobile Number"
 value={student.mobile}
 onChange={handleChange}
 />
+{errors.mobile && <p className="error">{errors.mobile}</p>}
 
 WhatsApp Number
 <input
@@ -522,6 +817,9 @@ placeholder="WhatsApp Number"
 value={student.whatsapp}
 onChange={handleChange}
 />
+{errors.whatsapp && (
+  <p className="error">{errors.whatsapp}</p>
+)}
 
 Alternate Contact Number
 <input
@@ -530,6 +828,9 @@ placeholder="Alternate Contact Number"
 value={student.alternateContact}
 onChange={handleChange}
 />
+{errors.alternateContact && (
+  <p className="error">{errors.alternateContact}</p>
+)}
 
             </div>
             <h4 className="section-title">Health Details</h4>
@@ -545,6 +846,9 @@ onChange={handleChange}
     <option>Yes</option>
     <option>No</option>
   </select>
+  {errors.majorIllness && (
+  <p className="error">{errors.majorIllness}</p>
+)}
 
   {student.majorIllness === "Yes" && (
    
@@ -556,6 +860,10 @@ onChange={handleChange}
     />
    
   )}
+  {errors.medicalNotes && (
+      <p className="error">{errors.medicalNotes}</p>
+    )}
+
 
   Allergic to any medicine?
   <select
@@ -567,6 +875,9 @@ onChange={handleChange}
     <option>Yes</option>
     <option>No</option>
   </select>
+  {errors.allergy && (
+  <p className="error">{errors.allergy}</p>
+  )}
 
   {student.allergy === "Yes" && (
     
@@ -576,6 +887,9 @@ onChange={handleChange}
       onChange={handleChange}
     />
   )}
+  {errors.allergyDetails && (
+      <p className="error">{errors.allergyDetails}</p>
+    )}
 
   
   Medical / Health Documents
@@ -615,6 +929,9 @@ onChange={handleChange}
     <option>No</option>
     <option>Yes</option>
   </select>
+  {errors.disability && (
+  <p className="error">{errors.disability}</p>
+)}
 
   {student.disability === "Yes" && (
     <div>
@@ -644,6 +961,11 @@ onChange={handleChange}
       )}
     </div>
   )}
+    {errors.disabilityCertificate && (
+      <p className="error">
+        {errors.disabilityCertificate}
+      </p>
+    )}
 
             </div>
             <h4 className="section-title">Language & Education</h4>
@@ -672,6 +994,11 @@ onChange={handleChange}
   <option>Manipuri</option>
   <option>Sanskrit</option>
 </select>
+{errors.motherTongue && (
+  <p className="error">{errors.motherTongue}</p>
+)}
+
+
              Other Languages Known
 <select
   multiple
@@ -693,6 +1020,9 @@ onChange={handleChange}
   <option>Bengali</option>
 
 </select>
+{errors.otherLanguage && (
+  <p className="error">{errors.otherLanguage}</p>
+)}
 
             </div>
            <h4 className="section-title guardian-title">Guardian Details</h4>
@@ -707,7 +1037,11 @@ onChange={handleChange}
   value={guardian.name}
   onChange={e => handleGuardianChange(index, "name", e.target.value)}
 />
+{guardianErrors[index]?.name && (
+  <p className="error">{guardianErrors[index].name}</p>
+)}
       </div>
+      
       <div>
         Contact Number
        <input 
@@ -716,6 +1050,9 @@ onChange={handleChange}
   value={guardian.contact}
   onChange={e => handleGuardianChange(index, "contact", e.target.value)}
 />
+{guardianErrors[index]?.contact && (
+  <p className="error">{guardianErrors[index].contact}</p>
+)}
       </div>
     </div>
 
@@ -732,6 +1069,11 @@ onChange={handleChange}
           <option>Local Guardian</option>
           <option>Relative</option>
         </select>
+        {guardianErrors[index]?.relationship && (
+  <p className="error">
+    {guardianErrors[index].relationship}
+  </p>
+)}
       </div>
       <div>
         Email Address
@@ -741,6 +1083,9 @@ onChange={handleChange}
   value={guardian.email}
   onChange={e => handleGuardianChange(index, "email", e.target.value)}
 />
+{guardianErrors[index]?.email && (
+  <p className="error">{guardianErrors[index].email}</p>
+)}
       </div>
     </div>
 
@@ -769,6 +1114,9 @@ onChange={handleChange}
       Uploaded: {guardian.photo.name}
     </a>
   )}
+  {guardianErrors[index]?.photo && (
+  <p className="error">{guardianErrors[index].photo}</p>
+)}
 </div>
 
 
@@ -792,6 +1140,12 @@ onChange={handleChange}
     onChange={(e) => handleGuardianChange(index, "aadhaarCard", e.target.files[0])} 
     style={{ padding: "4px" }} 
   />
+  {guardianErrors[index]?.aadhaarNumber && (
+  <p className="error">
+    {guardianErrors[index].aadhaarNumber}
+  </p>
+)}
+
   {guardian.aadhaarCard && (
     <a 
       href={URL.createObjectURL(guardian.aadhaarCard)} 
@@ -808,6 +1162,12 @@ onChange={handleChange}
       Uploaded: {guardian.aadhaarCard.name}
     </a>
   )}
+
+  {guardianErrors[index]?.aadhaarCard && (
+  <p className="error">
+    {guardianErrors[index].aadhaarCard}
+  </p>
+)}
 </div>
 
       </div>
@@ -815,18 +1175,10 @@ onChange={handleChange}
   </div>
 ))}
 
-<button 
-  type="button" 
-  className="btn add-guardian" 
-  onClick={() => setGuardians([...guardians, {
-    name: "",
-    contact: "",
-    relationship: "",
-    email: "",
-    photo: null,
-    aadhaarNumber: "",
-    aadhaarCard: null
-  }])}
+<button
+  type="button"
+  className="btn add-guardian"
+  onClick={addGuardian}
 >
   + Add Guardian
 </button>
@@ -1407,6 +1759,22 @@ onChange={(e) => handleFileChange(e, "diplomaTransferCertificate")}
   <option value="3">3rd Year</option>
   <option value="4">4th Year</option>
 </select>
+Semester
+<select
+  name="semester"
+  value={student.semester}
+  onChange={handleChange}
+>
+  <option value="">Select Semester</option>
+  <option value="1">Semester 1</option>
+  <option value="2">Semester 2</option>
+  <option value="3">Semester 3</option>
+  <option value="4">Semester 4</option>
+  <option value="5">Semester 5</option>
+  <option value="6">Semester 6</option>
+  <option value="7">Semester 7</option>
+  <option value="8">Semester 8</option>
+</select>
 
             Year of Passing 
            <select
@@ -1613,7 +1981,7 @@ onChange={(e) => handleFileChange(e, "diplomaTransferCertificate")}
         </>
       )}
       {step === 4 && (
-  <>
+  <div>
     <h3>Hostel Details</h3>
 
     {!student.gender || !student.year ? (
@@ -1621,44 +1989,37 @@ onChange={(e) => handleFileChange(e, "diplomaTransferCertificate")}
         Please complete Basic & Academic details (Gender + Year of Study)
       </p>
     ) : (
-      <>
+      <div>
         <div className="grid">
-          Hostel Name
-          <input
-            value={
-              student.gender && student.year
-                ? hostelData[student.gender][student.year].name
-                : ""
-            }
-            readOnly
-          />
+          <label>Hostel Name</label>
+          <input value={student.hostel.hostelName} readOnly />
 
-          Preferred Hostel Block
+          <label>Preferred Hostel Block</label>
           <select
-            value={block}
-            onChange={(e) => {
-  setBlock(e.target.value);
-  setSelectedBed("");
-
-  setStudent((prev) => ({
-    ...prev,
-    hostel: {
-      ...prev.hostel,
-      block: e.target.value,
-      floor: "",
-      room: "",
-      bedNumber: ""
-    }
-  }));
-}}
+            value={student.hostel?.selectedBlock || ""}
+            onChange={(e) =>
+              setStudent((prev) => ({
+                ...prev,
+                hostel: {
+                  ...prev.hostel,
+                  selectedBlock: e.target.value,
+                  selectedRoom: "",
+                },
+              }))
+            }
           >
             <option value="">Select Block</option>
-            <option value="A">Block A</option>
-            <option value="B">Block B</option>
+            {blocks.map((block) => (
+              <option key={block.name} value={block.name}>
+                {block.name}
+              </option>
+            ))}
           </select>
-          Hostel Type
-<input value={student.hostel.hostelType} readOnly />
-          Food Preference
+
+          <label>Hostel Type</label>
+          <input value={student.hostel.hostelType} readOnly />
+
+          <label>Food Preference</label>
           <select
             value={student.hostel.foodPreference}
             onChange={(e) =>
@@ -1677,7 +2038,7 @@ onChange={(e) => handleFileChange(e, "diplomaTransferCertificate")}
             <option value="Mixed">Mixed</option>
           </select>
 
-          Upload Fee Receipt
+          <label>Upload Fee Receipt</label>
           <input
             type="file"
             name="feeReceipt"
@@ -1714,81 +2075,98 @@ onChange={(e) => handleFileChange(e, "diplomaTransferCertificate")}
           )}
         </div>
 
-       {block && (
-  <>
-    <h4 style={{ marginTop: "20px" }}>Choose Room & Bed</h4>
+        {/* Rooms */}
+        {student.hostel.selectedBlock && hostels.length > 0 ? (
+          <div>
+            <h4 style={{ marginTop: "20px" }}>Choose Room</h4>
 
-    {Object.entries(hostelData[student.gender][student.year].blocks[block]).map(
-      ([floor, rooms]) => (
-        <div key={floor} className="floor-block">
-          <h5>{floor}</h5>
-          <div className="room-grid">
-            {Object.entries(rooms).map(([room, beds]) => (
-              <div key={room} className="room-card">
-                <div className="room-title">Room {room}</div>
-                <div className="bed-row">
-                  {beds.map((status, i) => {
-  const bedNumber = `Bed ${i + 1}`;
-  const bedLabel = `${floor} - Room ${room} - ${bedNumber}`;
+            {hostels
+              .filter(
+                (h) =>
+                  h.name.toLowerCase() ===
+                  student.hostel.hostelName.toLowerCase()
+              )
+              .map((hostelItem, i) => (
+                <div key={i}>
+                  <h3>{hostelItem.name}</h3>
 
-  const isSelected =
-    student.hostel.floor === floor &&
-    student.hostel.room === room &&
-    student.hostel.bedNumber === bedNumber;
+                  {hostelItem.blocks
+                    ?.filter(
+                      (b) =>
+                        b.name.toLowerCase() ===
+                        student.hostel.selectedBlock.toLowerCase()
+                    )
+                    .map((blockItem, j) => (
+                      <div key={j}>
+                        <h4>{blockItem.name}</h4>
 
-  return (
-    <button
-      key={i}
-      className={`bed ${status} ${isSelected ? "selected" : ""}`}
-      disabled={status === "occupied"}
-      onClick={() => {
-        setSelectedBed(bedLabel);
+                        <div className="room-grid">
+                          {blockItem.rooms?.map((room, k) => (
+                            <div key={k} className="room-card">
+                              <h4>Room {room.roomNo}</h4>
+                              <div className="bed-container">
+                                {[...Array(room.totalBeds)].map(
+                                  (_, bedIndex) => {
+                                    const isOccupied = room.students?.[bedIndex]
+                                      ? true
+                                      : false;
 
-        setStudent((prev) => ({
-          ...prev,
-          hostel: {
-            ...prev.hostel,
-            floor,
-            room,
-            bedNumber: bedNumber,
-            block,
-            hostelName: prev.hostel.hostelName || hostelData[student.gender][student.year].name
-          }
-        }));
-      }}
-    >
-      {i + 1}
-    </button>
-  );
-})}
+                                    return (
+                                      <button
+                                        key={bedIndex}
+                                        className={`bed-btn ${
+                                          isOccupied ? "occupied" : "free"
+                                        } ${
+                                          selectedBed ===
+                                          `${room.roomNo}-${bedIndex}`
+                                            ? "selected"
+                                            : ""
+                                        }`}
+                                        disabled={isOccupied}
+                                        onClick={() =>
+                                          handleBedSelect(
+                                            blockItem.name,
+                                            room.roomNo,
+                                            bedIndex
+                                          )
+                                        }
+                                      >
+                                        {bedIndex + 1}
+                                      </button>
+                                    );
+                                  }
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+
+                  {hostelItem.blocks?.filter(
+                    (b) =>
+                      b.name.toLowerCase() ===
+                      student.hostel.selectedBlock.toLowerCase()
+                  ).length === 0 && <p>No rooms in this block</p>}
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
+        ) : (
+          <p>No rooms found</p>
+        )}
+
+        {/* Buttons */}
+        <div className="btn-row">
+          <button className="btn prev" onClick={prev}>
+            Previous
+          </button>
+          <button className="btn next" onClick={next}>
+            Next
+          </button>
         </div>
-      )
+      </div>
     )}
-
-    {selectedBed && (
-      <p className="selected-bed">
-        Selected Bed: <strong>{selectedBed}</strong>
-      </p>
-    )}
-  </>
-)}
-
-      </>
-    )}
-
-    <div className="btn-row">
-      <button className="btn prev" onClick={prev}>
-        Previous
-      </button>
-      <button className="btn next" onClick={next}>
-        Next
-      </button>
-    </div>
-  </>
+  </div>
 )}
 
         {/* STEP 5 */}

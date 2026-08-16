@@ -1,0 +1,63 @@
+.receipt-page {
+  min-height: 100vh;
+  background: #f4f6f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.receipt-card {
+  width: 500px;
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  text-align: center;
+}
+
+.receipt-card h2 {
+  color: green;
+}
+
+.receipt-box {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.receipt-box p {
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 0;
+}
+
+.receipt-box hr {
+  margin: 15px 0;
+}
+
+.total {
+  text-align: right;
+  color: #1e88e5;
+}
+
+.receipt-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.receipt-actions button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.receipt-actions button:first-child {
+  background: #1e88e5;
+  color: white;
+}
+
+.receipt-actions button:last-child {
+  background: #4caf50;
+  color: white;
+}

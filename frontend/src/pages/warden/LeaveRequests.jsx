@@ -6,22 +6,30 @@ import WardenSidebar from "../../components/WardenSidebar";
 function LeaveRequests() {
   const [requests, setRequests] = useState([]);
   const [dateFilter, setDateFilter] = useState("");
-
+const warden = JSON.parse(localStorage.getItem("warden"));
+const wardenType = warden?.hostelType?.toLowerCase(); // "boys" or "girls"
   const API = "http://localhost:5000/api";
 
   useEffect(() => {
     fetchLeaves();
   }, []);
 
-  const fetchLeaves = async () => {
-    try {
-      const res = await axios.get(`${API}/leave`);
-      setRequests(res.data);
-    } catch (error) {
-      console.error("Error fetching leaves:", error);
-    }
-  };
+ const fetchLeaves = async () => {
+  try {
+    const res = await axios.get(`${API}/leave`);
 
+    console.log(res.data); // 🔥 check this
+
+    const filtered = res.data.filter(
+  (req) => req.hostelType?.toLowerCase().includes(wardenType)
+);
+
+    setRequests(filtered);
+
+  } catch (error) {
+    console.error("Error fetching leaves:", error);
+  }
+};
   // ✅ Filter by Applied On Date
   const filteredRequests =
     dateFilter === ""

@@ -24,6 +24,9 @@ import hostelRoutes from "./routes/hostelRoutes.js";
 import executiveRoutes from "./routes/executiveRoutes.js";
 import attendanceRoutes from "./routes/attendanceRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
+import wardenDashboardRoutes from "./routes/wardenDashboardRoutes.js";
+import adminHostelRoutes from "./routes/adminHostelRoutes.js";
+import sanitizationRoutes from "./routes/sanitizationRoutes.js";
 
 dotenv.config();
 
@@ -74,11 +77,18 @@ app.use("/api/hostels", hostelRoutes);
 app.use("/api/executive", executiveRoutes);
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/warden-dashboard", wardenDashboardRoutes);
+app.use("/api/admin/hostels", adminHostelRoutes);
+app.use("/api/sanitization", sanitizationRoutes);
 
 /* ================= SERVER ================= */
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log("Server running on port " + PORT);
-});
+if (process.env.NODE_ENV !== "test") {
+  app.listen(PORT, () => {
+    console.log("Server running on port " + PORT);
+  });
+}
+
+export default app;

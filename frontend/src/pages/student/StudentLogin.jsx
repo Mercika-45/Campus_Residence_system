@@ -34,6 +34,12 @@ function StudentLogin() {
 
 const handleLogin = async () => {
   setError("");
+ if (captchaInput.trim() !== captcha) {
+    setError("Invalid captcha");
+    generateCaptcha();       // refresh captcha
+    setCaptchaInput("");     // clear input
+    return;                  // ❗ STOP LOGIN
+  }
 
   try {
     const res = await axios.post(

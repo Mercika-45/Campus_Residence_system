@@ -5,14 +5,23 @@ import ExecutiveTopbar from "../../components/ExecutiveTopbar";
 import "../../styles/ExecutiveWarden.css";
 
 function ExecutiveDashboard() {
+
+  const API = "http://localhost:5000";
+
   const [executive, setExecutive] = useState(null);
+
   const [stats, setStats] = useState({
     blocks: 0,
     students: 0,
     wardens: 0
   });
 
+  const [loading, setLoading] = useState(true);
+
+  /* ================= LOAD EXECUTIVE DATA ================= */
+
   useEffect(() => {
+
     const data = localStorage.getItem("executiveWarden");
 
     if (!data) {
@@ -21,32 +30,61 @@ function ExecutiveDashboard() {
     }
 
     const parsed = JSON.parse(data);
-    setExecutive(parsed);
 
-    // ================= FETCH DATA BASED ON EXECUTIVE =================
-    axios
-      .get(`http://localhost:5000/api/executive/${parsed.email}/stats`)
-      .then(res => {
-        // Backend should return blocks, students, wardens count for this executive
-        setStats(res.data);
-      })
-      .catch(err => console.log("Failed to fetch executive stats:", err));
+    fetchExecutiveStats(parsed.email);
 
   }, []);
 
-  if (!executive) return null;
+  /* ================= FETCH FROM BACKEND ================= */
+
+  const fetchExecutiveStats = async (email) => {
+    try {
+
+      const res = await axios.get(
+        `${API}/api/executive/stats`,
+        {
+          params: { email }
+        }
+      );
+
+      // ✅ Stats
+      setStats({
+        blocks: res.data.blocks || 0,
+        students: res.data.students || 0,
+        wardens: res.data.wardens || 0
+      });
+
+      // ✅ Executive profile from DB
+      setExecutive(res.data.executive);
+
+    } catch (err) {
+      console.error("Failed to fetch executive stats:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /* ================= LOADING ================= */
+
+  if (loading) return <h2>Loading dashboard...</h2>;
+  if (!executive) return <h2>No Executive Data Found</h2>;
 
   const isBoys = executive.hostelType === "boys";
   const isGirls = executive.hostelType === "girls";
 
+  /* ================= UI ================= */
+
   return (
     <div className="dashboard-container">
+
       <ExecutiveSidebar />
 
       <div className="main-content1">
+
         <ExecutiveTopbar name={executive.name} />
 
         <div className="content">
+
           <h2>
             {isBoys
               ? "Boys Executive Dashboard"
@@ -59,38 +97,54 @@ function ExecutiveDashboard() {
 
           <div className="info-wrapper">
 
-            {/* Profile Card */}
+            {/* ================= PROFILE CARD ================= */}
             <div className="profile-card1">
+
               <img
-                src={executive.image || "/images/profile.jpg"}
+                src={
+  executive.image
+    ? `${API}${executive.image}`
+    : "/images/profile.jpg"
+}
                 alt="profile"
                 className="profile-img"
+                onError={(e) => {
+                  e.target.src = "/images/profile.jpg";
+                }}
               />
+
               <h3>{executive.name}</h3>
               <p>{executive.email}</p>
+
               <p>
-                <b>Hostel Type:</b> {isBoys ? "Boys Hostel" : "Girls Hostel"}
+                <b>Hostel Type :</b>{" "}
+                {isBoys ? "Boys Hostel" : "Girls Hostel"}
               </p>
+
             </div>
 
-            {/* General Info */}
+            {/* ================= GENERAL INFO ================= */}
+
             <div className="general-card">
+
               <h3>📄 Executive Information</h3>
 
               <div className="info-grid">
+
                 <p><b>ROLE</b> : Executive Warden</p>
 
-                <p><b>HOSTEL BLOCKS</b> : {stats.blocks}</p>
-                <p><b>STUDENTS</b> : {stats.students}</p>
-                <p><b>WARDENS</b> : {stats.wardens}</p>
+                <p><b>MOBILE</b> : {executive.phone || "Not Available"}</p>
 
-                <p><b>MOBILE</b> : {executive.phone || "9876543210"}</p>
                 <p><b>EMAIL</b> : {executive.email}</p>
-                <p><b>STATUS</b> : {executive.status || "Active"}</p>
+
+                <p><b>STATUS</b> : Active</p>
+
               </div>
+
             </div>
 
           </div>
+
         </div>
       </div>
     </div>

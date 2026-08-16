@@ -22,11 +22,12 @@ const formatted = res.data
     hostel: item.hostel || "N/A",
     phone: item.warden.phone,
     photo: item.warden.image
-      ? `http://localhost:5000${item.warden.image}` // ✅ prepend server URL
+      ? `http://localhost:5000${item.warden.image}`
       : "https://ui-avatars.com/api/?name=Warden&background=0A1F44&color=fff",
     hostelType: item.warden.hostelType?.toLowerCase() || "N/A",
+    role: item.warden.role?.toLowerCase() || "",
   }))
-  .filter(w => w.hostelType === "boys" || w.hostelType === "girls"); // only valid hostel types
+  .filter(w => (w.hostelType === "boys" || w.hostelType === "girls") && w.role.includes("local")); // only valid hostel types
 
         setLocalWardens(formatted);
       })

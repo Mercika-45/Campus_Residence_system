@@ -1,25 +1,39 @@
 import mongoose from "mongoose";
 
-const hostelSchema = new mongoose.Schema({
-  hostelName: String,
+// ✅ STUDENT
+const studentSchema = new mongoose.Schema({
+  regNo: { type: String, required: true },
+  studentName: { type: String, required: false},  // ✅ ADD THIS
+  year: { type: String, required: true },
+  department: { type: String, required: true },
+  hostelType: String
+});
 
-  hostelType: {
-    type: String,
-    enum: ["Boys Hostel", "Girls Hostel"], // ✅ MUST match Hostel model
-  },
-
-  block: String,
-  floor: String,
-  room: String,
-  bedNumber: String,
-  foodPreference: String,
-
-  feeReceipt: {
-    type: String,
-    default: ""
+// ✅ ROOM
+const roomSchema = new mongoose.Schema({
+  roomNo: String,
+  totalBeds: Number,
+  occupied: { type: Number, default: 0 },
+  students: {
+    type: [studentSchema],
+    default: []   // ✅ IMPORTANT FIX
   }
-},
-  { timestamps: true }
+});
+
+// ✅ BLOCK
+const blockSchema = new mongoose.Schema({
+  name: String,
+  rooms: [roomSchema]
+});
+
+// ✅ HOSTEL
+const hostelSchema = new mongoose.Schema(
+  {
+    name: String,
+    hostelType: String, // boys / girls
+    blocks: [blockSchema]
+  },
+  { timestamps: true } // ✅ optional improvement
 );
 
 export default mongoose.model("Hostel", hostelSchema);

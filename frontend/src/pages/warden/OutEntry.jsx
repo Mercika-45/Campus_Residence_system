@@ -20,8 +20,24 @@ function OutEntry() {
   const [filterYear, setFilterYear] = useState("");
 
   const [editId, setEditId] = useState(null);
-
+  const warden = JSON.parse(localStorage.getItem("warden"));
+const wardenType = warden?.hostelType?.toLowerCase();
   const API_URL = "http://localhost:5000/api/outentry";
+
+const fetchStudentDetails = async (regNumber) => {
+  try {
+    const res = await axios.get(
+      `http://localhost:5000/api/outentry/regno/${regNumber}`
+    );
+
+    setStudentName(res.data.studentName || "");
+    setYear(res.data.yearOfStudy || "1");
+    setParentMobile(res.data.fatherMobile || "");
+
+  } catch (error) {
+    console.log("Student not found");
+  }
+};
 
   /* ================= FETCH ENTRIES ================= */
   const fetchEntries = async () => {
@@ -35,7 +51,15 @@ function OutEntry() {
       }
 
       const res = await axios.get(query ? `${API_URL}?${query}` : API_URL);
-      setEntries(res.data);
+
+// ✅ FILTER BASED ON WARDEN TYPE
+const filtered = res.data.filter(
+  (entry) =>
+    !entry.wardenType || // allow old data
+    entry.wardenType.toLowerCase() === wardenType
+);
+
+setEntries(filtered);
     } catch (error) {
       console.error("Error fetching entries:", error);
     }
@@ -48,57 +72,63 @@ function OutEntry() {
   }, [filterYear, filterDate, showView]);
 
   /* ================= HANDLE SUBMIT ================= */
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (!studentName || !regNo || !parentMobile || !outDate || !returnDate) {
-      setMessage("Please fill all required fields.");
-      return;
+  if (!studentName || !regNo || !parentMobile || !outDate || !returnDate) {
+    setMessage("Please fill all required fields.");
+    return;
+  }
+
+  // ✅ GET WARDEN TYPE
+  const warden = JSON.parse(localStorage.getItem("warden"));
+  const wardenType = warden?.hostelType?.toLowerCase();
+
+  try {
+    if (editId) {
+      await axios.put(`${API_URL}/${editId}`, {
+        studentName,
+        regNo,
+        parentMobile,
+        year,
+        outDate,
+        returnDate,
+        reason,
+        wardenType // ✅ ADD HERE ALSO
+      });
+      setMessage("Entry updated successfully!");
+    } else {
+      await axios.post(API_URL, {
+        studentName,
+        regNo,
+        parentMobile,
+        year,
+        outDate,
+        returnDate,
+        reason,
+        wardenType // ✅ ADD HERE
+      });
+      setMessage("Out entry recorded & Parent notified successfully!");
     }
 
-    try {
-      if (editId) {
-        await axios.put(`${API_URL}/${editId}`, {
-          studentName,
-          regNo,
-          parentMobile,
-          year,
-          outDate,
-          returnDate,
-          reason,
-        });
-        setMessage("Entry updated successfully!");
-      } else {
-        await axios.post(API_URL, {
-          studentName,
-          regNo,
-          parentMobile,
-          year,
-          outDate,
-          returnDate,
-          reason,
-        });
-        setMessage("Out entry recorded & Parent notified successfully!");
-      }
+    setStudentName("");
+    setRegNo("");
+    setParentMobile("");
+    setYear("1");
+    setOutDate("");
+    setReturnDate("");
+    setReason("");
+    setEditId(null);
 
-      setStudentName("");
-      setRegNo("");
-      setParentMobile("");
-      setYear("1");
-      setOutDate("");
-      setReturnDate("");
-      setReason("");
-      setEditId(null);
+    setTimeout(() => setMessage(""), 3000);
 
-      setTimeout(() => setMessage(""), 3000);
+    if (showView) fetchEntries();
 
-      if (showView) fetchEntries();
-    } catch (error) {
-      console.error("Error saving entry:", error);
-      setMessage("Something went wrong!");
-    }
-  };
-
+  } catch (error) {
+    console.error("Error saving entry:", error);
+    setMessage("Something went wrong!");
+  }
+};
   /* ================= HANDLE DELETE ================= */
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm("Are you sure you want to delete?");
@@ -145,6 +175,25 @@ function OutEntry() {
         {!showView && (
           <div className="form-card">
             <form className="warden-form" onSubmit={handleSubmit}>
+
+                  <div className="form-group">
+                <label>Register Number</label>
+                <input
+  type="text"
+  value={regNo}
+  placeholder="Enter register number"
+  onChange={(e) => {
+    const value = e.target.value;
+    setRegNo(value);
+
+    // auto fetch when length reached (example 12)
+    if (value.length >= 6) {
+      fetchStudentDetails(value);
+    }
+  }}
+/>
+              </div>
+
               <div className="form-group">
                 <label>Student Name</label>
                 <input
@@ -155,15 +204,6 @@ function OutEntry() {
                 />
               </div>
 
-              <div className="form-group">
-                <label>Register Number</label>
-                <input
-                  type="text"
-                  value={regNo}
-                  onChange={(e) => setRegNo(e.target.value)}
-                  placeholder="Enter register number"
-                />
-              </div>
 
               <div className="form-group">
                 <label>Year</label>
@@ -175,15 +215,22 @@ function OutEntry() {
                 </select>
               </div>
 
-              <div className="form-group">
-                <label>Parent Mobile</label>
-                <input
-                  type="tel"
-                  value={parentMobile}
-                  onChange={(e) => setParentMobile(e.target.value)}
-                  placeholder="Enter mobile number"
-                />
-              </div>
+             <div className="form-group">
+  <label>Parent Mobile</label>
+
+  <input
+    type="tel"
+    value={parentMobile}
+    placeholder="Enter mobile number"
+    maxLength="10"
+    pattern="[0-9]{10}"
+    onChange={(e) => {
+      const value = e.target.value.replace(/\D/g, ""); // allow only numbers
+      setParentMobile(value);
+    }}
+    required
+  />
+</div>
 
               <div className="form-group">
                 <label>Out Date & Time</label>

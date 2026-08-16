@@ -7,6 +7,8 @@ import "../../styles/Complaints.css";
 
 function ViewComplaints() {
   const [complaints, setComplaints] = useState([]);
+  const executive = JSON.parse(localStorage.getItem("executiveWarden"));
+  const wardenType = executive?.hostelType?.toLowerCase();
 
   // 🔹 Fetch from backend
   useEffect(() => {
@@ -16,8 +18,8 @@ function ViewComplaints() {
   const fetchComplaints = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:5000/api/complaints"
-      );
+  `http://localhost:5000/api/complaints?hostelType=${wardenType}`
+);
       setComplaints(res.data);
     } catch (error) {
       console.error(error);
@@ -36,12 +38,12 @@ function ViewComplaints() {
     }
   };
 
-  // 🔹 Sort → Pending top, Resolved bottom
-  const sortedComplaints = [...complaints].sort((a, b) => {
-    if (a.status === "Resolved") return 1;
-    if (b.status === "Resolved") return -1;
-    return 0;
-  });
+
+const sortedComplaints = [...complaints].sort((a, b) => {
+  if (a.status === "Resolved") return 1;
+  if (b.status === "Resolved") return -1;
+  return 0;
+});
 
   return (
     <div className="dashboard-container">

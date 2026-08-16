@@ -54,9 +54,21 @@ function ExecutiveWardenLogin() {
 
       // ✅ Store specifically for executive dashboard
       localStorage.setItem("token", token);
-      localStorage.setItem("executiveWarden", JSON.stringify(user));
 
-      navigate("/executive/dashboard");
+// ✅ SAVE EXECUTIVE DATA (THIS WAS MISSING)
+localStorage.setItem("executiveWarden", JSON.stringify({
+  _id: user._id,
+  name: user.name,
+  email: user.email,
+  role: user.role,
+  hostelType: user.hostelType
+}));
+
+
+localStorage.setItem("wardenType", user.hostelType);
+
+navigate("/executive/dashboard");
+
 
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");

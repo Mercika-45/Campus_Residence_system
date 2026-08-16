@@ -5,6 +5,7 @@ const complaintSchema = new mongoose.Schema(
     studentName: { type: String, required: true },
     registerNo: { type: String, required: true },
     hostel: { type: String, required: true },
+    hostelType: { type: String },
     room: { type: String, required: true },
     category: { type: String, required: true },
     description: { type: String, required: true },
